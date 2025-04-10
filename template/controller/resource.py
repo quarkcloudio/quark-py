@@ -10,4 +10,4 @@ def index():
     if url == '':
         return 'url is empty'
     
-    return ""
+    return "resource"

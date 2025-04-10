@@ -1,20 +1,14 @@
 #coding: utf-8
+from typing import Any
 from flask import Flask
 from template.controller.resource import resource_bp
 
-# 创建一个app
-app = Flask(__name__)
+class Engine:
+    def __init__(self):
+        self.flask = Flask(__name__)
 
-# 设置debug模式
-app.config["DEBUG"] = True
+    def register_blueprint(self, bp):
+        self.flask.register_blueprint(bp)
 
-# 注册蓝图
-app.register_blueprint(resource_bp)
-
-# 创建路由
-@app.route('/')
-def index() -> str:
-    return 'Hello World!'
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000)
+    def run(self, host: str | None = None, port: int | None = None, debug: bool | None = None, load_dotenv: bool = True, **options: Any):
+        self.flask.run(host, port, debug, load_dotenv, **options)
