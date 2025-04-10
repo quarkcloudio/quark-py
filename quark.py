@@ -1,7 +1,6 @@
 #coding: utf-8
 from flask import Flask
-from api.detect import detect_bp
-from api.ocr import ocr_bp
+from template.controller.resource import resource_bp
 
 # 创建一个app
 app = Flask(__name__)
@@ -10,8 +9,7 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 
 # 注册蓝图
-app.register_blueprint(detect_bp)
-app.register_blueprint(ocr_bp)
+app.register_blueprint(resource_bp)
 
 # 创建路由
 @app.route('/')
