@@ -1,0 +1,17 @@
+[project]
+name = "quark-py"
+version = "0.0.1"
+description = "Flask + Ant Design Pro 前后端分离的管理后台，Build Anything With Quark"
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+authors = [
+  { name="tangtanglove", email="dai_hang_love@126.com" }
+]
+dependencies = [
+  "requests >=2.0.0"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
