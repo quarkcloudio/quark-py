@@ -8,12 +8,17 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "flask (>=3.1.0,<4.0.0)"
+    "flask (>=3.1.0,<4.0.0)",
+    "sqlalchemy (>=2.0.40,<3.0.0)",
+    "pymysql (>=1.1.1,<2.0.0)"
 ]
 
 [tool.poetry]
 packages = [{include = "quark", from = "src"}]
 
+[[tool.poetry.source]]
+name = "ustc"
+url = "https://pypi.mirrors.ustc.edu.cn/simple"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
