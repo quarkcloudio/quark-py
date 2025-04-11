@@ -1,5 +1,5 @@
 [project]
-name = "quark-py"
+name = "quarkpy"
 version = "0.0.1"
 description = "Flask + Ant Design Pro 前后端分离的管理后台，Build Anything With Quark"
 readme = "README.md"
