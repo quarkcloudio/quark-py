@@ -1,17 +1,20 @@
 [project]
-name = "quarkpy"
+name = "quark-py"
 version = "0.0.1"
 description = "Flask + Ant Design Pro 前后端分离的管理后台，Build Anything With Quark"
-readme = "README.md"
-requires-python = ">=3.7"
-license = { text = "MIT" }
 authors = [
-  { name="tangtanglove", email="dai_hang_love@126.com" }
+    {name = "tangtanglove",email = "dai_hang_love@126.com"}
 ]
+readme = "README.md"
+requires-python = ">=3.13"
 dependencies = [
-  "requests >=2.0.0"
+    "flask (>=3.1.0,<4.0.0)"
 ]
 
+[tool.poetry]
+packages = [{include = "quark", from = "src"}]
+
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

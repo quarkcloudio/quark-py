@@ -1,8 +1,8 @@
 #coding: utf-8
-from engine import Engine
+from quark import Quark
 
 # 创建一个app
-app = Engine(__name__)
+app = Quark(__name__)
 
 # 设置debug模式
 app.config["DEBUG"] = True
