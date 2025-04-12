@@ -5,7 +5,6 @@ def load_class_method_from_file(file_path, class_name, method_name, *args, **kwa
     spec = importlib.util.spec_from_file_location('dynamic_module', file_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-
     cls = getattr(module, class_name)
     obj = cls()
     method = getattr(obj, method_name)
