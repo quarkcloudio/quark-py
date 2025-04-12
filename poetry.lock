@@ -177,6 +177,22 @@ url = "https://pypi.mirrors.ustc.edu.cn/simple"
 reference = "ustc"
 
 [[package]]
+name = "importlib"
+version = "1.0.4"
+description = "Backport of importlib.import_module() from Python 2.7"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "importlib-1.0.4.zip", hash = "sha256:b6ee7066fea66e35f8d0acee24d98006de1a0a8a94a8ce6efe73a9a23c8d9826"},
+]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.mirrors.ustc.edu.cn/simple"
+reference = "ustc"
+
+[[package]]
 name = "itsdangerous"
 version = "2.2.0"
 description = "Safely pass data to untrusted environments and back."
@@ -457,4 +473,4 @@ reference = "ustc"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "33bc4fe1cf4adea67915850aba0bf0b1ff763403ab10400b459bd7234313931b"
+content-hash = "2fb839139acf5fb17bb3f5371219ce7ddf8006e7b98695dc88e323ee8294d507"
