@@ -7,3 +7,10 @@ class User(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     age = Column(Integer)
+
+    def __init__(self):
+        # 初始化代码
+        pass
+
+    def seeder(self):
+        db.Model.metadata.create_all(db.engine)
