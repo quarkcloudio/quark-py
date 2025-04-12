@@ -330,6 +330,26 @@ url = "https://pypi.mirrors.ustc.edu.cn/simple"
 reference = "ustc"
 
 [[package]]
+name = "python-i18n"
+version = "0.3.9"
+description = "Translation library for Python"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "python-i18n-0.3.9.tar.gz", hash = "sha256:df97f3d2364bf3a7ebfbd6cbefe8e45483468e52a9e30b909c6078f5f471e4e8"},
+    {file = "python_i18n-0.3.9-py3-none-any.whl", hash = "sha256:bda5b8d889ebd51973e22e53746417bd32783c9bd6780fd27cadbb733915651d"},
+]
+
+[package.extras]
+yaml = ["pyyaml (>=3.10)"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.mirrors.ustc.edu.cn/simple"
+reference = "ustc"
+
+[[package]]
 name = "sqlalchemy"
 version = "2.0.40"
 description = "Database Abstraction Library"
@@ -473,4 +493,4 @@ reference = "ustc"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "2fb839139acf5fb17bb3f5371219ce7ddf8006e7b98695dc88e323ee8294d507"
+content-hash = "f89a82692e550b6c8f2f8dd652f2d21c3289c0f64297a6ee6e632039ed338a22"

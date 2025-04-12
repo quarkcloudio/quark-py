@@ -1,0 +1,4 @@
+resource:
+  table_title_suffix: "列表"
+  table_action_column_title: "操作"
+  export_text: "导出"
