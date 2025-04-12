@@ -15,7 +15,7 @@ class Quark(Flask):
         # 模块加载路径
         self.config["MODULE_PATH"] = '/app'
 
-        # 模块加载路径
+        # 设置语言
         self.config["LOCALE"] = 'zh-hans'
 
     # 初始化数据库
