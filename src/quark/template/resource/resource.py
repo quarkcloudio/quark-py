@@ -36,7 +36,7 @@ class Resource:
     table_title_suffix: str = i18n.t('resource.table_title_suffix')
 
     # 列表页表格行为列显示文字（字段列名）
-    table_action_column_title: str = "操作"
+    table_action_column_title: str = i18n.t('resource.table_action_column_title')
 
     # 列表页表格行为列的宽度
     table_action_column_width: int = 0
@@ -52,7 +52,7 @@ class Resource:
     export: bool = False
 
     # 列表导出按钮文字内容
-    export_text: str = "导出"
+    export_text: str =  i18n.t('resource.export_text')
 
     # 列表页分页配置（如每页数量或是否分页）
     page_size: Any = None
