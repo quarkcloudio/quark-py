@@ -1,8 +1,8 @@
 #coding: utf-8
 from typing import Any
 from flask import Flask
-from dal import db
-from template.controller.resource import resource_bp
+from quark.dal import db
+from quark.template.controller.resource import resource_bp
 
 class Quark(Flask):
     def __init__(self, __name__):
