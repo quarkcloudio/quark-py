@@ -9,8 +9,7 @@ class User(db.Model):
     age = Column(Integer)
 
     def __init__(self):
-        # 初始化代码
         pass
 
-    def seeder(self):
-        db.Model.metadata.create_all(db.engine)
+    def migrate(self):
+        User.__table__.create(bind=db.engine, checkfirst=True)
