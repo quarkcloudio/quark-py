@@ -1,5 +1,6 @@
 #coding: utf-8
 from quark import Quark
+from flask import send_from_directory
 
 # 创建一个app
 app = Quark(__name__)
