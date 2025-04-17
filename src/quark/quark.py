@@ -1,7 +1,7 @@
 #coding: utf-8
 from typing import Any
 import os
-from flask import Flask, Blueprint, send_from_directory
+from flask import Flask, send_from_directory
 from quark.dal import db
 from quark.template import module
 from quark.template.controller.resource import resource_bp
@@ -54,6 +54,7 @@ class Quark(Flask):
     def init_serve_static(self):
         self.add_url_rule('/<path:path>', view_func=self.serve_static, methods=['GET'])
 
+    # 初始化模块
     def init_module(self) -> None:
         module.install()
 
