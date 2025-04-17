@@ -4,7 +4,7 @@ import os
 from flask import Flask, send_from_directory
 from quark.dal import db
 from quark.template import module
-from quark.template.controller.resource import resource_bp
+from quark.template.controller import login, resource
 import i18n
 
 class Quark(Flask):
@@ -60,7 +60,8 @@ class Quark(Flask):
 
     # 解析蓝图
     def parse_blueprint(self) -> None:
-        self.register_blueprint(resource_bp)
+        self.register_blueprint(login.login_bp)
+        self.register_blueprint(resource.resource_bp)
 
     # 加载应用
     def bootstrap(self) -> None:
