@@ -39,8 +39,10 @@ class Quark(Flask):
 
     # 静态资源和首页
     def serve_static(self, path):
-        # 设置静态文件路径
+        # 获取静态资源路径
         static_path = os.path.join(self.current_dir_path, self.config["STATIC_PATH"])
+
+        # 判断是否存在index.html
         full_path = os.path.join(static_path, path)
         index_path = os.path.join(full_path, "index.html")
         if os.path.isfile(index_path):
@@ -52,6 +54,9 @@ class Quark(Flask):
     def init_serve_static(self):
         self.add_url_rule('/<path:path>', view_func=self.serve_static, methods=['GET'])
 
+    def init_module(self) -> None:
+        module.install()
+
     # 解析蓝图
     def parse_blueprint(self) -> None:
         self.register_blueprint(resource_bp)
@@ -62,14 +67,14 @@ class Quark(Flask):
         # 初始化数据库
         self.init_db()
 
+        # 初始化模块
+        self.init_module()
+
         # 初始化 locale
         self.init_locale()
 
         # 初始化静态资源
         self.init_serve_static()
-
-        # 安装模版
-        module.install()
 
         # 解析蓝图
         self.parse_blueprint()
