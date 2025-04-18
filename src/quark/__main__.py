@@ -1,5 +1,5 @@
 #coding: utf-8
-from quark import Quark
+from .quark import Quark
 
 # 创建一个app
 app = Quark(__name__)

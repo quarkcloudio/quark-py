@@ -2,10 +2,10 @@
 from typing import Any
 import os
 from flask import Flask, send_from_directory
-from quark.dal import db
-from quark.template import module
-from quark.template.controller import login, resource
-from quark.config import config
+from .dal import db
+from .template import module
+from .template.controller import login, resource
+from .config import config
 import i18n
 
 class Quark(Flask):

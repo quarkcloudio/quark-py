@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from quark.dal import db
+from ..dal import db
 
 class User(db.Model):
     __tablename__ = 'users'  # 表名
