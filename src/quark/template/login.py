@@ -7,3 +7,6 @@ class Login:
 
     # 页面标题
     title: str = ""
+
+    def index_render(self):
+        return "xyz"
