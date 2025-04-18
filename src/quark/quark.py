@@ -4,7 +4,7 @@ import os
 from flask import Flask, send_from_directory
 from .dal import db
 from .template import module
-from .template.controller import login, resource
+from .controller import login, resource
 from .config import config
 import i18n
 

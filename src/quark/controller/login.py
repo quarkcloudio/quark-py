@@ -1,5 +1,5 @@
 from flask import Blueprint
-from ...core import login_render
+from ..core import login_render
 
 # 创建蓝图
 login_bp = Blueprint('login', __name__)
