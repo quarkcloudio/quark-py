@@ -5,6 +5,7 @@ from flask import Flask, send_from_directory
 from quark.dal import db
 from quark.template import module
 from quark.template.controller import login, resource
+from quark.config import config
 import i18n
 
 class Quark(Flask):
@@ -36,6 +37,10 @@ class Quark(Flask):
 
         # 设置默认语言
         i18n.set('locale', self.config["LOCALE"])
+
+    # 初始化配置
+    def init_config(self) -> None:
+        config.update(self.config)
 
     # 静态资源和首页
     def serve_static(self, path):
@@ -69,11 +74,14 @@ class Quark(Flask):
         # 初始化数据库
         self.init_db()
 
-        # 初始化模块
-        self.init_module()
-
         # 初始化 locale
         self.init_locale()
+
+        # 初始化配置
+        self.init_config()
+
+        # 初始化模块
+        self.init_module()
 
         # 初始化静态资源
         self.init_serve_static()

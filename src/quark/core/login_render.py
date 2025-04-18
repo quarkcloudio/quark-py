@@ -1,2 +1,4 @@
+from quark.config import config
+
 def index_render(resource: str):
-    return "index"+resource
+    return config["MODULE_PATH"]+resource
