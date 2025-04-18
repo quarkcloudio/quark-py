@@ -32,8 +32,10 @@ class Quark(Flask):
 
     # 初始化 locale
     def init_locale(self) -> None:
+        locales_path = os.path.abspath(os.path.join(self.current_dir_path, 'locales'))
+
         # 设置 locale 路径
-        i18n.load_path.append('locales')
+        i18n.load_path.append(locales_path)
 
         # 设置默认语言
         i18n.set('locale', self.config["LOCALE"])
