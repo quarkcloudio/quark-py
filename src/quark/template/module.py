@@ -5,6 +5,9 @@ from ..model.permission import Permission
 from ..model.menu import Menu
 from ..model.department import Department
 from ..model.config import Config
+from ..model.attachment import Attachment
+from ..model.attachment_category import AttachmentCategory
+from ..model.action_log import ActionLog
 from ..dal import db
 
 # 执行安装操作
