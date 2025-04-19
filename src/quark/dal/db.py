@@ -3,11 +3,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 engine = None
-Model = declarative_base()  # SQLORM基类
+Session = None
+Model = declarative_base()
 
 def init(db_uri: str):
-    global engine, Model, session
+    global engine, Session
     engine = create_engine(db_uri)
+    Session = sessionmaker(bind=engine)
 
 def session():
-    return sessionmaker(engine)()  # 构建session对象
+    return Session
