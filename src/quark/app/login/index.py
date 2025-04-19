@@ -6,4 +6,4 @@ class Index(Login):
     api: str = "/api/admin/login/index/handle"
     redirect: str = "/layout/index?api=/api/admin/dashboard/index/index"
     title: str = "QuarkPy"
-    subtitle: str = "信息丰富的世界里，唯一稀缺的就是人类的注意力"
+    sub_title: str = "信息丰富的世界里，唯一稀缺的就是人类的注意力"
