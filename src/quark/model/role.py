@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime
 from ..dal import db
 
 class Role(db.Model):
@@ -26,5 +25,8 @@ class Role(db.Model):
                 if not exists:
                     session.add(role)
             session.commit()
-        except IntegrityError as e:
+        except Exception as e:
             session.rollback()
+            raise
+        finally:
+            session.close()
