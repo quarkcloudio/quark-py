@@ -1,109 +1,110 @@
-import hashlib
 import json
-import uuid
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
+
 from ..element import Element
+
 
 @dataclass
 class ActivityConfig:
-    Title: str = ""
-    SubTitle: str = ""
-    Action: Any = None
-    Style: Dict[str, Any] = field(default_factory=dict)
+    title: str = ""
+    sub_title: str = ""
+    action: Any = None
+    style: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
-class LoginComponent(Element):
-    Api: str = ""
-    Redirect: str = ""
-    Logo: Any = None
-    Title: str = ""
-    SubTitle: str = ""
-    BackgroundImageUrl: str = ""
-    ActivityConfig: Optional[ActivityConfig] = None
-    Values: Dict[str, Any] = field(default_factory=dict)
-    InitialValues: Dict[str, Any] = field(default_factory=dict)
-    Body: Any = None
-    Actions: List[Any] = field(default_factory=list)
+class Component(Element):
+    api: str = ""
+    redirect: str = ""
+    logo: Any = None
+    title: str = ""
+    sub_title: str = ""
+    background_image_url: str = ""
+    activity_config: Optional[ActivityConfig] = None
+    values: Dict[str, Any] = field(default_factory=dict)
+    initial_values: Dict[str, Any] = field(default_factory=dict)
+    body: Any = None
+    actions: List[Any] = field(default_factory=list)
 
     def __post_init__(self):
-        self.Component = "login"
+        self.component = "login"
         self.set_key("", True)
 
+    # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):
-        self.Style = style
+        self.style = style
         return self
 
     def set_api(self, api: str):
-        self.Api = api
+        self.api = api
         return self
 
     def set_redirect(self, redirect: str):
-        self.Redirect = redirect
+        self.redirect = redirect
         return self
 
     def set_logo(self, logo: Any):
-        self.Logo = logo
+        self.logo = logo
         return self
 
     def set_title(self, title: str):
-        self.Title = title
+        self.title = title
         return self
 
-    def set_sub_title(self, subtitle: str):
-        self.SubTitle = subtitle
+    def set_sub_title(self, sub_title: str):
+        self.sub_title = sub_title
         return self
 
     def set_background_image_url(self, url: str):
-        self.BackgroundImageUrl = url
+        self.background_image_url = url
         return self
 
     def set_activity_config(self, config: ActivityConfig):
-        self.ActivityConfig = config
+        self.activity_config = config
         return self
 
     def set_initial_values(self, initial_values: Dict[str, Any]):
         data = initial_values.copy()
 
-        # 模拟解析 body 中字段（如有必要可用类注册机制）
-        if isinstance(self.Body, list):
-            for item in self.Body:
+        if isinstance(self.body, list):
+            for item in self.body:
                 value = self._parse_initial_value(item, initial_values)
                 if value is not None:
-                    name = getattr(item, "Name", "")
+                    name = getattr(item, "name", "")
                     if name:
                         data[name] = value
 
         for k, v in data.items():
-            if isinstance(v, str):
-                if "[" in v or "{" in v:
-                    try:
-                        data[k] = json.loads(v)
-                    except Exception:
-                        pass
+            if isinstance(v, str) and ("[" in v or "{" in v):
+                try:
+                    data[k] = json.loads(v)
+                except Exception:
+                    pass
 
-        self.InitialValues = data
+        self.initial_values = data
         return self
 
+    def set_body(self, body: Any):
+        self.body = body
+        return self
+
+    def set_actions(self, actions: List[Any]):
+        self.actions = actions
+        return self
+
+    # 私有方法
     def _parse_initial_value(self, item, initial_values):
-        name = getattr(item, "Name", "")
-        value = getattr(item, "Value", None)
+        name = getattr(item, "name", "")
+        value = getattr(item, "value", None)
 
         if not name:
             return None
 
-        if getattr(item, "DefaultValue", None) is not None:
-            value = item.DefaultValue
+        if hasattr(item, "default_value") and item.default_value is not None:
+            value = item.default_value
 
         if name in initial_values:
             value = initial_values[name]
 
         return value
-
-    def set_body(self, body: Any):
-        self.Body = body
-        return self
-
-    def set_actions(self, actions: List[Any]):
-        self.Actions = actions
-        return self

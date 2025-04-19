@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Optional, Any, List
+from .component.login import login
 import i18n
 
 @dataclass
@@ -27,19 +28,11 @@ class Login:
         return self.subtitle
 
     def render(self):
-        # 模拟 login.Component 的 JSON 结构
-        login_component = {
-            "component": "login",
-            "api": self.get_api(),
-            "redirect": self.get_redirect(),
-            "logo": self.get_logo(),
-            "title": self.get_title(),
-            "subTitle": self.get_subtitle(),
-            "body": [
-                # 添加字段组件字段结构
-                {"component": "inputField", "name": "username", "label": "用户名"},
-                {"component": "passwordField", "name": "password", "label": "密码"},
-                {"component": "captchaField", "name": "captcha", "label": "验证码"},
-            ]
-        }
-        return login_component
+        login_component = login.Component()
+        login_component.set_title(self.get_title())
+        login_component.set_sub_title(self.get_subtitle())
+        login_component.set_api(self.get_api())
+        login_component.set_redirect(self.get_redirect())
+        login_component.set_logo(self.get_logo())
+  
+        return login_component.to_json()
