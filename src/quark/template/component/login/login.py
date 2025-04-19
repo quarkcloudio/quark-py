@@ -1,8 +1,7 @@
 import json
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-
-from ..element import Element
+from ..component.element import Element
 
 
 @dataclass

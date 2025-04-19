@@ -1,7 +1,6 @@
-from dataclasses import dataclass, field
-from typing import Optional, Any, List
+from dataclasses import dataclass
+from typing import Optional, Any
 from .component.login import login
-import i18n
 
 @dataclass
 class Login:
