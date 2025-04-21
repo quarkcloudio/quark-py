@@ -172,8 +172,11 @@ class Component(Element):
     def _convert_to_frontend_rule(self, rule: Rule) -> Rule:
         return rule
 
-    def set_rules(self, rules: List[Rule]):
-        self.rules = [Rule(name=self.name, rule=rule.rule, message=rule.message) for rule in rules]
+    def set_rules(self, rules: List['Rule']) -> 'Component':
+        for rule in rules:
+            rule.name = self.name
+        
+        self.rules = rules
         return self
 
     def set_creation_rules(self, rules: List[Rule]):
