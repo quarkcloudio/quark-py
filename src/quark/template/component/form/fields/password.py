@@ -78,7 +78,6 @@ class Component(Element):
     visibility_toggle: bool = False
 
     def __post_init__(self):
-        self.column.init()
         self.set_key("", True)
         self.set_width(200)
 

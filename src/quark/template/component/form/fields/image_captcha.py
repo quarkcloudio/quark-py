@@ -80,7 +80,6 @@ class Component(Element):
     captcha_url: str = ""
 
     def __post_init__(self):
-        self.column.init()
         self.set_key("", True)
         self.set_width(200)
 

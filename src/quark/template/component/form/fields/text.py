@@ -77,7 +77,6 @@ class Component(Element):
     style: dict = field(default_factory=dict)
 
     def __post_init__(self):
-        self.column.init()
         self.set_key("",True)
         self.set_width(200)
 
