@@ -1,131 +1,133 @@
 from dataclasses import dataclass, field
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Dict
+from ..component.element import Element
+
 
 @dataclass
 class Expandable:
-    ChildrenColumnName: Optional[str] = None
-    ColumnTitle: Optional[Any] = None
-    ColumnWidth: Optional[Any] = None
-    DefaultExpandAllRows: bool = False
-    DefaultExpandedRowKeys: List[Any] = field(default_factory=list)
-    ExpandedRowClassName: Optional[str] = None
-    ExpandedRowKeys: List[Any] = field(default_factory=list)
-    ExpandIcon: Optional[Any] = None
-    ExpandRowByClick: bool = False
-    Fixed: Optional[Any] = None
-    IndentSize: int = 0
-    RowExpandable: bool = False
-    ShowExpandColumn: bool = False
+    children_column_name: Optional[str] = None
+    column_title: Optional[Any] = None
+    column_width: Optional[Any] = None
+    default_expand_all_rows: bool = False
+    default_expanded_row_keys: List[Any] = field(default_factory=list)
+    expanded_row_class_name: Optional[str] = None
+    expanded_row_keys: List[Any] = field(default_factory=list)
+    expand_icon: Optional[Any] = None
+    expand_row_by_click: bool = False
+    fixed: Optional[Any] = None
+    indent_size: int = 0
+    row_expandable: bool = False
+    show_expand_column: bool = False
 
 
 @dataclass
 class Component(Element):
-    RowKey: str = "id"
-    Api: str = ""
-    ApiType: str = "GET"
-    TableLayout: str = ""
-    HeaderTitle: str = ""
-    Columns: Any = None
-    RowSelection: Any = field(default_factory=list)
-    Options: Dict[str, bool] = field(default_factory=lambda: {
+    row_key: str = "id"
+    api: str = ""
+    api_type: str = "GET"
+    table_layout: str = ""
+    header_title: str = ""
+    columns: Any = None
+    row_selection: Any = field(default_factory=list)
+    options: Dict[str, bool] = field(default_factory=lambda: {
         "fullScreen": True, "reload": True, "setting": True
     })
-    Search: Any = None
-    BatchActions: Any = None
-    DateFormatter: str = "string"
-    ColumnEmptyText: str = "-"
-    ToolBar: Any = None
-    TreeBar: Any = None
-    TableExtraRender: Any = None
-    Expandable: Optional[Expandable] = None
-    Scroll: Any = None
-    Striped: bool = False
-    Datasource: Any = None
-    Pagination: Any = None
-    Polling: int = 0
+    search: Any = None
+    batch_actions: Any = None
+    date_formatter: str = "string"
+    column_empty_text: str = "-"
+    tool_bar: Any = None
+    tree_bar: Any = None
+    table_extra_render: Any = None
+    expandable: Optional[Expandable] = None
+    scroll: Any = None
+    striped: bool = False
+    datasource: Any = None
+    pagination: Any = None
+    polling: int = 0
 
     def __post_init__(self):
-        self.Component = "table"
+        self.component = "table"
         self.set_key("table", False)
 
     def set_style(self, style: dict):
-        self.Style = style
+        self.style = style
         return self
 
     def set_row_key(self, key: str):
-        self.RowKey = key
+        self.row_key = key
         return self
 
     def set_api(self, api: str):
-        self.Api = api
+        self.api = api
         return self
 
     def set_api_type(self, api_type: str):
-        self.ApiType = api_type
+        self.api_type = api_type
         return self
 
     def set_table_layout(self, layout: str):
-        self.TableLayout = layout
+        self.table_layout = layout
         return self
 
     def set_title(self, title: str):
-        self.HeaderTitle = title
+        self.header_title = title
         return self
 
     def set_columns(self, columns: Any):
-        self.Columns = columns
+        self.columns = columns
         return self
 
     def set_row_selection(self, selection: Any):
-        self.RowSelection = selection
+        self.row_selection = selection
         return self
 
     def set_options(self, options: Dict[str, bool]):
-        self.Options = options
+        self.options = options
         return self
 
     def set_date_formatter(self, formatter: str):
-        self.DateFormatter = formatter
+        self.date_formatter = formatter
         return self
 
     def set_column_empty_text(self, text: str):
-        self.ColumnEmptyText = text
+        self.column_empty_text = text
         return self
 
     def set_toolbar(self, toolbar: Any):
-        self.ToolBar = toolbar
+        self.tool_bar = toolbar
         return self
 
     def set_treebar(self, treebar: Any):
-        self.TreeBar = treebar
+        self.tree_bar = treebar
         return self
 
     def set_batch_actions(self, actions: Any):
-        self.BatchActions = actions
+        self.batch_actions = actions
         return self
 
     def set_table_extra_render(self, render: Any):
-        self.TableExtraRender = render
+        self.table_extra_render = render
         return self
 
     def set_expandable(self, expandable: Expandable):
-        self.Expandable = expandable
+        self.expandable = expandable
         return self
 
     def set_scroll(self, scroll: Any):
-        self.Scroll = scroll
+        self.scroll = scroll
         return self
 
     def set_striped(self, striped: bool):
-        self.Striped = striped
+        self.striped = striped
         return self
 
     def set_datasource(self, source: Any):
-        self.Datasource = source
+        self.datasource = source
         return self
 
     def set_pagination(self, current: int, page_size: int, total: int, default_current: int, page_size_options: list):
-        self.Pagination = {
+        self.pagination = {
             "current": current,
             "pageSize": page_size,
             "total": total,
@@ -135,5 +137,5 @@ class Component(Element):
         return self
 
     def set_polling(self, polling: int):
-        self.Polling = polling
+        self.polling = polling
         return self

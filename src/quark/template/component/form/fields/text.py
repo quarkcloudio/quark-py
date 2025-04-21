@@ -1,16 +1,14 @@
 from dataclasses import dataclass, field
 from typing import Any, List, Optional, Union
+from ...component.element import Element
+from ...table.column import Column
+from ..rule import Rule
+from .when import Component as When, Item as WhenItem
 import json
 import string
 
 @dataclass
-class Column:
-    def init(self):
-        # 初始化列属性
-        pass
-
-@dataclass
-class Component:
+class Component(Element):
     component_key: str = ""
     component: str = "textField"
     row_props: Optional[dict] = None

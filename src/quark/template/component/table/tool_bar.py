@@ -1,42 +1,42 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
-from element import Element
+from ..component.element import Element
 
 
 @dataclass
 class ToolBar(Element):
-    Title: Optional[str] = None
-    SubTitle: Optional[str] = None
-    Description: Optional[str] = None
-    Search: Any = None
-    Actions: Any = None
-    Filter: Any = None
-    MultipleLine: bool = False
-    Menu: Any = None
-    Tabs: Any = None
+    title: Optional[str] = None
+    sub_title: Optional[str] = None
+    description: Optional[str] = None
+    search: Any = None
+    actions: Any = None
+    filter_: Any = None
+    multiple_line: bool = False
+    menu: Any = None
+    tabs: Any = None
 
     def __post_init__(self):
-        self.Component = "toolBar"
+        self.component = "toolBar"
         self.set_key("toolBar", True)  # 对应 component.DEFAULT_CRYPT = true
 
     def set_style(self, style: Dict[str, Any]):
-        self.Style = style
+        self.style = style
         return self
 
     def set_title(self, title: str):
-        self.Title = title
+        self.title = title
         return self
 
     def set_sub_title(self, subtitle: str):
-        self.SubTitle = subtitle
+        self.sub_title = subtitle
         return self
 
     def set_description(self, description: str):
-        self.Description = description
+        self.description = description
         return self
 
     def set_search(self, search: Any):
-        self.Search = search
+        self.search = search
         return self
 
     def set_action(self, callback: Any):
@@ -45,21 +45,21 @@ class ToolBar(Element):
         return self
 
     def set_actions(self, actions: Any):
-        self.Actions = actions
+        self.actions = actions
         return self
 
     def set_filter(self, filter_: Any):
-        self.Filter = filter_
+        self.filter_ = filter_
         return self
 
     def set_multiple_line(self, multiple_line: bool):
-        self.MultipleLine = multiple_line
+        self.multiple_line = multiple_line
         return self
 
     def set_menu(self, menu: Any):
-        self.Menu = menu
+        self.menu = menu
         return self
 
     def set_tabs(self, tabs: Any):
-        self.Tabs = tabs
+        self.tabs = tabs
         return self

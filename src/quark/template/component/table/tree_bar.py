@@ -1,11 +1,13 @@
 from dataclasses import dataclass, field
 from typing import Any, List, Optional, Union
+from ..component.element import Element
+
 
 @dataclass
 class FieldNames:
     """
     定义树节点字段名称的结构。
-    
+
     Attributes:
         title (str): 树节点的标题字段名称。
         key (str): 树节点的键字段名称。
@@ -15,11 +17,12 @@ class FieldNames:
     key: str
     children: str
 
+
 @dataclass
 class TreeData:
     """
     定义树节点的数据结构。
-    
+
     Attributes:
         title (str): 树节点的标题。
         key (Any): 树节点的键，用于标识节点。
@@ -41,11 +44,12 @@ class TreeData:
     is_leaf: Optional[bool] = None
     selectable: Optional[bool] = None
 
+
 @dataclass
-class TreeBar:
+class TreeBar(Element):
     """
     定义树形组件的数据结构和操作方法。
-    
+
     Attributes:
         component (str): 组件名称。
         name (str): 字段名，支持数组。
@@ -123,10 +127,10 @@ class TreeBar:
     def set_name(self, name: str):
         """
         设置字段名。
-        
+
         Args:
             name (str): 字段名。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -136,10 +140,10 @@ class TreeBar:
     def set_width(self, width: Union[str, int]):
         """
         设置宽度。
-        
+
         Args:
             width (Union[str, int]): 宽度值。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -149,10 +153,10 @@ class TreeBar:
     def set_auto_expand_parent(self, auto_expand_parent: bool):
         """
         设置是否自动展开父节点。
-        
+
         Args:
             auto_expand_parent (bool): 是否自动展开父节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -162,10 +166,10 @@ class TreeBar:
     def set_block_node(self, block_node: bool):
         """
         设置是否节点占据一行。
-        
+
         Args:
             block_node (bool): 是否节点占据一行。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -175,10 +179,10 @@ class TreeBar:
     def set_checkable(self, checkable: bool):
         """
         设置是否节点前添加 Checkbox 复选框。
-        
+
         Args:
             checkable (bool): 是否节点前添加 Checkbox 复选框。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -188,10 +192,10 @@ class TreeBar:
     def set_checked_keys(self, checked_keys: List[Any]):
         """
         设置受控选中复选框的树节点。
-        
+
         Args:
             checked_keys (List[Any]): 受控选中复选框的树节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -201,10 +205,10 @@ class TreeBar:
     def set_check_strictly(self, check_strictly: bool):
         """
         设置 checkable 状态下节点选择完全受控。
-        
+
         Args:
             check_strictly (bool): 是否 checkable 状态下节点选择完全受控。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -214,10 +218,10 @@ class TreeBar:
     def set_default_checked_keys(self, default_checked_keys: List[Any]):
         """
         设置默认选中复选框的树节点。
-        
+
         Args:
             default_checked_keys (List[Any]): 默认选中复选框的树节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -227,10 +231,10 @@ class TreeBar:
     def set_default_expand_all(self, default_expand_all: bool):
         """
         设置默认展开所有树节点。
-        
+
         Args:
             default_expand_all (bool): 是否默认展开所有树节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -240,10 +244,10 @@ class TreeBar:
     def set_default_expanded_keys(self, default_expanded_keys: List[Any]):
         """
         设置默认展开指定的树节点。
-        
+
         Args:
             default_expanded_keys (List[Any]): 默认展开指定的树节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -253,10 +257,10 @@ class TreeBar:
     def set_default_expand_parent(self, default_expand_parent: bool):
         """
         设置默认展开父节点。
-        
+
         Args:
             default_expand_parent (bool): 是否默认展开父节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -266,10 +270,10 @@ class TreeBar:
     def set_default_selected_keys(self, default_selected_keys: List[Any]):
         """
         设置默认选中的树节点。
-        
+
         Args:
             default_selected_keys (List[Any]): 默认选中的树节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -279,10 +283,10 @@ class TreeBar:
     def set_draggable(self, draggable: bool):
         """
         设置是否节点可拖拽。
-        
+
         Args:
             draggable (bool): 是否节点可拖拽。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -292,10 +296,10 @@ class TreeBar:
     def set_expanded_keys(self, expanded_keys: List[Any]):
         """
         设置受控展开指定的树节点。
-        
+
         Args:
             expanded_keys (List[Any]): 受控展开指定的树节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -305,10 +309,10 @@ class TreeBar:
     def set_field_names(self, field_names: FieldNames):
         """
         设置自定义 options 中 label value children 的字段。
-        
+
         Args:
             field_names (FieldNames): 自定义字段名称。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -318,10 +322,10 @@ class TreeBar:
     def set_height(self, height: int):
         """
         设置虚拟滚动容器高度。
-        
+
         Args:
             height (int): 高度值。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -331,10 +335,10 @@ class TreeBar:
     def set_icon(self, icon: Any):
         """
         设置自定义树节点图标。
-        
+
         Args:
             icon (Any): 图标。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -344,10 +348,10 @@ class TreeBar:
     def set_multiple(self, multiple: bool):
         """
         设置是否支持点选多个节点。
-        
+
         Args:
             multiple (bool): 是否支持点选多个节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -357,10 +361,10 @@ class TreeBar:
     def set_placeholder(self, placeholder: str):
         """
         设置占位文本。
-        
+
         Args:
             placeholder (str): 占位文本。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -370,10 +374,10 @@ class TreeBar:
     def set_root_class_name(self, root_class_name: str):
         """
         设置添加在 Tree 最外层的 className。
-        
+
         Args:
             root_class_name (str): className。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -383,10 +387,10 @@ class TreeBar:
     def set_root_style(self, root_style: Any):
         """
         设置添加在 Tree 最外层的 style。
-        
+
         Args:
             root_style (Any): style。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -396,10 +400,10 @@ class TreeBar:
     def set_selectable(self, selectable: bool):
         """
         设置是否可选中。
-        
+
         Args:
             selectable (bool): 是否可选中。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -409,10 +413,10 @@ class TreeBar:
     def set_selected_keys(self, selected_keys: List[Any]):
         """
         设置受控选中的树节点。
-        
+
         Args:
             selected_keys (List[Any]): 受控选中的树节点。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -422,10 +426,10 @@ class TreeBar:
     def set_show_icon(self, show_icon: bool):
         """
         设置是否展示 TreeNode title 前的图标。
-        
+
         Args:
             show_icon (bool): 是否展示图标。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -435,10 +439,10 @@ class TreeBar:
     def set_show_line(self, show_line: bool):
         """
         设置是否展示连接线。
-        
+
         Args:
             show_line (bool): 是否展示连接线。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -448,10 +452,10 @@ class TreeBar:
     def set_switcher_icon(self, switcher_icon: Any):
         """
         设置自定义树节点的展开/折叠图标。
-        
+
         Args:
             switcher_icon (Any): 展开/折叠图标。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -461,14 +465,14 @@ class TreeBar:
     def build_tree(self, items: List[dict], pid: int, parent_key_name: str, key_name: str, title_name: str) -> List[TreeData]:
         """
         使用递归构建树结构。
-        
+
         Args:
             items (List[dict]): 树节点数据列表。
             pid (int): 父节点 ID。
             parent_key_name (str): 父节点键名称。
             key_name (str): 节点键名称。
             title_name (str): 节点标题名称。
-        
+
         Returns:
             List[TreeData]: 树结构数据列表。
         """
@@ -489,14 +493,14 @@ class TreeBar:
     def list_to_tree_data(self, list_data: List[dict], root_id: int, parent_key_name: str, key_name: str, title_name: str) -> List[TreeData]:
         """
         将列表数据转换为树结构数据。
-        
+
         Args:
             list_data (List[dict]): 列表数据。
             root_id (int): 根节点 ID。
             parent_key_name (str): 父节点键名称。
             key_name (str): 节点键名称。
             title_name (str): 节点标题名称。
-        
+
         Returns:
             List[TreeData]: 树结构数据列表。
         """
@@ -505,10 +509,10 @@ class TreeBar:
     def set_tree_data(self, *tree_data: Union[List[TreeData], int, str]):
         """
         设置树节点数据。
-        
+
         Args:
             tree_data (Union[List[TreeData], int, str]): 树节点数据。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
@@ -523,10 +527,10 @@ class TreeBar:
     def set_style(self, style: dict):
         """
         设置自定义样式。
-        
+
         Args:
             style (dict): 样式字典。
-        
+
         Returns:
             TreeBar: 当前实例。
         """
