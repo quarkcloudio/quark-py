@@ -24,7 +24,7 @@ class Index(Login):
     def fields(self):
         return [
             (
-                field.Text(name="username", label="用户名", required=True).
+                field.Text(name="username", label="用户名").
                 set_rules([
                     Rule.required("请输入用户名")
                 ]).
@@ -32,7 +32,7 @@ class Index(Login):
                 set_size("large")
             ),
             (
-                field.Password(name="password", label="密码", required=True).
+                field.Password(name="password", label="密码").
                 set_rules([
                     Rule.required("请输入密码")
                 ]).
