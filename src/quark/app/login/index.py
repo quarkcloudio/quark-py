@@ -40,5 +40,14 @@ class Index(Login):
                 ]).
                 set_width("100%").
                 set_size("large")
+            ),
+            (
+                field.ImageCaptcha(name="captcha").
+                set_placeholder("验证码").
+                set_rules([
+                    Rule.is_required("请输入验证码")
+                ]).
+                set_width("100%").
+                set_size("large")
             )
         ]

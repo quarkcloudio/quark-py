@@ -170,7 +170,9 @@ class Component(Element):
         return rule.convert_to_frontend_rule()
 
     def set_rules(self, rules: List[Rule]):
-        self.rules = [Rule(name=self.name, rule=rule.rule, message=rule.message) for rule in rules]
+        for rule in rules:
+            rule.name = self.name
+        self.rules = rules
         return self
 
     def set_creation_rules(self, rules: List[Rule]):
