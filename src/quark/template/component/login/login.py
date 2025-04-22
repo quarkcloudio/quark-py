@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, model_validator
 from typing import Any, Dict, List, Optional
 import json
 from ..component.element import Element
@@ -10,6 +10,7 @@ class ActivityConfig(BaseModel):
     style: Dict[str, Any] = Field(default_factory=dict)
 
 class Component(Element):
+    component: str = "login"
     api: str = ""
     redirect: str = ""
     logo: Any = None
@@ -21,19 +22,11 @@ class Component(Element):
     initial_values: Dict[str, Any] = Field(default_factory=dict)
     body: Any = None
     actions: List[Any] = Field(default_factory=list)
-    component: str = "login"
-    component_key: str = ""
 
-    crypt: bool = Field(default=False, exclude=True)
-
-    @field_validator('component_key', mode="before")
-    def set_key(cls, v, values):
-        crypt = values.get('crypt', False)
-        return v if not crypt else cls._make_hex(v)
-
-    @staticmethod
-    def _make_hex(key: str) -> str:
-        return key.encode().hex()
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
 
     # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):

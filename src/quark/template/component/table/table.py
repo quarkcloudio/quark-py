@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, model_validator
 from typing import Any, List, Optional, Dict
 from ..component.element import Element
 
-class Expandable(BaseModel):
+class Expandable(Element):
     children_column_name: Optional[str] = None
     column_title: Optional[Any] = None
     column_width: Optional[Any] = None
@@ -13,16 +13,17 @@ class Expandable(BaseModel):
     expand_icon: Optional[Any] = None
     expand_row_by_click: bool = False
     fixed: Optional[Any] = None
-    indent_size: int = 0
+    indent_size: int = None
     row_expandable: bool = False
     show_expand_column: bool = False
 
-class Component(BaseModel, Element):
+class Component(Element):
+    component: str = "table"
     row_key: str = "id"
-    api: str = ""
+    api: str = None
     api_type: str = "GET"
-    table_layout: str = ""
-    header_title: str = ""
+    table_layout: str = None
+    header_title: str = None
     columns: Any = None
     row_selection: Any = Field(default_factory=list)
     options: Dict[str, bool] = Field(default_factory=lambda: {
@@ -40,21 +41,12 @@ class Component(BaseModel, Element):
     striped: bool = False
     datasource: Any = None
     pagination: Any = None
-    polling: int = 0
-    component: str = "table"
-    component_key: str = ""
+    polling: int = None
 
-    crypt: bool = Field(default=False, exclude=True)
-
-    @field_validator('component_key', mode="before")
-    def set_key(cls, v, values):
-        crypt = values.get('crypt', False)
-        return v if not crypt else cls._make_hex(v)
-
-    @staticmethod
-    def _make_hex(key: str) -> str:
-        return key.encode().hex()
-
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
     # 设置方法（链式调用）
     def set_style(self, style: dict):
         self.style = style

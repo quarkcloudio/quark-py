@@ -1,34 +1,27 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, model_validator
 from typing import Any, List, Dict
+from ..component.element import Element
 
-class Search(BaseModel):
-    # 属性定义
-    filter_type: str = ""
-    search_text: str = ""
-    reset_text: str = ""
-    submit_text: str = ""
+class Search(Element):
+    component: str = "search"
+    filter_type: str = None
+    search_text: str = None
+    reset_text: str = None
+    submit_text: str = None
     label_width: int = 0
     span: int = 0
-    class_name: str = ""
+    class_name: str = None
     default_collapsed: bool = False
     show_hidden_num: bool = False
-    export_text: str = ""
-    export_api: str = ""
+    export_text: str = None
+    export_api: str = None
     items: List[Any] = Field(default_factory=list)
     style: Dict[str, Any] = Field(default_factory=dict)
 
-    # 固定字段，模拟组件元素
-    component: str = "search"
-    key: str = "defaultKey"
-    crypt: str = "defaultCrypt"
-
-    @field_validator('key', mode="before")
-    def set_key(cls, v, values):
-        return v
-
-    @field_validator('crypt', mode="before")
-    def set_crypt(cls, v, values):
-        return v
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
 
     # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):

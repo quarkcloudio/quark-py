@@ -1,48 +1,37 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, model_validator
 from typing import Any, Dict, Union, List, Optional
+from ..component.element import Element
 
-class Column(BaseModel):
-    # 字段定义
-    component_key: str = ""
-    title: str = ""
-    attribute: str = ""
+class Column(Element):
+    component: str = "column"
+    title: str = None
+    attribute: str = None
     align: str = "left"
-    data_index: str = ""
+    data_index: str = None
     fixed: Any = None
-    tooltip: str = ""
+    tooltip: str = None
     ellipsis: bool = False
     copyable: bool = False
     value_enum: Optional[Union[Dict[Any, Any], List[Dict[str, Any]]]] = None
-    value_type: str = ""
+    value_type: str = None
     hide_in_search: bool = True
     hide_in_table: bool = False
     hide_in_form: bool = False
     filters: Optional[Union[bool, Dict[str, str], List[Dict[str, str]]]] = None
-    order: int = 0
+    order: int = None
     sorter: Any = None
-    span: int = 0
-    width: int = 0
+    span: int = None
+    width: int = None
     editable: Optional[Dict[str, Any]] = None
     actions: Optional[Any] = None
     form_item_props: Optional[Any] = None
     field_props: Optional[Any] = None
     style: Dict[str, Any] = Field(default_factory=dict)
 
-    # 内部字段（不暴露）
-    component: str = "column"
-    key: str = "defaultKey"
-
-    crypt: bool = Field(default=False, exclude=True)
-
-    @field_validator('key', mode="before")
-    def set_key(cls, v, values):
-        crypt = values.get('crypt', False)
-        attribute = values.get('attribute', "")
-        return attribute if not crypt else cls._make_hex(attribute)
-
-    @staticmethod
-    def _make_hex(key: str) -> str:
-        return key.encode().hex()
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
 
     # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):

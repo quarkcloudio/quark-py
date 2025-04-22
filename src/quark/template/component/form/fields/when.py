@@ -1,4 +1,4 @@
-from pydantic import Field, field_validator
+from pydantic import Field, model_validator
 from typing import Any, List, Optional
 from ...component.element import Element
 
@@ -11,24 +11,13 @@ class Item(Element):
     body: Optional[Any] = None    # 内容
 
 class Component(Element):
-    component_key: str = ""
-    component: str = ""
+    component: str = "when"
     items: List[Item] = Field(default_factory=list)
 
-    crypt: bool = Field(default=False, exclude=True)
-
-    @field_validator('component', mode="before")
-    def set_component(cls, v):
-        return "when"
-
-    @field_validator('component_key', mode="before")
-    def set_key(cls, v, values):
-        crypt = values.get('crypt', False)
-        return v if not crypt else cls._make_hex(v)
-
-    @staticmethod
-    def _make_hex(key: str) -> str:
-        return key.encode().hex()
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
 
     # 设置When组件中需要解析的元素
     def set_items(self, items: List[Item]) -> 'Component':

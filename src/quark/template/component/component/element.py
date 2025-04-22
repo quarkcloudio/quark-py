@@ -1,13 +1,11 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Any, Dict
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, Dict, Optional
 import hashlib
 import uuid
-
 
 def to_camel(string: str) -> str:
     parts = string.split('_')
     return parts[0] + ''.join(word.capitalize() for word in parts[1:])
-
 
 class Element(BaseModel):
     model_config = ConfigDict(
@@ -15,6 +13,25 @@ class Element(BaseModel):
         populate_by_name=True,
         extra='allow'
     )
+
+    component_key: str = ""
+    component: str = ""
+    style: dict = Field(default_factory=dict)
+
+    def set_component(self, component: str) -> 'Element':
+        self.component = component
+        self.set_key(component, crypt=True)
+        return self
+
+    def set_key(self, key: Optional[str] = "", crypt: bool = True) -> 'Element':
+        if not key:
+            key = str(uuid.uuid4())
+        if crypt:
+            md5_hash = hashlib.md5()
+            md5_hash.update(key.encode('utf-8'))
+            key = md5_hash.hexdigest()
+        self.component_key = key
+        return self
 
     def set(self, **kwargs):
         for key, value in kwargs.items():

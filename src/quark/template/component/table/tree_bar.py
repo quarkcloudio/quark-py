@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, model_validator
 from typing import Any, List, Optional, Union
 from ..component.element import Element
 
-class FieldNames(BaseModel):
+class FieldNames(Element):
     """
     定义树节点字段名称的结构。
 
@@ -15,7 +15,7 @@ class FieldNames(BaseModel):
     key: str
     children: str
 
-class TreeData(BaseModel):
+class TreeData(Element):
     """
     定义树节点的数据结构。
 
@@ -40,9 +40,9 @@ class TreeData(BaseModel):
     is_leaf: Optional[bool] = None
     selectable: Optional[bool] = None
 
-TreeData.update_forward_refs()
+TreeData.model_rebuild()
 
-class TreeBar(BaseModel, Element):
+class TreeBar(Element):
     """
     定义树形组件的数据结构和操作方法。
 
@@ -112,18 +112,11 @@ class TreeBar(BaseModel, Element):
     value: Optional[Any] = None
     virtual: bool = False
     style: dict = Field(default_factory=dict)
-    component_key: str = ""
 
-    crypt: bool = Field(default=True, exclude=True)
-
-    @field_validator('component_key', mode="before")
-    def set_key(cls, v, values):
-        crypt = values.get('crypt', False)
-        return v if not crypt else cls._make_hex(v)
-
-    @staticmethod
-    def _make_hex(key: str) -> str:
-        return key.encode().hex()
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
 
     # 设置方法（链式调用）
     def set_name(self, name: str):

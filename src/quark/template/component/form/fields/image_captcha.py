@@ -1,4 +1,4 @@
-from pydantic import Field, field_validator
+from pydantic import Field, model_validator
 from typing import Any, List, Optional, Union, Callable
 from ...component.element import Element
 from ...table.column import Column
@@ -8,7 +8,6 @@ import json
 import string
 
 class Component(Element):
-    component_key: str = ""
     component: str = "imageCaptchaField"
     row_props: Optional[dict] = None
     col_props: Optional[dict] = None
@@ -78,16 +77,10 @@ class Component(Element):
     captcha_id_url: str = None
     captcha_url: str = None
 
-    crypt: bool = Field(default=False, exclude=True)
-
-    @field_validator('component_key', mode="before")
-    def set_key(cls, v, values):
-        crypt = values.get('crypt', False)
-        return v if not crypt else cls._make_hex(v)
-
-    @staticmethod
-    def _make_hex(key: str) -> str:
-        return key.encode().hex()
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
 
     def set_style(self, style: dict):
         self.style = style

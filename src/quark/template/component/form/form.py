@@ -1,4 +1,4 @@
-from pydantic import Field, field_validator
+from pydantic import Field, model_validator, field_validator
 from typing import Any, Dict, List
 import json
 from ..component.element import Element
@@ -17,13 +17,13 @@ def parse_initial_values(values: Dict[str, Any]) -> Dict[str, Any]:
 
 class Component(Element):
     component: str = "form"
-    title: str = ""
-    width: str = ""
+    title: str = None
+    width: str = None
     colon: bool = True
     values: Dict[str, Any] = Field(default_factory=dict)
     initial_values: Dict[str, Any] = Field(default_factory=dict)
     label_align: str = "right"
-    name: str = ""
+    name: str = None
     preserve: bool = True
     required_mark: bool = True
     scroll_to_first_error: bool = False
@@ -35,15 +35,12 @@ class Component(Element):
     label_col: Dict[str, Any] = Field(default_factory=dict)
     wrapper_col: Dict[str, Any] = Field(default_factory=dict)
     button_wrapper_col: Dict[str, Any] = Field(default_factory=dict)
-    api: str = ""
+    api: str = None
     api_type: str = "POST"
     target_blank: bool = False
-    init_api: str = ""
+    init_api: str = None
     body: List[Any] = Field(default_factory=list)
     actions: List[Any] = Field(default_factory=list)
-    component_key: str = ""
-
-    crypt: bool = Field(default=False, exclude=True)
 
     @field_validator('label_col', mode="before")
     def set_default_label_col(cls, v, values):
@@ -62,11 +59,6 @@ class Component(Element):
         if not v:
             return {"offset": 4, "span": 20}
         return v
-
-    @field_validator('component_key', mode="before")
-    def set_key(cls, v, values):
-        crypt = values.get('crypt', False)
-        return v if not crypt else cls._make_hex(v)
 
     @field_validator('layout')
     def validate_layout(cls, v, values):
@@ -90,9 +82,10 @@ class Component(Element):
             raise ValueError("Can't set button_wrapper_col in vertical layout")
         return v
 
-    @staticmethod
-    def _make_hex(key: str) -> str:
-        return key.encode().hex()
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
 
     def set_title(self, title: str):
         self.title = title
