@@ -1,18 +1,14 @@
-import json
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field, field_validator
 from typing import Any, Dict, List, Optional
+import json
 from ..component.element import Element
 
-
-@dataclass
-class ActivityConfig:
+class ActivityConfig(BaseModel):
     title: str = ""
     sub_title: str = ""
     action: Any = None
-    style: Dict[str, Any] = field(default_factory=dict)
+    style: Dict[str, Any] = Field(default_factory=dict)
 
-
-@dataclass
 class Component(Element):
     api: str = ""
     redirect: str = ""
@@ -21,14 +17,23 @@ class Component(Element):
     sub_title: str = ""
     background_image_url: str = ""
     activity_config: Optional[ActivityConfig] = None
-    values: Dict[str, Any] = field(default_factory=dict)
-    initial_values: Dict[str, Any] = field(default_factory=dict)
+    values: Dict[str, Any] = Field(default_factory=dict)
+    initial_values: Dict[str, Any] = Field(default_factory=dict)
     body: Any = None
-    actions: List[Any] = field(default_factory=list)
+    actions: List[Any] = Field(default_factory=list)
+    component: str = "login"
+    component_key: str = ""
 
-    def __post_init__(self):
-        self.component = "login"
-        self.set_key("", True)
+    crypt: bool = Field(default=False, exclude=True)
+
+    @field_validator('component_key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        return v if not crypt else cls._make_hex(v)
+
+    @staticmethod
+    def _make_hex(key: str) -> str:
+        return key.encode().hex()
 
     # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):

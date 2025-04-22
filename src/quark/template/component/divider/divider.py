@@ -1,21 +1,42 @@
-from dataclasses import dataclass, field
+from pydantic import Field, field_validator
 from typing import Any, Dict, Optional
 from ..component.element import Element
 
-@dataclass
 class Component(Element):
     dashed: bool = False
-    orientation: str = ""
+    orientation: str = "center"
     plain: bool = False
-    type: str = ""
+    type: str = "horizontal"
     body: Optional[Any] = None
+    component: str = "divider"
+    component_key: str = ""
 
-    def __post_init__(self):
-        self.component = "divider"
-        self.type = "horizontal"
-        self.orientation = "center"
-        self.set_key("", True)
+    crypt: bool = Field(default=True, exclude=True)
 
+    @field_validator('orientation')
+    def validate_orientation(cls, v):
+        limits = ["left", "right", "center"]
+        if v not in limits:
+            raise ValueError("Argument must be in 'left', 'right', 'center'!")
+        return v
+
+    @field_validator('type')
+    def validate_type(cls, v):
+        limits = ["vertical", "horizontal"]
+        if v not in limits:
+            raise ValueError("Argument must be in 'vertical', 'horizontal'!")
+        return v
+
+    @field_validator('component_key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        return v if not crypt else cls._make_hex(v)
+
+    @staticmethod
+    def _make_hex(key: str) -> str:
+        return key.encode().hex()
+
+    # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):
         self.style = style
         return self
@@ -25,9 +46,6 @@ class Component(Element):
         return self
 
     def set_orientation(self, orientation: str):
-        limits = ["left", "right", "center"]
-        if orientation not in limits:
-            raise ValueError("Argument must be in 'left', 'right', 'center'!")
         self.orientation = orientation
         return self
 
@@ -36,9 +54,6 @@ class Component(Element):
         return self
 
     def set_type(self, divider_type: str):
-        limits = ["vertical", "horizontal"]
-        if divider_type not in limits:
-            raise ValueError("Argument must be in 'vertical', 'horizontal'!")
         self.type = divider_type
         return self
 

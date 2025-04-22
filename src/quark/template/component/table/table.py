@@ -1,17 +1,15 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field, field_validator
 from typing import Any, List, Optional, Dict
 from ..component.element import Element
 
-
-@dataclass
-class Expandable:
+class Expandable(BaseModel):
     children_column_name: Optional[str] = None
     column_title: Optional[Any] = None
     column_width: Optional[Any] = None
     default_expand_all_rows: bool = False
-    default_expanded_row_keys: List[Any] = field(default_factory=list)
+    default_expanded_row_keys: List[Any] = Field(default_factory=list)
     expanded_row_class_name: Optional[str] = None
-    expanded_row_keys: List[Any] = field(default_factory=list)
+    expanded_row_keys: List[Any] = Field(default_factory=list)
     expand_icon: Optional[Any] = None
     expand_row_by_click: bool = False
     fixed: Optional[Any] = None
@@ -19,17 +17,15 @@ class Expandable:
     row_expandable: bool = False
     show_expand_column: bool = False
 
-
-@dataclass
-class Component(Element):
+class Component(BaseModel, Element):
     row_key: str = "id"
     api: str = ""
     api_type: str = "GET"
     table_layout: str = ""
     header_title: str = ""
     columns: Any = None
-    row_selection: Any = field(default_factory=list)
-    options: Dict[str, bool] = field(default_factory=lambda: {
+    row_selection: Any = Field(default_factory=list)
+    options: Dict[str, bool] = Field(default_factory=lambda: {
         "fullScreen": True, "reload": True, "setting": True
     })
     search: Any = None
@@ -45,11 +41,21 @@ class Component(Element):
     datasource: Any = None
     pagination: Any = None
     polling: int = 0
+    component: str = "table"
+    component_key: str = ""
 
-    def __post_init__(self):
-        self.component = "table"
-        self.set_key("table", False)
+    crypt: bool = Field(default=False, exclude=True)
 
+    @field_validator('component_key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        return v if not crypt else cls._make_hex(v)
+
+    @staticmethod
+    def _make_hex(key: str) -> str:
+        return key.encode().hex()
+
+    # 设置方法（链式调用）
     def set_style(self, style: dict):
         self.style = style
         return self

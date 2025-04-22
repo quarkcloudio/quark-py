@@ -1,19 +1,19 @@
-from dataclasses import dataclass, field
+from pydantic import Field
+from ..component.element import Element
 from typing import Any, List, Optional
 
-@dataclass
-class Rule:
+class Rule(Element):
     name: str = ""                      # 需要验证的字段名称
     rule_type: str = ""                 # 规则类型，max | min | unique | required
     default_field: Optional[Any] = None # 仅在 type 为 array 类型时有效，用于指定数组元素的校验规则
-    enum: List[Any] = field(default_factory=list) # 是否匹配枚举中的值（需要将 type 设置为 enum）
+    enum: List[Any] = Field(default_factory=list) # 是否匹配枚举中的值（需要将 type 设置为 enum）
     fields: Optional[Any] = None        # 仅在 type 为 array 或 object 类型时有效，用于指定子元素的校验规则
     length: int = 0                     # string 类型时为字符串长度；number 类型时为确定数字； array 类型时为数组长度
     max_value: int = 0                  # 必须设置 type：string 类型为字符串最大长度；number 类型时为最大值；array 类型时为数组最大长度
     message: str = ""                   # 错误信息，不设置时会通过模板自动生成
     min_value: int = 0                  # 必须设置 type：string 类型为字符串最小长度；number 类型时为最小值；array 类型时为数组最小长度
     pattern: str = ""                   # 正则表达式匹配
-    required: bool = False              # 是否为必选字段
+    required_field: bool = False        # 是否为必选字段
     unique_table: str = ""              # type：unique时，指定验证的表名
     unique_table_field: str = ""        # type：unique时，指定需验证表中的字段
     unique_ignore_value: str = ""       # type：unique时，忽略符合条件验证的列，例如：{id}
@@ -136,7 +136,7 @@ class Rule:
 
     # 是否为必选字段
     def set_required(self) -> 'Rule':
-        self.required = True
+        self.required_field = True
         return self.set_rule_type("required")
 
     # 必须为字符串

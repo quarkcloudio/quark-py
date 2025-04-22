@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field, field_validator
+from typing import Any, Dict, List
 import json
 from ..component.element import Element
 
@@ -15,15 +15,13 @@ def parse_initial_values(values: Dict[str, Any]) -> Dict[str, Any]:
             parsed[k] = v
     return parsed
 
-
-@dataclass
 class Component(Element):
     component: str = "form"
     title: str = ""
     width: str = ""
     colon: bool = True
-    values: Dict[str, Any] = field(default_factory=dict)
-    initial_values: Dict[str, Any] = field(default_factory=dict)
+    values: Dict[str, Any] = Field(default_factory=dict)
+    initial_values: Dict[str, Any] = Field(default_factory=dict)
     label_align: str = "right"
     name: str = ""
     preserve: bool = True
@@ -33,23 +31,68 @@ class Component(Element):
     date_formatter: str = "string"
     layout: str = "horizontal"
     grid: bool = False
-    row_props: Dict[str, Any] = field(default_factory=dict)
-    label_col: Dict[str, Any] = field(default_factory=dict)
-    wrapper_col: Dict[str, Any] = field(default_factory=dict)
-    button_wrapper_col: Dict[str, Any] = field(default_factory=dict)
+    row_props: Dict[str, Any] = Field(default_factory=dict)
+    label_col: Dict[str, Any] = Field(default_factory=dict)
+    wrapper_col: Dict[str, Any] = Field(default_factory=dict)
+    button_wrapper_col: Dict[str, Any] = Field(default_factory=dict)
     api: str = ""
     api_type: str = "POST"
     target_blank: bool = False
     init_api: str = ""
-    body: List[Any] = field(default_factory=list)
-    actions: List[Any] = field(default_factory=list)
+    body: List[Any] = Field(default_factory=list)
+    actions: List[Any] = Field(default_factory=list)
     component_key: str = ""
 
-    def __post_init__(self):
-        self.label_col = {"span": 4}
-        self.wrapper_col = {"span": 20}
-        self.button_wrapper_col = {"offset": 4, "span": 20}
-        self.set_key("", True)
+    crypt: bool = Field(default=False, exclude=True)
+
+    @field_validator('label_col', mode="before")
+    def set_default_label_col(cls, v, values):
+        if not v:
+            return {"span": 4}
+        return v
+
+    @field_validator('wrapper_col', mode="before")
+    def set_default_wrapper_col(cls, v, values):
+        if not v:
+            return {"span": 20}
+        return v
+
+    @field_validator('button_wrapper_col', mode="before")
+    def set_default_button_wrapper_col(cls, v, values):
+        if not v:
+            return {"offset": 4, "span": 20}
+        return v
+
+    @field_validator('component_key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        return v if not crypt else cls._make_hex(v)
+
+    @field_validator('layout')
+    def validate_layout(cls, v, values):
+        if v == "vertical":
+            values['label_col'] = {}
+            values['wrapper_col'] = {}
+            values['button_wrapper_col'] = {}
+        return v
+
+    @field_validator('wrapper_col')
+    def validate_wrapper_col(cls, v, values):
+        layout = values.get('layout')
+        if layout == "vertical":
+            raise ValueError("Can't set wrapper_col in vertical layout")
+        return v
+
+    @field_validator('button_wrapper_col')
+    def validate_button_wrapper_col(cls, v, values):
+        layout = values.get('layout')
+        if layout == "vertical":
+            raise ValueError("Can't set button_wrapper_col in vertical layout")
+        return v
+
+    @staticmethod
+    def _make_hex(key: str) -> str:
+        return key.encode().hex()
 
     def set_title(self, title: str):
         self.title = title

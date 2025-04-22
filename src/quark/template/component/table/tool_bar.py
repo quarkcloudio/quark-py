@@ -1,10 +1,8 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field, field_validator
 from typing import Any, Dict, Optional
 from ..component.element import Element
 
-
-@dataclass
-class ToolBar(Element):
+class ToolBar(BaseModel, Element):
     title: Optional[str] = None
     sub_title: Optional[str] = None
     description: Optional[str] = None
@@ -14,11 +12,21 @@ class ToolBar(Element):
     multiple_line: bool = False
     menu: Any = None
     tabs: Any = None
+    component: str = "toolBar"
+    component_key: str = ""
 
-    def __post_init__(self):
-        self.component = "toolBar"
-        self.set_key("toolBar", True)  # 对应 component.DEFAULT_CRYPT = true
+    crypt: bool = Field(default=True, exclude=True)
 
+    @field_validator('component_key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        return v if not crypt else cls._make_hex(v)
+
+    @staticmethod
+    def _make_hex(key: str) -> str:
+        return key.encode().hex()
+
+    # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):
         self.style = style
         return self

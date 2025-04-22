@@ -1,9 +1,7 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field, field_validator
 from typing import Any, List, Dict
 
-
-@dataclass
-class Search:
+class Search(BaseModel):
     # 属性定义
     filter_type: str = ""
     search_text: str = ""
@@ -16,22 +14,23 @@ class Search:
     show_hidden_num: bool = False
     export_text: str = ""
     export_api: str = ""
-    items: List[Any] = field(default_factory=list)
-    style: Dict[str, Any] = field(default_factory=dict)
+    items: List[Any] = Field(default_factory=list)
+    style: Dict[str, Any] = Field(default_factory=dict)
 
     # 固定字段，模拟组件元素
-    component: str = field(init=False)
-    key: str = field(init=False)
-    crypt: str = field(init=False)
+    component: str = "search"
+    key: str = "defaultKey"
+    crypt: str = "defaultCrypt"
 
-    def __post_init__(self):
-        self.component = "search"
-        self.default_collapsed = True
-        self.reset_text = "重置"
-        self.search_text = "查询"
-        self.key = "defaultKey"
-        self.crypt = "defaultCrypt"
+    @field_validator('key', mode="before")
+    def set_key(cls, v, values):
+        return v
 
+    @field_validator('crypt', mode="before")
+    def set_crypt(cls, v, values):
+        return v
+
+    # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):
         self.style = style
         return self

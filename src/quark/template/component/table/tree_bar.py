@@ -1,10 +1,8 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field, field_validator
 from typing import Any, List, Optional, Union
 from ..component.element import Element
 
-
-@dataclass
-class FieldNames:
+class FieldNames(BaseModel):
     """
     定义树节点字段名称的结构。
 
@@ -17,9 +15,7 @@ class FieldNames:
     key: str
     children: str
 
-
-@dataclass
-class TreeData:
+class TreeData(BaseModel):
     """
     定义树节点的数据结构。
 
@@ -36,7 +32,7 @@ class TreeData:
     """
     title: str
     key: Any
-    children: List['TreeData'] = field(default_factory=list)
+    children: List['TreeData'] = Field(default_factory=list)
     checkable: Optional[bool] = None
     disable_checkbox: Optional[bool] = None
     disabled: Optional[bool] = None
@@ -44,9 +40,9 @@ class TreeData:
     is_leaf: Optional[bool] = None
     selectable: Optional[bool] = None
 
+TreeData.update_forward_refs()
 
-@dataclass
-class TreeBar(Element):
+class TreeBar(BaseModel, Element):
     """
     定义树形组件的数据结构和操作方法。
 
@@ -89,17 +85,17 @@ class TreeBar(Element):
     auto_expand_parent: bool = False
     block_node: bool = False
     checkable: bool = False
-    checked_keys: List[Any] = field(default_factory=list)
+    checked_keys: List[Any] = Field(default_factory=list)
     check_strictly: bool = False
-    default_checked_keys: List[Any] = field(default_factory=list)
+    default_checked_keys: List[Any] = Field(default_factory=list)
     default_expand_all: bool = True
-    default_expanded_keys: List[Any] = field(default_factory=list)
+    default_expanded_keys: List[Any] = Field(default_factory=list)
     default_expand_parent: bool = False
-    default_selected_keys: List[Any] = field(default_factory=list)
+    default_selected_keys: List[Any] = Field(default_factory=list)
     default_value: Optional[Any] = None
     disabled: bool = False
     draggable: bool = False
-    expanded_keys: List[Any] = field(default_factory=list)
+    expanded_keys: List[Any] = Field(default_factory=list)
     field_names: Optional[FieldNames] = None
     height: Optional[int] = None
     icon: Optional[Any] = None
@@ -108,22 +104,28 @@ class TreeBar(Element):
     root_class_name: Optional[str] = None
     root_style: Optional[Any] = None
     selectable: bool = True
-    selected_keys: List[Any] = field(default_factory=list)
+    selected_keys: List[Any] = Field(default_factory=list)
     show_icon: bool = False
     show_line: bool = True
     switcher_icon: Optional[Any] = None
-    tree_data: List[TreeData] = field(default_factory=list)
+    tree_data: List[TreeData] = Field(default_factory=list)
     value: Optional[Any] = None
     virtual: bool = False
-    style: dict = field(default_factory=dict)
+    style: dict = Field(default_factory=dict)
+    component_key: str = ""
 
-    def __post_init__(self):
-        """
-        初始化后的操作。
-        """
-        # 可以在这里添加一些初始化后的操作
-        pass
+    crypt: bool = Field(default=True, exclude=True)
 
+    @field_validator('component_key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        return v if not crypt else cls._make_hex(v)
+
+    @staticmethod
+    def _make_hex(key: str) -> str:
+        return key.encode().hex()
+
+    # 设置方法（链式调用）
     def set_name(self, name: str):
         """
         设置字段名。

@@ -1,9 +1,7 @@
-from dataclasses import dataclass, field
-from typing import Any, Dict, Union, List
+from pydantic import BaseModel, Field, field_validator
+from typing import Any, Dict, Union, List, Optional
 
-
-@dataclass
-class Column:
+class Column(BaseModel):
     # 字段定义
     component_key: str = ""
     title: str = ""
@@ -14,30 +12,39 @@ class Column:
     tooltip: str = ""
     ellipsis: bool = False
     copyable: bool = False
-    value_enum: Any = None
+    value_enum: Optional[Union[Dict[Any, Any], List[Dict[str, Any]]]] = None
     value_type: str = ""
     hide_in_search: bool = True
     hide_in_table: bool = False
     hide_in_form: bool = False
-    filters: Any = False
+    filters: Optional[Union[bool, Dict[str, str], List[Dict[str, str]]]] = None
     order: int = 0
     sorter: Any = None
     span: int = 0
     width: int = 0
-    editable: Any = False
-    actions: Any = False
-    form_item_props: Any = None
-    field_props: Any = None
-    style: Dict[str, Any] = field(default_factory=dict)
+    editable: Optional[Dict[str, Any]] = None
+    actions: Optional[Any] = None
+    form_item_props: Optional[Any] = None
+    field_props: Optional[Any] = None
+    style: Dict[str, Any] = Field(default_factory=dict)
 
     # 内部字段（不暴露）
-    component: str = field(default="column", init=False)
-    key: str = field(default="defaultKey", init=False)
+    component: str = "column"
+    key: str = "defaultKey"
 
-    def set_key(self, key: str, crypt: bool = False):
-        self.key = key
-        return self
+    crypt: bool = Field(default=False, exclude=True)
 
+    @field_validator('key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        attribute = values.get('attribute', "")
+        return attribute if not crypt else cls._make_hex(attribute)
+
+    @staticmethod
+    def _make_hex(key: str) -> str:
+        return key.encode().hex()
+
+    # 设置方法（链式调用）
     def set_style(self, style: Dict[str, Any]):
         self.style = style
         return self
@@ -47,7 +54,7 @@ class Column:
         return self
 
     def set_attribute(self, attribute: str):
-        self.set_key(attribute)
+        self.key = attribute
         self.component_key = attribute
         self.data_index = attribute
         self.attribute = attribute

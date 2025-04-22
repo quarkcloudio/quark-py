@@ -1,8 +1,7 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field, field_validator
 from typing import Any, List, Optional
 
-@dataclass
-class Item:
+class Item(BaseModel):
     component: str = ""          # 组件名称
     condition: str = ""           # 条件：js表达式语句
     condition_name: str = ""      # 需要对比的字段名称
@@ -10,22 +9,24 @@ class Item:
     option: Optional[Any] = None # 条件符合的属性值
     body: Optional[Any] = None    # 内容
 
-@dataclass
-class Component:
-    component_key: str = ""  # 组件标识
-    component: str = ""      # 组件名称
-    items: List[Item] = field(default_factory=list)  # When组件中需要解析的元素
+class Component(BaseModel):
+    component_key: str = ""
+    component: str = ""
+    items: List[Item] = Field(default_factory=list)
 
-    def __post_init__(self):
-        self.component = "when"
-        self.set_key("", True)
+    crypt: bool = Field(default=False, exclude=True)
 
-    # 设置Key
-    def set_key(self, key: str, crypt: bool) -> 'Component':
-        self.component_key = key if not crypt else self._make_hex(key)
-        return self
+    @field_validator('component', mode="before")
+    def set_component(cls, v):
+        return "when"
 
-    def _make_hex(self, key: str) -> str:
+    @field_validator('component_key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        return v if not crypt else cls._make_hex(v)
+
+    @staticmethod
+    def _make_hex(key: str) -> str:
         return key.encode().hex()
 
     # 设置When组件中需要解析的元素

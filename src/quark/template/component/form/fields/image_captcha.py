@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from pydantic import Field, field_validator
 from typing import Any, List, Optional, Union, Callable
 from ...component.element import Element
 from ...table.column import Column
@@ -7,7 +7,6 @@ from .when import Component as When, Item as WhenItem
 import json
 import string
 
-@dataclass
 class Component(Element):
     component_key: str = ""
     component: str = "imageCaptchaField"
@@ -30,7 +29,7 @@ class Component(Element):
     value_prop_name: str = ""
     wrapper_col: Optional[Union[dict, str]] = None
 
-    column: Column = field(default_factory=Column)
+    column: Column = Field(default_factory=Column)
     align: str = ""
     fixed: Optional[Union[bool, str]] = None
     editable: bool = False
@@ -44,12 +43,12 @@ class Component(Element):
 
     api: str = ""
     ignore: bool = False
-    rules: List[Rule] = field(default_factory=list)
-    creation_rules: List[Rule] = field(default_factory=list)
-    update_rules: List[Rule] = field(default_factory=list)
-    frontend_rules: List[Rule] = field(default_factory=list)
+    rules: List[Rule] = Field(default_factory=list)
+    creation_rules: List[Rule] = Field(default_factory=list)
+    update_rules: List[Rule] = Field(default_factory=list)
+    frontend_rules: List[Rule] = Field(default_factory=list)
     when: Optional[When] = None
-    when_item: List[WhenItem] = field(default_factory=list)
+    when_item: List[WhenItem] = Field(default_factory=list)
     show_on_index: bool = True
     show_on_detail: bool = True
     show_on_creation: bool = True
@@ -74,19 +73,20 @@ class Component(Element):
     type: str = ""
     value: Optional[Any] = None
     placeholder: str = "请输入"
-    style: dict = field(default_factory=dict)
+    style: dict = Field(default_factory=dict)
 
     captcha_id_url: str = ""
     captcha_url: str = ""
 
-    def __post_init__(self):
-        self.set_key("", True)
-        self.set_width(200)
+    crypt: bool = Field(default=False, exclude=True)
 
-    def set_key(self, key: str, crypt: bool):
-        self.component_key = key if not crypt else self._make_hex(key)
+    @field_validator('component_key', mode="before")
+    def set_key(cls, v, values):
+        crypt = values.get('crypt', False)
+        return v if not crypt else cls._make_hex(v)
 
-    def _make_hex(self, key: str) -> str:
+    @staticmethod
+    def _make_hex(key: str) -> str:
         return key.encode().hex()
 
     def set_style(self, style: dict):

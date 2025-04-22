@@ -1,9 +1,6 @@
-import time
-import string
-from dataclasses import dataclass, field
-from typing import Any, List, Optional, Union, Callable
-from io import BytesIO
-from flask import request, jsonify, redirect, send_file
+from dataclasses import dataclass
+from typing import Any, Optional
+from flask import jsonify, redirect
 from ..template.component.divider.divider import Component as Divider
 from ..template.component.login.login import Component as LoginComponent
 from ..template.component.tabs.tabs import Component as TabsComponent
@@ -140,16 +137,43 @@ class Login:
                 tab_component = TabsComponent().set_tab_panes(fields).set_centered(True)
 
                 # 组件
-                component = LoginComponent().set_api(login_api).set_redirect(redirect).set_logo(logo).set_title(title).set_sub_title(sub_title).set_body(tab_component).to_json()
+                component = (
+                    LoginComponent().
+                        set_api(login_api).
+                        set_redirect(redirect).
+                        set_logo(logo).
+                        set_title(title).
+                        set_sub_title(sub_title).
+                        set_body(tab_component).
+                        to_json(indent=2)
+                    )
             else:
                 fields = [Divider().set_style({"marginTop": "-15px"})] + fields
 
                 # 组件
-                component = LoginComponent().set_api(login_api).set_redirect(redirect).set_logo(logo).set_title(title).set_sub_title(sub_title).set_body(fields).to_json()
+                component = (
+                    LoginComponent().
+                        set_api(login_api).
+                        set_redirect(redirect).
+                        set_logo(logo).
+                        set_title(title).
+                        set_sub_title(sub_title).
+                        set_body(fields).
+                        to_json(indent=2)
+                    )
         else:
             fields = [Divider().set_style({"marginTop": "-15px"})] + fields
 
             # 组件
-            component = LoginComponent().set_api(login_api).set_redirect(redirect).set_logo(logo).set_title(title).set_sub_title(sub_title).set_body(fields).to_json()
+            component = (
+                LoginComponent().
+                    set_api(login_api).
+                    set_redirect(redirect).
+                    set_logo(logo).
+                    set_title(title).
+                    set_sub_title(sub_title).
+                    set_body(fields).
+                    to_json()
+                )
 
         return component
