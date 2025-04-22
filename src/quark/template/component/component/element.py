@@ -22,7 +22,7 @@ class Element(BaseModel):
         return self
 
     def to_json(self, **kwargs) -> str:
-        return self.model_dump_json(by_alias=True, **kwargs)
+        return self.model_dump_json(by_alias=True, exclude_none=True, **kwargs)
 
     def to_dict(self, **kwargs) -> Dict[str, Any]:
         return self.model_dump(by_alias=True, **kwargs)

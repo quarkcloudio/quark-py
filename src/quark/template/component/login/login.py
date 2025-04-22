@@ -15,7 +15,7 @@ class Component(Element):
     logo: Any = None
     title: str = ""
     sub_title: str = ""
-    background_image_url: str = ""
+    background_image_url: str = None
     activity_config: Optional[ActivityConfig] = None
     values: Dict[str, Any] = Field(default_factory=dict)
     initial_values: Dict[str, Any] = Field(default_factory=dict)

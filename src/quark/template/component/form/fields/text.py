@@ -14,23 +14,23 @@ class Component(Element):
     col_props: Optional[dict] = None
     secondary: bool = False
     colon: bool = True
-    extra: str = ""
+    extra: str = None
     has_feedback: bool = False
-    help: str = ""
+    help: str = None
     hidden: bool = False
     initial_value: Optional[Any] = None
-    label: str = ""
+    label: str = None
     label_align: str = "right"
     label_col: Optional[Union[dict, str]] = None
-    name: str = ""
-    no_style: bool = False
+    name: str = None
+    no_style: bool = None
     required: bool = False
-    tooltip: str = ""
-    value_prop_name: str = ""
+    tooltip: str = None
+    value_prop_name: str = None
     wrapper_col: Optional[Union[dict, str]] = None
 
     column: Column = Field(default_factory=Column)
-    align: str = ""
+    align: str = None
     fixed: Optional[Union[bool, str]] = None
     editable: bool = False
     ellipsis: bool = False
@@ -41,7 +41,7 @@ class Component(Element):
     span: int = 0
     column_width: int = 0
 
-    api: str = ""
+    api: str = None
     ignore: bool = False
     rules: List[Rule] = Field(default_factory=list)
     creation_rules: List[Rule] = Field(default_factory=list)

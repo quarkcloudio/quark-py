@@ -14,23 +14,23 @@ class Component(Element):
     col_props: Optional[dict] = None
     secondary: bool = False
     colon: bool = True
-    extra: str = ""
+    extra: str = None
     has_feedback: bool = False
-    help: str = ""
+    help: str = None
     hidden: bool = False
     initial_value: Optional[Any] = None
-    label: str = ""
+    label: str = None
     label_align: str = "right"
     label_col: Optional[Union[dict, str]] = None
-    name: str = ""
-    no_style: bool = False
-    required: bool = False
-    tooltip: str = ""
-    value_prop_name: str = ""
+    name: str = None
+    no_style: bool = None
+    required: bool = None
+    tooltip: str = None
+    value_prop_name: str = None
     wrapper_col: Optional[Union[dict, str]] = None
 
     column: Column = Field(default_factory=Column)
-    align: str = ""
+    align: str = None
     fixed: Optional[Union[bool, str]] = None
     editable: bool = False
     ellipsis: bool = False
@@ -63,20 +63,20 @@ class Component(Element):
     bordered: bool = True
     default_value: Optional[Any] = None
     disabled: Optional[Union[bool, str]] = None
-    id: str = ""
+    id: str = None
     max_length: int = 200
     show_count: bool = False
-    status: str = ""
+    status: str = None
     prefix: Optional[Any] = None
-    size: str = ""
+    size: str = None
     suffix: Optional[Any] = None
-    type: str = ""
+    type: str = None
     value: Optional[Any] = None
     placeholder: str = "请输入"
     style: dict = Field(default_factory=dict)
 
-    captcha_id_url: str = ""
-    captcha_url: str = ""
+    captcha_id_url: str = None
+    captcha_url: str = None
 
     crypt: bool = Field(default=False, exclude=True)
 
