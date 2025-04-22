@@ -27,7 +27,7 @@ class Index(Login):
                 field.Text(name="username").
                 set_placeholder("用户名").
                 set_rules([
-                    Rule.required("请输入用户名")
+                    Rule.is_required("请输入用户名")
                 ]).
                 set_width("100%").
                 set_size("large")
@@ -36,7 +36,7 @@ class Index(Login):
                 field.Password(name="password").
                 set_placeholder("密码").
                 set_rules([
-                    Rule.required("请输入密码")
+                    Rule.is_required("请输入密码")
                 ]).
                 set_width("100%").
                 set_size("large")
