@@ -33,11 +33,6 @@ class Element(BaseModel):
         self.component_key = key
         return self
 
-    def set(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-        return self
-
     def to_json(self, **kwargs) -> str:
         return self.model_dump_json(by_alias=True, exclude_none=True, **kwargs)
 
