@@ -41,7 +41,7 @@ class Component(Element):
     span: int = 0
     column_width: int = 0
 
-    api: str = ""
+    api: str = None
     ignore: bool = False
     rules: List[Rule] = Field(default_factory=list)
     creation_rules: List[Rule] = Field(default_factory=list)

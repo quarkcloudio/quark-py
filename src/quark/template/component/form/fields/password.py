@@ -41,7 +41,7 @@ class Component(Element):
     span: int = 0
     column_width: int = 0
 
-    api: str = ""
+    api: str = None
     ignore: bool = False
     rules: List[Rule] = Field(default_factory=list)
     creation_rules: List[Rule] = Field(default_factory=list)
@@ -63,18 +63,18 @@ class Component(Element):
     bordered: bool = True
     default_value: Optional[Any] = None
     disabled: Optional[Union[bool, str]] = None
-    id: str = ""
+    id: str = None
     max_length: int = 200
     show_count: bool = False
-    status: str = ""
+    status: str = None
     prefix: Optional[Any] = None
-    size: str = ""
+    size: str = None
     suffix: Optional[Any] = None
-    type: str = ""
+    type: str = None
     value: Optional[Any] = None
     placeholder: str = "请输入"
     style: dict = Field(default_factory=dict)
-    visibility_toggle: bool = False
+    visibility_toggle: bool = None
 
     crypt: bool = Field(default=False, exclude=True)
 

@@ -63,14 +63,14 @@ class Component(Element):
     bordered: bool = True
     default_value: Optional[Any] = None
     disabled: Optional[Union[bool, str]] = None
-    id: str = ""
+    id: str = None
     max_length: int = 200
     show_count: bool = False
-    status: str = ""
+    status: str = None
     prefix: Optional[Any] = None
-    size: str = ""
+    size: str = None
     suffix: Optional[Any] = None
-    type: str = ""
+    type: str = None
     value: Optional[Any] = None
     placeholder: str = "请输入"
     style: dict = Field(default_factory=dict)

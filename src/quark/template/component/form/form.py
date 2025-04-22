@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
 from typing import Any, Dict, List
 import json
 from ..component.element import Element
