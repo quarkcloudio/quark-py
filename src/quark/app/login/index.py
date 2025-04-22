@@ -11,7 +11,7 @@ class Index(Login):
         self.api =  "/api/admin/login/index/handle"
 
         # 标题
-        self.title = "QuarkGo"
+        self.title = "QuarkPy"
 
         # 跳转地址
         self.redirect = "/layout/index?api=/api/admin/dashboard/index/index"
@@ -24,7 +24,8 @@ class Index(Login):
     def fields(self):
         return [
             (
-                field.Text(name="username", label="用户名").
+                field.Text(name="username").
+                set_placeholder("用户名").
                 set_rules([
                     Rule.required("请输入用户名")
                 ]).
@@ -32,7 +33,8 @@ class Index(Login):
                 set_size("large")
             ),
             (
-                field.Password(name="password", label="密码").
+                field.Password(name="password").
+                set_placeholder("密码").
                 set_rules([
                     Rule.required("请输入密码")
                 ]).
