@@ -48,6 +48,8 @@ class Index(Login):
                     Rule.is_required("请输入验证码")
                 ]).
                 set_width("100%").
-                set_size("large")
+                set_size("large").
+                set_captcha_id_url("/api/admin/login/index/captchaId").
+                set_captcha_url("/api/admin/login/index/captcha")
             )
         ]

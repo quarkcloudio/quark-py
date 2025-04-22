@@ -8,3 +8,13 @@ login_bp = Blueprint('login', __name__)
 @login_bp.route('/api/admin/login/<resource>/index', methods=['GET'])
 def index(resource):
     return class_loader.load_resource_object('Login').render()
+
+# 获取验证码id
+@login_bp.route('/api/admin/login/<resource>/captchaId', methods=['GET'])
+def captcha_id(resource):
+    return class_loader.load_resource_object('Login').captcha_id()
+
+# 获取验证码
+@login_bp.route('/api/admin/login/<resource>/captcha', methods=['GET'])
+def captcha(resource):
+    return class_loader.load_resource_object('Login').captcha()

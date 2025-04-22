@@ -2,10 +2,12 @@
 from typing import Any
 import os
 from flask import Flask, send_from_directory
+from flask_caching import Cache
 from .dal import db
 from .template import module
 from .controller import login, resource
 from .config import config
+from . import cache
 import i18n
 
 class Quark(Flask):
@@ -22,6 +24,9 @@ class Quark(Flask):
 
         # 设置语言
         self.config["LOCALE"] = 'zh-hans'
+
+        # 配置缓存（例如使用简单的内存缓存）
+        self.config['CACHE_TYPE'] = 'simple'  # 或 'redis', 'memcached', 'filesystem' 等
 
         # 设置静态文件路径
         self.config["STATIC_PATH"] = 'web/app/'
@@ -43,6 +48,10 @@ class Quark(Flask):
     # 初始化配置
     def init_config(self) -> None:
         config.update(self.config)
+
+    # 初始化缓存
+    def init_cache(self) -> None:
+        cache.cache = Cache(self)
 
     # 静态资源和首页
     def serve_static(self, path):
@@ -81,6 +90,9 @@ class Quark(Flask):
 
         # 初始化配置
         self.init_config()
+
+        # 初始化缓存
+        self.init_cache()
 
         # 初始化模块
         self.init_module()

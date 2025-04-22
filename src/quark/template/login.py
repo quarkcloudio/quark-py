@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, Optional
+import uuid
 from flask import jsonify, redirect
+from ..template.component.message.message import Component as Message
 from ..template.component.divider.divider import Component as Divider
 from ..template.component.login.login import Component as LoginComponent
 from ..template.component.tabs.tabs import Component as TabsComponent
+from ..cache import cache
 
 @dataclass
 class Login:
@@ -51,10 +54,14 @@ class Login:
         return self.sub_title
 
     def captcha_id(self):
-        return jsonify({"code": 0, "message": "操作成功", "data": {"captchaId": 1}})
+        id = str(uuid.uuid4())
+        cache.set(id, "uninitialized", timeout=60)
+        Message.success("获取成功")
+        return jsonify({"code": 0, "message": "获取成功", "data": {"captchaId": id}})
 
     def captcha(self, id):
-        return ""
+        value = cache.get(id)
+        return value
 
     def fields(self):
         return []
