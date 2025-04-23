@@ -6,14 +6,14 @@ class Rule(Element):
     name: str = None                      # 需要验证的字段名称
     rule_type: str = None                 # 规则类型，max | min | unique | required
     default_field: Optional[Any] = None # 仅在 type 为 array 类型时有效，用于指定数组元素的校验规则
-    enum: List[Any] = Field(default_factory=list) # 是否匹配枚举中的值（需要将 type 设置为 enum）
+    enum: List[Any] = None # 是否匹配枚举中的值（需要将 type 设置为 enum）
     fields: Optional[Any] = None        # 仅在 type 为 array 或 object 类型时有效，用于指定子元素的校验规则
     length: int = None                     # string 类型时为字符串长度；number 类型时为确定数字； array 类型时为数组长度
     max_value: int = None                  # 必须设置 type：string 类型为字符串最大长度；number 类型时为最大值；array 类型时为数组最大长度
     message: str = None                   # 错误信息，不设置时会通过模板自动生成
     min_value: int = None                  # 必须设置 type：string 类型为字符串最小长度；number 类型时为最小值；array 类型时为数组最小长度
     pattern: str = None                   # 正则表达式匹配
-    required: bool = False        # 是否为必选字段
+    required: bool = None        # 是否为必选字段
     unique_table: str = None              # type：unique时，指定验证的表名
     unique_table_field: str = None        # type：unique时，指定需验证表中的字段
     unique_ignore_value: str = None      # type：unique时，忽略符合条件验证的列，例如：{id}

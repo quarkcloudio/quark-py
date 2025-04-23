@@ -1,5 +1,6 @@
 from pydantic import Field, model_validator
 from typing import Any, List, Optional, Union, Callable
+from flask import request
 from ...component.element import Element
 from ...table.column import Column
 from ..rule import Rule
@@ -147,10 +148,9 @@ class Component(Element):
         self.required = True
         return self
 
-    def build_frontend_rules(self, path: str):
-        frontend_rules = []
-        rules = [rule for rule in self.rules]
-        uri = path.split("/")
+    def build_frontend_rules(self):
+        rules = self.rules
+        uri = request.path.split("/")
         is_creating = uri[-1] in ["create", "store"]
         is_editing = uri[-1] in ["edit", "update"]
 
@@ -159,11 +159,8 @@ class Component(Element):
         if is_editing:
             rules.extend(self.update_rules)
 
-        self.frontend_rules = [self._convert_to_frontend_rule(rule) for rule in rules]
+        self.frontend_rules = Rule.convert_to_frontend_rules(rules)
         return self
-
-    def _convert_to_frontend_rule(self, rule: Rule) -> Rule:
-        return rule
 
     def set_rules(self, rules: List[Rule]):
         for rule in rules:

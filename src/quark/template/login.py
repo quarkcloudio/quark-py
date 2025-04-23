@@ -124,13 +124,12 @@ class Login:
                     items.append(v)
                 else:
                     component = getattr(v, "component", "")
-                    if "field" in component:
+                    if "Field" in component:
                         # 判断是否在创建页面
                         if hasattr(v, "is_shown_on_creation") and v.is_shown_on_creation():
                             # 生成前端验证规则
                             if hasattr(v, "build_frontend_rules"):
-                                #v.build_frontend_rules(ctx.path)
-                                print("todo")
+                                v.build_frontend_rules()
 
                             # 组合数据
                             items.append(v)

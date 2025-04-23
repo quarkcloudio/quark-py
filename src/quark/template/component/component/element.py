@@ -14,9 +14,9 @@ class Element(BaseModel):
         extra='allow'
     )
 
-    component_key: str = ""
-    component: str = ""
-    style: dict = Field(default_factory=dict)
+    component: str = None
+    component_key: str = None
+    style: dict = None
 
     def set_component(self, component: str) -> 'Element':
         self.component = component
