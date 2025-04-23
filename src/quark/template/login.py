@@ -77,12 +77,12 @@ class Login:
         image = ImageCaptcha(width=170, height=50)
         captcha_image = image.generate_image(captcha_text)
 
-        # 3. 保存为 BytesIO
+        # 保存为 BytesIO
         buffer = BytesIO()
         captcha_image.save(buffer, format='PNG')
         buffer.seek(0)
 
-        # 4. 返回二进制图片流
+        # 返回二进制图片流
         response = make_response(send_file(buffer, mimetype='image/png'))
         return response
 

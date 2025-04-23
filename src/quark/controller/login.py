@@ -18,3 +18,8 @@ def captcha_id(resource):
 @login_bp.route('/api/admin/login/<resource>/captcha/<id>', methods=['GET'])
 def captcha(resource, id):
     return class_loader.load_resource_object('Login').captcha(id)
+
+# 获取验证码
+@login_bp.route('/api/admin/login/<resource>/handle', methods=['POST'])
+def handle(resource):
+    return class_loader.load_resource_object('Login').handle()
