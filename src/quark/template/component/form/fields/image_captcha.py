@@ -36,10 +36,10 @@ class Component(Element):
     ellipsis: bool = False
     copyable: bool = False
     filters: Optional[Any] = None
-    order: int = 0
+    order: int = None
     sorter: Optional[Union[bool, dict]] = None
-    span: int = 0
-    column_width: int = 0
+    span: int = None
+    column_width: int = None
 
     api: str = None
     ignore: bool = False

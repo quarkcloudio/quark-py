@@ -3,8 +3,8 @@ from ..component.element import Element
 from typing import Any, List, Optional
 
 class Rule(Element):
-    name: str = None                      # 需要验证的字段名称
-    rule_type: str = None                 # 规则类型，max | min | unique | required
+    name: str = Field(None, exclude=True)  # 需要验证的字段名称
+    rule_type: str = Field(None, exclude=True)  # 规则类型，max | min | unique | required
     default_field: Optional[Any] = None # 仅在 type 为 array 类型时有效，用于指定数组元素的校验规则
     enum: List[Any] = None # 是否匹配枚举中的值（需要将 type 设置为 enum）
     fields: Optional[Any] = None        # 仅在 type 为 array 或 object 类型时有效，用于指定子元素的校验规则
@@ -14,9 +14,9 @@ class Rule(Element):
     min_value: int = None                  # 必须设置 type：string 类型为字符串最小长度；number 类型时为最小值；array 类型时为数组最小长度
     pattern: str = None                   # 正则表达式匹配
     required: bool = None        # 是否为必选字段
-    unique_table: str = None              # type：unique时，指定验证的表名
-    unique_table_field: str = None        # type：unique时，指定需验证表中的字段
-    unique_ignore_value: str = None      # type：unique时，忽略符合条件验证的列，例如：{id}
+    unique_table: str = Field(None, exclude=True)              # type：unique时，指定验证的表名
+    unique_table_field: str = Field(None, exclude=True)        # type：unique时，指定需验证表中的字段
+    unique_ignore_value: str = Field(None, exclude=True)      # type：unique时，忽略符合条件验证的列，例如：{id}
     rule_type_field: str = None           # 字段类型，string | number | boolean | method | regexp | integer | float | array | object | enum | date | url | hex | email | any
 
     # 转换前端验证规则，剔除前端不支持的 unique

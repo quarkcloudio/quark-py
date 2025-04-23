@@ -90,7 +90,7 @@ class Login:
         return []
 
     def handle(self):
-        return jsonify({"code": 1, "message": "请实现登录方法"})
+        return Message.error("请实现登录方法")
 
     def logout(self):
         return redirect("/", code=302)
