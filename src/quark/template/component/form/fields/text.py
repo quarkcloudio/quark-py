@@ -172,11 +172,15 @@ class Component(Element):
         return self
 
     def set_creation_rules(self, rules: List[Rule]):
-        self.creation_rules = [Rule(name=self.name, rule=rule.rule, message=rule.message) for rule in rules]
+        for rule in rules:
+            rule.name = self.name
+        self.creation_rules = rules
         return self
 
     def set_update_rules(self, rules: List[Rule]):
-        self.update_rules = [Rule(name=self.name, rule=rule.rule, message=rule.message) for rule in rules]
+        for rule in rules:
+            rule.name = self.name
+        self.update_rules = rules
         return self
 
     def get_rules(self) -> List[Rule]:
