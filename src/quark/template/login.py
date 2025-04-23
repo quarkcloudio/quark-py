@@ -1,7 +1,11 @@
 from dataclasses import dataclass
 from typing import Any, Optional
 import uuid
-from flask import jsonify, redirect
+from captcha.image import ImageCaptcha
+import random
+import string
+from io import BytesIO
+from flask import jsonify, redirect, send_file, make_response
 from ..template.component.message.message import Component as Message
 from ..template.component.divider.divider import Component as Divider
 from ..template.component.login.login import Component as LoginComponent
@@ -63,8 +67,24 @@ class Login:
 
     def captcha(self, id):
         value = cache.get(id)
-        print(value)
-        return value
+        if value != "uninitialized":
+            return Message.error("验证码已过期，请重新获取")
+        # 生成随机验证码文本
+        captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+        cache.set(id, captcha_text, timeout=60)
+
+        # 创建图形验证码对象
+        image = ImageCaptcha(width=170, height=50)
+        captcha_image = image.generate_image(captcha_text)
+
+        # 3. 保存为 BytesIO
+        buffer = BytesIO()
+        captcha_image.save(buffer, format='PNG')
+        buffer.seek(0)
+
+        # 4. 返回二进制图片流
+        response = make_response(send_file(buffer, mimetype='image/png'))
+        return response
 
     def fields(self):
         return []
