@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from quark.template.login import Login
 from quark.template.component.form import field, Rule
+from quark.template.component.icon.icon import Component as Icon
 
 @dataclass
 class Index(Login):
@@ -30,7 +31,8 @@ class Index(Login):
                     Rule.is_required("请输入用户名")
                 ]).
                 set_width("100%").
-                set_size("large")
+                set_size("large").
+                set_prefix(Icon().set_type("icon-user"))
             ),
             (
                 field.Password(name="password").
@@ -39,17 +41,19 @@ class Index(Login):
                     Rule.is_required("请输入密码")
                 ]).
                 set_width("100%").
-                set_size("large")
+                set_size("large").
+                set_prefix(Icon().set_type("icon-lock"))
             ),
             (
                 field.ImageCaptcha(name="captcha").
+                set_captcha_id_url("/api/admin/login/index/captchaId").
+                set_captcha_url("/api/admin/login/index/captcha/:id").
                 set_placeholder("验证码").
                 set_rules([
                     Rule.is_required("请输入验证码")
                 ]).
                 set_width("100%").
                 set_size("large").
-                set_captcha_id_url("/api/admin/login/index/captchaId").
-                set_captcha_url("/api/admin/login/index/captcha/:id")
+                set_prefix(Icon().set_type("icon-safetycertificate"))
             )
         ]
