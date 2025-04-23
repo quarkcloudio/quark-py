@@ -50,6 +50,6 @@ class Index(Login):
                 set_width("100%").
                 set_size("large").
                 set_captcha_id_url("/api/admin/login/index/captchaId").
-                set_captcha_url("/api/admin/login/index/captcha")
+                set_captcha_url("/api/admin/login/index/captcha/:id")
             )
         ]

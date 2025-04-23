@@ -4,7 +4,7 @@ from ..component.element import Element
 
 class Component(Element):
     component: str = Field(default="message")
-    class_name: str = Field(default="", alias="className")
+    class_name: str = Field(default=None, alias="className")
     type: str = Field(default="success")
     content: Any = Field(default=None)
     duration: int = Field(default=0)
@@ -18,43 +18,24 @@ class Component(Element):
 
     # 返回成功
     @classmethod
-    def success(cls, message, data):
-        content = ""
-        url = ""
-        data = None
-
-        if len(message) == 1:
-            content = message[0]
-        elif len(message) == 2:
-            content = message[0]
-            url = message[1]
-        elif len(message) >= 3:
-            content = message[0]
-            url = message[1]
-            data = message[2]
-
+    def success(cls, content, data = None, url = ""):
         return (cls()
                 .set_type("success")
                 .set_content(content)
                 .set_url(url)
-                .set_data(data))
+                .set_data(data)
+                .to_json()
+            )
 
     # 返回失败
     @classmethod
-    def error(cls, message):
-        content = ""
-        url = ""
-
-        if len(message) == 1:
-            content = message[0]
-        elif len(message) == 2:
-            content = message[0]
-            url = message[1]
-
+    def error(cls, content, url = ""):
         return (cls()
                 .set_type("error")
                 .set_content(content)
-                .set_url(url))
+                .set_url(url)
+                .to_json()
+            )
     @model_validator(mode="after")
     def init(self):
         self.component = "message"

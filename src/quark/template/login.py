@@ -56,11 +56,14 @@ class Login:
     def captcha_id(self):
         id = str(uuid.uuid4())
         cache.set(id, "uninitialized", timeout=60)
-        Message.success("获取成功")
-        return jsonify({"code": 0, "message": "获取成功", "data": {"captchaId": id}})
+        
+        return Message.success("获取成功", {
+            "captchaId": id
+        })
 
     def captcha(self, id):
         value = cache.get(id)
+        print(value)
         return value
 
     def fields(self):

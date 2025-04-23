@@ -15,6 +15,6 @@ def captcha_id(resource):
     return class_loader.load_resource_object('Login').captcha_id()
 
 # 获取验证码
-@login_bp.route('/api/admin/login/<resource>/captcha', methods=['GET'])
-def captcha(resource):
-    return class_loader.load_resource_object('Login').captcha()
+@login_bp.route('/api/admin/login/<resource>/captcha/<id>', methods=['GET'])
+def captcha(resource, id):
+    return class_loader.load_resource_object('Login').captcha(id)
