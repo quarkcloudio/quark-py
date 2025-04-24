@@ -12,4 +12,4 @@ def init(db_uri: str):
     Session = sessionmaker(bind=engine)
 
 def session():
-    return Session
+    return Session()
