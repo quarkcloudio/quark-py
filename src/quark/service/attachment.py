@@ -1,35 +1,8 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-import json
-import os
+from ..dal import db
+from ..model.attachment import Attachment
 from datetime import datetime
+import json
 import openpyxl
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///quark.db'
-app.config['SECRET_KEY'] = 'your_secret_key'
-db = SQLAlchemy(app)
-
-# 定义Attachment模型
-class Attachment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    path = db.Column(db.String(255), nullable=False)
-    url = db.Column(db.String(255), nullable=False)
-    hash = db.Column(db.String(255), nullable=False)
-    category_id = db.Column(db.Integer, nullable=True)
-    type = db.Column(db.String(50), nullable=True)
-    source = db.Column(db.String(50), nullable=False)
-    uid = db.Column(db.Integer, nullable=False)
-    status = db.Column(db.Integer, nullable=False, default=1)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Attachment {self.name}>'
-
-# 初始化数据库
-with app.app_context():
-    db.create_all()
 
 # 假设的ConfigService类
 class ConfigService:
