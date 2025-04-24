@@ -5,7 +5,7 @@ from captcha.image import ImageCaptcha
 import random
 import string
 from io import BytesIO
-from flask import jsonify, redirect, send_file, make_response
+from flask import redirect, send_file, make_response
 from ..template.component.message.message import Component as Message
 from ..template.component.divider.divider import Component as Divider
 from ..template.component.login.login import Component as LoginComponent
@@ -70,7 +70,7 @@ class Login:
         if value != "uninitialized":
             return Message.error("验证码已过期，请重新获取")
         # 生成随机验证码文本
-        captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+        captcha_text = ''.join(random.choices(string.digits, k=4))
         cache.set(id, captcha_text, timeout=60)
 
         # 创建图形验证码对象

@@ -1,7 +1,11 @@
 from dataclasses import dataclass
+from flask import request
 from quark.template.login import Login
 from quark.template.component.form import field, Rule
 from quark.template.component.icon.icon import Component as Icon
+from quark.template.component.message.message import Component as Message
+from quark.cache import cache
+from quark.service import auth_service
 
 @dataclass
 class Index(Login):
@@ -57,3 +61,24 @@ class Index(Login):
                 set_prefix(Icon().set_type("icon-safetycertificate"))
             )
         ]
+    
+    def handle(self):
+        data = request.get_json()
+
+        if not data["captcha"]["id"] or not data["captcha"]["value"]:
+            return Message.error("验证码不能为空")
+
+        if cache.get(data["captcha"]["id"]) != data["captcha"]["value"]:
+            return Message.error("验证码错误")
+
+        if not data["username"] or not data["password"]:
+            return Message.error("用户名或密码不能为空")
+
+        try:
+            token = auth_service.admin_login(data["username"], data["password"])
+        except Exception as e:
+            return Message.error(str(e))
+
+        return Message.success("登录成功", {
+            "token": token
+        })
