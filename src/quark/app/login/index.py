@@ -5,7 +5,7 @@ from quark.template.component.form import field, Rule
 from quark.template.component.icon.icon import Component as Icon
 from quark.template.component.message.message import Component as Message
 from quark.cache import cache
-from quark.service import auth_service
+from quark.service import auth
 
 @dataclass
 class Index(Login):
@@ -75,7 +75,7 @@ class Index(Login):
             return Message.error("用户名或密码不能为空")
 
         try:
-            token = auth_service.admin_login(data["username"], data["password"])
+            token = auth.admin_login(data["username"], data["password"])
         except Exception as e:
             return Message.error(str(e))
 
