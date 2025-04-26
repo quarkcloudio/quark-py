@@ -46,24 +46,24 @@ class AuthService:
             raise ValueError("the user has been disabled")
         return user_info
 
-    def get_id(self, guard_name: str) -> Tuple[int, Optional[Exception]]:
+    def get_id(self, guard_name: str) -> int:
         user, err = self.get_info(guard_name)
         return user.id, err
 
-    def admin_login(self, username: str, password: str) -> Tuple[str, Optional[Exception]]:
+    def admin_login(self, username: str, password: str) -> str:
         return self.login(username, password, 'admin')
 
-    def get_admin(self) -> Tuple[User, Optional[Exception]]:
+    def get_admin(self) -> User:
         return self.get_info('admin')
 
-    def get_admin_id(self) -> Tuple[int, Optional[Exception]]:
+    def get_admin_id(self) -> int:
         return self.get_id('admin')
 
-    def user_login(self, username: str, password: str) -> Tuple[str, Optional[Exception]]:
+    def user_login(self, username: str, password: str) -> str:
         return self.login(username, password, 'user')
 
-    def get_user(self) -> Tuple[User, Optional[Exception]]:
+    def get_user(self) -> User:
         return self.get_info('user')
 
-    def get_uid(self) -> Tuple[int, Optional[Exception]]:
+    def get_uid(self) -> int:
         return self.get_id('user')
