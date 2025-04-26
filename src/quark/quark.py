@@ -65,8 +65,8 @@ class Quark(Flask):
         else:
             return send_from_directory(self.config["STATIC_PATH"], path)
 
-    # 初始化静态资源
-    def init_serve_static(self):
+    # 设置静态资源
+    def set_serve_static(self):
         self.add_url_rule('/<path:path>', view_func=self.serve_static, methods=['GET'])
 
 
@@ -94,8 +94,8 @@ class Quark(Flask):
         with self.app_context():
             module.install()
 
-        # 初始化静态资源
-        self.init_serve_static()
+        # 设置静态资源
+        self.set_serve_static()
 
         # 加载蓝图
         self.load_blueprints()
