@@ -1,3 +1,8 @@
+from flask_jwt_extended import create_access_token
 
-def admin_login(usrname, password):
-    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJRdWFya0Nsb3VkIiwic3ViIjoiVXNlclRva2VuIiwiZXhwIjoxNzQ1NTUwOTE3LCJuYmYiOjE3NDU0NjQ1MTcsImlhdCI6MTc0NTQ2NDUxNywiaWQiOjEsInVzZXJuYW1lIjoiYWRtaW5pc3RyYXRvciIsIm5pY2tuYW1lIjoi6LaF57qn566h55CG5ZGYIiwic2V4IjoxLCJlbWFpbCI6ImFkbWluQHlvdXJ3ZWIuY29tIiwicGhvbmUiOiIxMDA4NiIsImF2YXRhciI6IiIsImd1YXJkX25hbWUiOiJhZG1pbiJ9.S_ybY5FgaRgpajsZrRAWQtF2yZSs23_dtvIvMAA68FI"
+def admin_login(username, password):
+
+    # 添加角色到 claims 中
+    claims = {"username": username}
+    access_token = create_access_token(identity=username, additional_claims=claims)
+    return access_token

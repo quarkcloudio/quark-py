@@ -3,6 +3,7 @@ from typing import Any
 import os
 import i18n
 from flask import Flask, send_from_directory
+from flask_jwt_extended import JWTManager
 from .template import module
 from .controller import login, resource
 from .config import config
@@ -52,6 +53,10 @@ class Quark(Flask):
     def init_db(self) -> None:
         db.init_app(self)
 
+    # 初始化 JWT
+    def init_jwt(self) -> None:
+        JWTManager(self)
+
     # 静态资源和首页
     def serve_static(self, path):
         # 获取静态资源路径
@@ -89,6 +94,9 @@ class Quark(Flask):
 
         # 初始化数据库
         self.init_db()
+
+        # 初始化 JWT
+        self.init_jwt()
 
         # 安装应用
         with self.app_context():
