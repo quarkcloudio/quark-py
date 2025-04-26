@@ -70,8 +70,8 @@ class Quark(Flask):
         self.add_url_rule('/<path:path>', view_func=self.serve_static, methods=['GET'])
 
 
-    # 解析蓝图
-    def parse_blueprint(self) -> None:
+    # 加载蓝图
+    def load_blueprints(self) -> None:
         self.register_blueprint(login.login_bp)
         self.register_blueprint(resource.resource_bp)
 
@@ -97,8 +97,8 @@ class Quark(Flask):
         # 初始化静态资源
         self.init_serve_static()
 
-        # 解析蓝图
-        self.parse_blueprint()
+        # 加载蓝图
+        self.load_blueprints()
     
     # 启动服务
     def run(self, host: str | None = None, port: int | None = None, debug: bool | None = None, load_dotenv: bool = True, **options: Any) -> None:
