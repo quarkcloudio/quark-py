@@ -1,14 +1,13 @@
 #coding: utf-8
 from typing import Any
 import os
+import i18n
 from flask import Flask, send_from_directory
-from flask_caching import Cache
-from .dal import db
 from .template import module
 from .controller import login, resource
 from .config import config
-from . import cache
-import i18n
+from .cache import cache
+from .db import db
 
 class Quark(Flask):
 
@@ -31,10 +30,6 @@ class Quark(Flask):
         # 设置静态文件路径
         self.config["STATIC_PATH"] = 'web/app/'
 
-    # 初始化数据库
-    def init_db(self) -> None:
-        db.init(self.config["DB_URI"])
-
     # 初始化 locale
     def init_locale(self) -> None:
         locales_path = os.path.abspath(os.path.join(self.current_dir_path, 'locales'))
@@ -51,7 +46,11 @@ class Quark(Flask):
 
     # 初始化缓存
     def init_cache(self) -> None:
-        cache.cache = Cache(self)
+        cache.init_app(self)
+
+    # 初始化数据库
+    def init_db(self) -> None:
+       db.init_app(self)
 
     # 静态资源和首页
     def serve_static(self, path):
@@ -70,9 +69,6 @@ class Quark(Flask):
     def init_serve_static(self):
         self.add_url_rule('/<path:path>', view_func=self.serve_static, methods=['GET'])
 
-    # 初始化模块
-    def init_module(self) -> None:
-        module.install()
 
     # 解析蓝图
     def parse_blueprint(self) -> None:
@@ -81,9 +77,6 @@ class Quark(Flask):
 
     # 加载应用
     def bootstrap(self) -> None:
-
-        # 初始化数据库
-        self.init_db()
 
         # 初始化 locale
         self.init_locale()
@@ -94,8 +87,12 @@ class Quark(Flask):
         # 初始化缓存
         self.init_cache()
 
-        # 初始化模块
-        self.init_module()
+        # 初始化数据库
+        self.init_db()
+
+        # 安装模型
+        with self.app_context():
+            module.install()
 
         # 初始化静态资源
         self.init_serve_static()

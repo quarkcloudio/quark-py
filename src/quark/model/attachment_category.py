@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from ..dal import db
+from ..db import db
 
 class AttachmentCategory(db.Model):
     __tablename__ = 'attachment_categories'

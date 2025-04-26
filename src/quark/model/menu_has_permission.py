@@ -1,6 +1,6 @@
 from sqlalchemy import Column, BigInteger, String, DateTime
 from sqlalchemy.sql import func
-from ..dal import db
+from ..db import db
 
 class MenuHasPermission(db.Model):
     __tablename__ = 'menu_has_permissions'

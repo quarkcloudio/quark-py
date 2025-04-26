@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, UniqueConstraint
 from sqlalchemy.sql import func
 from datetime import datetime
 from bcrypt import hashpw, gensalt
-from ..dal import db
+from ..db import db
 
 def encrypt_password(password: str) -> str:
     return hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
@@ -48,16 +48,15 @@ class User(db.Model):
             last_login_time=datetime.utcnow()
         )
 
-        session = db.Session()
-        existing = session.query(User).filter_by(username='administrator').first()
+        existing = db.session.query(User).filter_by(username='administrator').first()
         if existing:
             return
         
         try:
-            session.add(user)
-            session.commit()
+            db.session.add(user)
+            db.session.commit()
         except Exception as e:
-            session.rollback()
+            db.session.rollback()
             raise
         finally:
-            session.close()
+            db.session.close()

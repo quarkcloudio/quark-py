@@ -1,4 +1,4 @@
 from typing import Any
 
-# 全局变量
+# 全局配置变量
 config: Any = {}

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
-from ..dal import db
+from ..db import db
 
 class Permission(db.Model):
     __tablename__ = 'permissions'

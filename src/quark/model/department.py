@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
-from ..dal import db
+from ..db import db
 
 class Department(db.Model):
     __tablename__ = 'departments'
@@ -14,28 +14,21 @@ class Department(db.Model):
 
     @staticmethod
     def seeder():
-        session = db.Session()
-        try:
-            # 查找或插入“夸克云科技”根部门
-            root = session.query(Department).filter_by(name="夸克云科技", pid=0).first()
-            if not root:
-                root = Department(name="夸克云科技", pid=0, sort=0, status=1)
-                session.add(root)
-                session.commit()
-                session.refresh(root)
+        # 查找或插入“夸克云科技”根部门
+        root = db.session.query(Department).filter_by(name="夸克云科技", pid=0).first()
+        if not root:
+            root = Department(name="夸克云科技", pid=0, sort=0, status=1)
+            db.session.add(root)
+            db.session.commit()
+            db.session.refresh(root)
 
-            seeders = [
-                Department(name="研发中心", pid=root.id, sort=0, status=1),
-                Department(name="营销中心", pid=root.id, sort=0, status=1),
-            ]
-            for dept in seeders:
-                exists = session.query(Department).filter_by(name=dept.name, pid=dept.pid).first()
-                if not exists:
-                    session.add(dept)
+        seeders = [
+            Department(name="研发中心", pid=root.id, sort=0, status=1),
+            Department(name="营销中心", pid=root.id, sort=0, status=1),
+        ]
+        for dept in seeders:
+            exists = db.session.query(Department).filter_by(name=dept.name, pid=dept.pid).first()
+            if not exists:
+                db.session.add(dept)
 
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+        db.session.commit()

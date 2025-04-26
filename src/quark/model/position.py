@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
-from ..dal import db
+from ..db import db
 
 class Position(db.Model):
     __tablename__ = 'positions'
@@ -19,18 +19,11 @@ class Position(db.Model):
             Position(name="项目经理", sort=0, status=1),
             Position(name="普通员工", sort=0, status=1),
         ]
-        session = db.Session()
-        try:
-            for pos in seeders:
-                exists = session.query(Position).filter_by(name=pos.name).first()
-                if not exists:
-                    session.add(pos)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+        for pos in seeders:
+            exists = db.session.query(Position).filter_by(name=pos.name).first()
+            if not exists:
+                db.session.add(pos)
+        db.session.commit()
 
     @staticmethod
     def list():

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.sql import func
-from ..dal import db
+from ..db import db
 
 
 class Menu(db.Model):
@@ -50,15 +50,8 @@ class Menu(db.Model):
             Menu(id=18, name="部门列表", guard_name="admin", icon="", type=2, pid=3, sort=0, path="/api/admin/department/index", show=1, is_engine=1, is_link=0, status=1),
             Menu(id=19, name="职位列表", guard_name="admin", icon="", type=2, pid=3, sort=0, path="/api/admin/position/index", show=1, is_engine=1, is_link=0, status=1),
         ]
-        session = db.Session()
-        try:
-            for menu in seeders:
-                exists = session.query(Menu).filter_by(id=menu.id).first()
-                if not exists:
-                    session.add(menu)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+        for menu in seeders:
+            exists = db.session.query(Menu).filter_by(id=menu.id).first()
+            if not exists:
+                db.session.add(menu)
+        db.session.commit()

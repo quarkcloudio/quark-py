@@ -8,7 +8,7 @@ app = Quark(__name__)
 app.config["DEBUG"] = True
 
 # 配置数据库
-app.config["DB_URI"] = 'mysql+pymysql://root:fK7xPGJi1gJfIief@localhost:3306/quarkpy'
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:fK7xPGJi1gJfIief@localhost:3306/quarkpy'
 
 # 创建路由
 @app.route('/')

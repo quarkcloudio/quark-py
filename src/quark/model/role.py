@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
-from sqlalchemy.exc import IntegrityError
-from ..dal import db
+from ..db import db
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -18,15 +17,8 @@ class Role(db.Model):
         seeders = [
             Role(name='普通角色', guard_name='admin', data_scope=1),
         ]
-        session = db.Session()
-        try:
-            for role in seeders:
-                exists = session.query(Role).filter_by(name=role.name).first()
-                if not exists:
-                    session.add(role)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+        for role in seeders:
+            exists = db.session.query(Role).filter_by(name=role.name).first()
+            if not exists:
+                db.session.add(role)
+        db.session.commit()

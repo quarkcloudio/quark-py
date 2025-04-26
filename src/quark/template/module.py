@@ -1,3 +1,4 @@
+from ..db import db
 from ..model.user import User
 from ..model.role import Role
 from ..model.menu import Menu
@@ -13,12 +14,12 @@ from ..model.config import Config
 from ..model.attachment import Attachment
 from ..model.attachment_category import AttachmentCategory
 from ..model.action_log import ActionLog
-from ..dal import db
 
 # 执行安装操作
 def install():
+    
     # 创建数据库表
-    db.Model.metadata.create_all(db.engine)
+    db.create_all()
 
     # 初始化数据
     User.seeder()
