@@ -6,10 +6,10 @@ import random
 import string
 from io import BytesIO
 from flask import redirect, send_file, make_response
-from ..template.component.message.message import Component as Message
-from ..template.component.divider.divider import Component as Divider
-from ..template.component.login.login import Component as LoginComponent
-from ..template.component.tabs.tabs import Component as TabsComponent
+from ..component.message.message import Component as Message
+from ..component.divider.divider import Component as Divider
+from ..component.login.login import Component as LoginComponent
+from ..component.tabs.tabs import Component as TabsComponent
 from ..cache import cache
 
 @dataclass

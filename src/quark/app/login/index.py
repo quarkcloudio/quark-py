@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from flask import request
 from quark.template.login import Login
-from quark.template.component.form import field, Rule
-from quark.template.component.icon.icon import Component as Icon
-from quark.template.component.message.message import Component as Message
+from quark.component.form import field, Rule
+from quark.component.icon.icon import Component as Icon
+from quark.component.message.message import Component as Message
 from quark.cache import cache
 from quark.service.auth import AuthService
 

@@ -5,7 +5,7 @@ import i18n
 from flask import Flask, send_from_directory
 from flask_jwt_extended import JWTManager
 from .template import module
-from .controller import login, resource
+from .controller import login, layout, dashboard, resource
 from .config import config
 from .cache import cache
 from .db import db
@@ -75,9 +75,11 @@ class Quark(Flask):
         self.add_url_rule('/<path:path>', view_func=self.serve_static, methods=['GET'])
 
 
-    # 加载蓝图
+    # 加载系统蓝图
     def load_blueprints(self) -> None:
         self.register_blueprint(login.login_bp)
+        self.register_blueprint(layout.layout_bp)
+        self.register_blueprint(dashboard.dashboard_bp)
         self.register_blueprint(resource.resource_bp)
 
     # 加载应用
@@ -105,7 +107,7 @@ class Quark(Flask):
         # 设置静态资源
         self.set_serve_static()
 
-        # 加载蓝图
+        # 加载系统蓝图
         self.load_blueprints()
     
     # 启动服务
