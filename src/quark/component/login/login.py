@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import Field, model_validator
 from typing import Any, Dict, List, Optional
 import json
 from ..component.element import Element
 
-class ActivityConfig(BaseModel):
+class ActivityConfig(Element):
     title: str = ""
     sub_title: str = ""
     action: Any = None
@@ -11,11 +11,11 @@ class ActivityConfig(BaseModel):
 
 class Component(Element):
     component: str = "login"
-    api: str = ""
-    redirect: str = ""
+    api: str = None
+    redirect: str = None
     logo: Any = None
-    title: str = ""
-    sub_title: str = ""
+    title: str = None
+    sub_title: str = None
     background_image_url: str = None
     activity_config: Optional[ActivityConfig] = None
     values: Dict[str, Any] = Field(default_factory=dict)
