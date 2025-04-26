@@ -4,7 +4,7 @@ import os
 import i18n
 from flask import Flask, send_from_directory
 from flask_jwt_extended import JWTManager
-from .template import module
+from . import install
 from .controller import login, layout, dashboard, resource
 from .config import config
 from .cache import cache
@@ -102,7 +102,7 @@ class Quark(Flask):
 
         # 安装应用
         with self.app_context():
-            module.install()
+            install.setup_all()
 
         # 设置静态资源
         self.set_serve_static()
