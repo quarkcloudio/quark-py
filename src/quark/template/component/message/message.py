@@ -14,7 +14,7 @@ class Component(Element):
     url: str = Field(default="")
 
     class Config:
-        allow_population_by_field_name = True
+        validate_by_name = True
 
     # 返回成功
     @classmethod
