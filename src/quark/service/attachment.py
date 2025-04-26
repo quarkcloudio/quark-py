@@ -1,4 +1,4 @@
-from ..dal import db
+from ..db import db
 from ..model.attachment import Attachment
 from datetime import datetime
 import json

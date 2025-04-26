@@ -1,8 +1,7 @@
-# 假设的MenuService类
-class MenuService:
-    def get_list_by_user_id(self, user_id):
-        # 这里添加实际的逻辑来获取菜单列表
-        return [{"id": 1, "name": "Menu 1"}, {"id": 2, "name": "Menu 2"}]
+from ..db import db
+from ..model.user import User
+from .attachment import AttachmentService
+from .menu import MenuService
 
 # UserService类
 class UserService:

@@ -1,4 +1,4 @@
-from ..dal import db
+from ..db import db
 from ..model.attachment_category import AttachmentCategory
 
 # AttachmentCategoryService类

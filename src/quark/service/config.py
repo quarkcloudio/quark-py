@@ -1,4 +1,4 @@
-from ..dal import db
+from ..db import db
 from ..model.config import Config
 import threading
 

@@ -1,4 +1,4 @@
-from ..dal import db
+from ..db import db
 from ..model.action_log import ActionLog
 
 # ActionLogService类
@@ -12,8 +12,6 @@ class ActionLogService:
             action=data.action,
             ip=data.ip
         )
-        session = db.Session()
-        session.add(action_log)
-        session.commit()
-        session.close()
+        db.session.add(action_log)
+        db.session.commit()
         return action_log.id

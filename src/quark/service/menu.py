@@ -1,4 +1,4 @@
-from ..dal import db
+from ..db import db
 from ..model.menu import Menu
 import uuid
 
