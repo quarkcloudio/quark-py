@@ -1,7 +1,8 @@
 import jwt
 from datetime import datetime, timedelta
 from typing import Tuple, Optional
-from flask_jwt_extended import create_access_token
+from flask import request
+from flask_jwt_extended import create_access_token, get_jwt_identity
 from ..model.user import User
 from ..service.user import UserService
 from ..utils.bcrypt import check_password
@@ -20,42 +21,30 @@ class AuthService:
             'phone': user.phone,
             'avatar': user.avatar,
             'guard_name': guard_name,
-            'exp': datetime.now() + timedelta(seconds=expire_second),
-            'iat': datetime.now(),
-            'nbf': datetime.now(),
             'iss': 'QuarkCloud',
             'sub': 'UserToken'
         }
-        return create_access_token(identity=user.username, additional_claims=user_claims)
+        return create_access_token(identity=user.username, additional_claims=user_claims, expires_delta=timedelta(seconds=expire_second))
 
-    def login(self, username: str, password: str, guard_name: str) -> Tuple[str, Optional[Exception]]:
+    def login(self, username: str, password: str, guard_name: str) -> str:
         user_service = UserService()
-        user, err = user_service.get_info_by_username(username)
-        if err:
-            return '', err
-        if not check_password(user.password, password):
-            return '', ValueError("the username or password is incorrect")
-        token, err = self.make_token(user, guard_name, 24 * 60 * 60)
-        if err:
-            return '', err
-        err = user_service.update_last_login(user.id, self.ctx.client_ip(), datetime.now())
-        return token, err
+        user = user_service.get_info_by_username(username)
+        if not check_password(password, user.password):
+            raise ValueError("the username or password is incorrect")
+        token = self.make_token(user, guard_name, 24 * 60 * 60)
+        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        user_service.update_last_login(user.id, client_ip, datetime.now())
+        return token
 
-    def get_info(self, guard_name: str) -> Tuple[User, Optional[Exception]]:
-        try:
-            user_claims = jwt.decode(self.ctx.jwt_token, self.ctx.jwt_secret, algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            return User(), ValueError("Token expired")
-        except jwt.InvalidTokenError:
-            return User(), ValueError("Invalid token")
-
+    def get_info(self, guard_name: str) -> User:
+        user_claims = get_jwt_identity()
         if user_claims['guard_name'] != guard_name:
-            return User(), ValueError("401 unauthorized")
+            raise ValueError("401 unauthorized")
 
-        user_info, err = UserService().get_info_by_id(user_claims['id'])
+        user_info = UserService().get_info_by_id(user_claims['id'])
         if user_info.status != 1:
-            return User(), ValueError("the user has been disabled")
-        return user_info, err
+            raise ValueError("the user has been disabled")
+        return user_info
 
     def get_id(self, guard_name: str) -> Tuple[int, Optional[Exception]]:
         user, err = self.get_info(guard_name)
