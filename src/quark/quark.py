@@ -90,7 +90,7 @@ class Quark(Flask):
         # 初始化数据库
         self.init_db()
 
-        # 安装模型
+        # 安装应用
         with self.app_context():
             module.install()
 
