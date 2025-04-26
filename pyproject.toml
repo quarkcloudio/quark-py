@@ -6,7 +6,7 @@ authors = [
     {name = "tangtanglove",email = "dai_hang_love@126.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<4"
 dependencies = [
     "flask (>=3.1.0,<4.0.0)",
     "sqlalchemy (>=2.0.40,<3.0.0)",
@@ -19,7 +19,8 @@ dependencies = [
     "captcha (>=0.7.1,<0.8.0)",
     "pandas (>=2.2.3,<3.0.0)",
     "openpyxl (>=3.1.5,<4.0.0)",
-    "flask-sqlalchemy (>=3.1.1,<4.0.0)"
+    "flask-sqlalchemy (>=3.1.1,<4.0.0)",
+    "flask-jwt-extended (>=4.7.1,<5.0.0)"
 ]
 
 [tool.poetry]
