@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import Any, Optional
 import uuid
-from captcha.image import ImageCaptcha
 import random
 import string
 from io import BytesIO
+from captcha.image import ImageCaptcha
 from flask import redirect, send_file, make_response
 from ..component.message.message import Component as Message
 from ..component.divider.divider import Component as Divider
