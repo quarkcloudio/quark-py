@@ -4,6 +4,7 @@ from typing import Tuple, Optional
 from flask_jwt_extended import create_access_token
 from ..model.user import User
 from ..service.user import UserService
+from ..utils.bcrypt import check_password
 
 class AuthService:
     def __init__(self):
@@ -32,7 +33,7 @@ class AuthService:
         user, err = user_service.get_info_by_username(username)
         if err:
             return '', err
-        if not check_password_hash(user.password, password):
+        if not check_password(user.password, password):
             return '', ValueError("the username or password is incorrect")
         token, err = self.make_token(user, guard_name, 24 * 60 * 60)
         if err:

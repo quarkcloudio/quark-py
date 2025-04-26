@@ -1,11 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, UniqueConstraint
 from sqlalchemy.sql import func
 from datetime import datetime
-from bcrypt import hashpw, gensalt
 from ..db import db
-
-def encrypt_password(password: str) -> str:
-    return hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
+from ..utils.bcrypt import encrypt_password
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -52,11 +49,5 @@ class User(db.Model):
         if existing:
             return
         
-        try:
-            db.session.add(user)
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            raise
-        finally:
-            db.session.close()
+        db.session.add(user)
+        db.session.commit()
