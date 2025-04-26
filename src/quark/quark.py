@@ -30,6 +30,10 @@ class Quark(Flask):
         # 设置静态文件路径
         self.config["STATIC_PATH"] = 'web/app/'
 
+    # 初始化配置
+    def init_config(self) -> None:
+        config.update(self.config)
+
     # 初始化 locale
     def init_locale(self) -> None:
         locales_path = os.path.abspath(os.path.join(self.current_dir_path, 'locales'))
@@ -39,10 +43,6 @@ class Quark(Flask):
 
         # 设置默认语言
         i18n.set('locale', self.config["LOCALE"])
-
-    # 初始化配置
-    def init_config(self) -> None:
-        config.update(self.config)
 
     # 初始化缓存
     def init_cache(self) -> None:
@@ -78,11 +78,11 @@ class Quark(Flask):
     # 加载应用
     def bootstrap(self) -> None:
 
-        # 初始化 locale
-        self.init_locale()
-
         # 初始化配置
         self.init_config()
+
+        # 初始化 locale
+        self.init_locale()
 
         # 初始化缓存
         self.init_cache()
