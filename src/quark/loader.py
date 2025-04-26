@@ -2,8 +2,7 @@ import os
 import re
 import importlib
 from flask import request
-import pkgutil
-from ..config import config
+from .config import config
 
 # Load a class from a file
 def load_class(file_path, class_name):
@@ -33,7 +32,7 @@ def load_resource(class_type: str):
     resource = request.view_args.get('resource')
     resource_snake_case = re.sub(r'(?<!^)(?=[A-Z])', '_', resource).lower()
     module_classes=get_classes_in_package(config["MODULE_PATH"])
-    app_classes=get_classes_in_package(os.path.join(os.path.dirname(__file__),'..', 'app'))
+    app_classes=get_classes_in_package(os.path.join(os.path.dirname(__file__), 'app'))
     for getclass in module_classes:
         module_name = getclass.__module__.split('.')[-1]
         if getclass.__bases__[0].__name__ == class_type and module_name == resource_snake_case:
