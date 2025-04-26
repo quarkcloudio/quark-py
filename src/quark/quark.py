@@ -50,7 +50,7 @@ class Quark(Flask):
 
     # 初始化数据库
     def init_db(self) -> None:
-       db.init_app(self)
+        db.init_app(self)
 
     # 静态资源和首页
     def serve_static(self, path):
