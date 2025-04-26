@@ -7,3 +7,8 @@ class Layout:
 
     # 页面标题
     title: str = ""
+
+    def render(self):
+        return {
+            "title": self.title
+        }
