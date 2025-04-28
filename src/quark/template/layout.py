@@ -1,15 +1,13 @@
-from pydantic import BaseModel
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 import time
-import uuid
-import hashlib
-from quark import Template, Context
-from db import Client as DBClient
-from service import AuthService, UserService
-from action import Component as ActionComponent
-from footer import Component as FooterComponent
-from layout import Component as LayoutComponent
+from ..service.auth import AuthService
+from ..service.user import UserService
+from ..component.action.action import Component as ActionComponent
+from ..component.footer.footer import Component as FooterComponent
+from ..component.layout.layout import Component as LayoutComponent
 
+@dataclass
 class Layout:
     index_path: str = ""
     title: str = ""
@@ -28,17 +26,7 @@ class Layout:
     links: List[Dict[str, Any]] = []
     right_menus: List[Any] = []
 
-    def bootstrap(self):
-        self.index_path = "/api/admin/layout/:resource/index"  # 路由路径
-        return self
-
-    def load_init_route(self):
-        self.GET(self.index_path, self.render)  # 获取布局配置
-        return self
-
-    def load_init_data(self, ctx: Context):
-        # 初始化数据对象
-        self.DB = DBClient
+    def __post_init__(self):
 
         # layout 的左上角 的 title
         self.title = "QuarkGo"
@@ -119,9 +107,6 @@ class Layout:
 
         return self
 
-    def init(self, ctx: Context):
-        return self
-
     def get_title(self) -> str:
         return self.title
 
@@ -167,8 +152,8 @@ class Layout:
     def get_right_menus(self) -> List[Any]:
         return self.right_menus
 
-    def get_menus(self, ctx: Context) -> Tuple[Any, Optional[Exception]]:
-        auth_service = AuthService(ctx)
+    def get_menus(self) -> Any:
+        auth_service = AuthService()
         admin_info, err = auth_service.get_admin()
         if err:
             return None, err
@@ -177,62 +162,59 @@ class Layout:
         user_service = UserService()
         return user_service.get_menu_list_by_id(admin_info.id)
 
-    def render(self, ctx: Context) -> Optional[Exception]:
-        template = self
+    def render(self) -> Any:
 
         # 获取 layout 的左上角 的 title
-        title = template.get_title()
+        title = self.get_title()
 
         # 获取 layout 的左上角 的 logo
-        logo = template.get_logo()
+        logo = self.get_logo()
 
         # 获取 layout 的头部行为
-        actions = template.get_actions()
+        actions = self.get_actions()
 
         # 获取 layout 的菜单模式,side：右侧导航，top：顶部导航，mix：混合模式
-        layout_mode = template.get_layout()
+        layout_mode = self.get_layout()
 
         # 获取 layout 的菜单模式为mix时，是否自动分割菜单
-        split_menus = template.get_split_menus()
+        split_menus = self.get_split_menus()
 
         # 获取 layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
-        content_width = template.get_content_width()
+        content_width = self.get_content_width()
 
         # 获取主题色,"#1890ff"
-        primary_color = template.get_primary_color()
+        primary_color = self.get_primary_color()
 
         # 获取是否固定导航
-        fix_siderbar = template.get_fix_siderbar()
+        fix_siderbar = self.get_fix_siderbar()
 
         # 获取是否固定 header 到顶部
-        fixed_header = template.get_fixed_header()
+        fixed_header = self.get_fixed_header()
 
         # 获取使用 IconFont 的图标配置
-        iconfont_url = template.get_iconfont_url()
+        iconfont_url = self.get_iconfont_url()
 
         # 获取当前 layout 的语言设置，'zh-CN' | 'zh-TW' | 'en-US'
-        locale = template.get_locale()
+        locale = self.get_locale()
 
         # 侧边菜单宽度
-        sider_width = template.get_sider_width()
+        sider_width = self.get_sider_width()
 
         # 获取管理员菜单
-        get_menus, err = template.get_menus(ctx)
-        if err:
-            return ctx.cjson_error(err.args[0])
+        get_menus = self.get_menus()
 
         # 网站版权 time.Now().Format("2006") + " QuarkGo"
-        copyright = template.get_copyright()
+        copyright = self.get_copyright()
 
         # 友情链接
-        links = template.get_links()
+        links = self.get_links()
 
         # 右上角菜单
-        right_menus = template.get_right_menus()
+        right_menus = self.get_right_menus()
 
         # 页脚
-        footer = FooterComponent().init().set_copyright(copyright).set_links(links)
+        footer = FooterComponent().set_copyright(copyright).set_links(links)
 
-        component = LayoutComponent().init().set_title(title).set_logo(logo).set_menu(get_menus).set_actions(actions).set_layout(layout_mode).set_split_menus(split_menus).set_content_width(content_width).set_primary_color(primary_color).set_fix_siderbar(fix_siderbar).set_fixed_header(fixed_header).set_iconfont_url(iconfont_url).set_locale(locale).set_sider_width(sider_width).set_right_menus(right_menus).set_footer(footer)
+        component = LayoutComponent().set_title(title).set_logo(logo).set_menu(get_menus).set_actions(actions).set_layout(layout_mode).set_split_menus(split_menus).set_content_width(content_width).set_primary_color(primary_color).set_fix_siderbar(fix_siderbar).set_fixed_header(fixed_header).set_iconfont_url(iconfont_url).set_locale(locale).set_sider_width(sider_width).set_right_menus(right_menus).set_footer(footer)
 
         return component

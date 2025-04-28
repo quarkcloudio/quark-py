@@ -60,7 +60,6 @@ class Login:
     def captcha_id(self):
         id = str(uuid.uuid4())
         cache.set(id, "uninitialized", timeout=60)
-        
         return Message.success("获取成功", {
             "captchaId": id
         })
