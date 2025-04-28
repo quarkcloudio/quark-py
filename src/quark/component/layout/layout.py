@@ -11,11 +11,11 @@ class Component(Element):
     content_style: Optional[Dict[str, str]] = None
     actions: Optional[Any] = None
     layout: Optional[str] = None
-    split_menus: bool = False
+    split_menus: bool = None
     content_width: Optional[str] = None
     primary_color: Optional[str] = None
-    fixed_header: bool = False
-    fix_siderbar: bool = False
+    fixed_header: bool = None
+    fix_siderbar: bool = None
     iconfont_url: Optional[str] = None
     locale: Optional[str] = None
     sider_width: Optional[int] = None

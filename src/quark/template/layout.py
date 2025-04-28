@@ -23,8 +23,8 @@ class Layout:
     locale: str = ""
     sider_width: int = 0
     copyright: str = ""
-    links: List[Dict[str, Any]] = []
-    right_menus: List[Any] = []
+    links: List[Dict[str, Any]] = None
+    right_menus: List[Any] = None
 
     def __post_init__(self):
 
@@ -154,9 +154,7 @@ class Layout:
 
     def get_menus(self) -> Any:
         auth_service = AuthService()
-        admin_info, err = auth_service.get_admin()
-        if err:
-            return None, err
+        admin_info = auth_service.get_admin()
 
         # 获取管理员菜单
         user_service = UserService()
@@ -215,6 +213,6 @@ class Layout:
         # 页脚
         footer = FooterComponent().set_copyright(copyright).set_links(links)
 
-        component = LayoutComponent().set_title(title).set_logo(logo).set_menu(get_menus).set_actions(actions).set_layout(layout_mode).set_split_menus(split_menus).set_content_width(content_width).set_primary_color(primary_color).set_fix_siderbar(fix_siderbar).set_fixed_header(fixed_header).set_iconfont_url(iconfont_url).set_locale(locale).set_sider_width(sider_width).set_right_menus(right_menus).set_footer(footer)
+        component = LayoutComponent().set_title(title).set_logo(logo).set_menu(get_menus).set_actions(actions).set_layout(layout_mode).set_split_menus(split_menus).set_content_width(content_width).set_primary_color(primary_color).set_fix_siderbar(fix_siderbar).set_fixed_header(fixed_header).set_iconfont_url(iconfont_url).set_locale(locale).set_sider_width(sider_width).set_right_menus(right_menus).set_footer(footer).to_json()
 
         return component

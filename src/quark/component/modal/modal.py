@@ -16,11 +16,11 @@ class Component(Element):
     width: int = Field(520, description="宽度")
     z_index: int = Field(1000, alias="zIndex", description="设置 Modal 的 z-index")
     actions: List[Any] = Field([], description="弹窗行为")
-    init_api: Optional[Any] = Field(None, alias="initApi", description="数据初始化接口", default=None)
+    init_api: Optional[Any] = Field(None, alias="initApi", description="数据初始化接口")
     body: Any = Field(None, description="容器控件里面的内容")
 
     class Config:
-        allow_population_by_field_name = True
+        validate_by_name = True
 
     def set_style(self, style: Any):
         """Set style."""

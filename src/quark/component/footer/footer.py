@@ -8,7 +8,7 @@ class Component(Element):
     links: List[dict] = Field([], description="链接信息")
 
     class Config:
-        allow_population_by_field_name = True
+        validate_by_name = True
 
     def set_style(self, style: dict):
         """Set style."""

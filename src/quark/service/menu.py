@@ -52,7 +52,11 @@ class MenuService:
         menus = []
 
         if user_id == 1:
-            menus = Menu.query.filter_by(guard_name=self.guard_name, status=1, type=db.or_(1, 2, 3)).order_by(Menu.sort.asc()).all()
+            menus = Menu.query.filter(
+                Menu.guard_name == self.guard_name,
+                Menu.status == 1,
+                Menu.type.in_([1, 2, 3])
+            ).order_by(Menu.sort.asc()).all()
             return self.menu_parser(menus)
 
         role_has_menus = CasbinService().get_user_menus(user_id)
@@ -62,7 +66,13 @@ class MenuService:
         menu_ids = [menu.id for menu in role_has_menus]
 
         # 最底层列表
-        menus = Menu.query.filter_by(guard_name=self.guard_name, status=1, id=db.or_(*menu_ids), type=db.or_(1, 2, 3), pid=db.not_(0)).all()
+        menus = Menu.query.filter(
+            Menu.guard_name == self.guard_name,
+            Menu.status == 1,
+            Menu.id.in_(menu_ids),
+            Menu.type.in_([1, 2, 3]),
+            Menu.pid != 0
+        ).all()
 
         for menu in menus:
             parent_menus = self.find_parent_tree_node(menu.pid)
@@ -70,7 +80,11 @@ class MenuService:
                 menu_ids.append(parent_menu.id)
 
         # 所有列表
-        menus = Menu.query.filter_by(guard_name=self.guard_name, status=1, id=db.or_(*menu_ids)).order_by(Menu.sort.asc()).all()
+        menus = Menu.query.filter(
+            Menu.guard_name == self.guard_name,
+            Menu.status == 1,
+            Menu.id.in_(menu_ids)
+        ).order_by(Menu.sort.asc()).all()
 
         return self.menu_parser(menus)
 

@@ -2,7 +2,7 @@ import jwt
 from datetime import datetime, timedelta
 from typing import Tuple, Optional
 from flask import request
-from flask_jwt_extended import create_access_token, get_jwt_identity
+from flask_jwt_extended import create_access_token, verify_jwt_in_request, get_jwt
 from ..model.user import User
 from ..service.user import UserService
 from ..utils.bcrypt import check_password
@@ -37,7 +37,9 @@ class AuthService:
         return token
 
     def get_info(self, guard_name: str) -> User:
-        user_claims = get_jwt_identity()
+        verify_jwt_in_request()
+        user_claims = get_jwt()
+        
         if user_claims['guard_name'] != guard_name:
             raise ValueError("401 unauthorized")
 
@@ -47,8 +49,8 @@ class AuthService:
         return user_info
 
     def get_id(self, guard_name: str) -> int:
-        user, err = self.get_info(guard_name)
-        return user.id, err
+        user = self.get_info(guard_name)
+        return user.id
 
     def admin_login(self, username: str, password: str) -> str:
         return self.login(username, password, 'admin')
