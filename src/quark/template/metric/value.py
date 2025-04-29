@@ -8,8 +8,8 @@ class Value:
     precision: int = None
 
     # 记录条数
-    def count(self) -> StatisticComponent:
-        return 10
+    def count(self, value: int) -> StatisticComponent:
+        return self.result(value)
 
     # 包含组件的结果
     def result(self, value: int) -> StatisticComponent:

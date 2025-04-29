@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import Field, model_validator
 from typing import Any, Dict, List, Optional
+from ..component.element import Element
 
-class Component(BaseModel):
+class Component(Element):
     component: str = Field(default="pageContainer")
     content: Any = Field(..., description="内容区")
     extra_content: Optional[Any] = Field(None, description="额外内容区，位于 content 的右侧")

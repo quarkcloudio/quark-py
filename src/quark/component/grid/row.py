@@ -18,10 +18,6 @@ class Row(Element):
         self.set_key()
         return self
 
-    def set_key(self, key: str, crypt: str):
-        # 模拟设置key的方法
-        pass
-
     def set_style(self, style: Dict[str, Any]):
         # 设置样式
         self.style = style

@@ -7,7 +7,6 @@ from ..component.grid.col import Col
 from ..component.pagecontainer.pagecontainer import Component as PageContainerComponent
 from ..component.pagecontainer.pageheader import PageHeader
 from ..component.statistic.statistic import Component as StatisticComponent
-from ..component.message.message import Component as Message
 
 class Dashboard:
     title: str = Field("仪表盘", description="页面标题")
