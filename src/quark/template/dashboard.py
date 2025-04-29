@@ -63,7 +63,7 @@ class Dashboard:
         # 获取卡片组件列表
         cards = self.cards()
         if not cards:
-            return Message.error("请实现Cards内容")
+            return "请实现Cards内容"
 
         cols: List[Col] = []
         body: List[Row] = []
