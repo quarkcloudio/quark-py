@@ -25,7 +25,7 @@ class Login:
     logo: Optional[Any] = None
 
     # 标题
-    title: str = "QuarkGo"
+    title: str = "QuarkPy"
 
     # 子标题
     sub_title: str = "信息丰富的世界里，唯一稀缺的就是人类的注意力"

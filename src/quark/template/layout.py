@@ -11,7 +11,7 @@ from ..component.layout.layout import Component as LayoutComponent
 class Layout:
     
     # layout 的左上角 的 title
-    title: str = "QuarkGo"
+    title: str = "QuarkPy"
 
     # layout 的左上角 的 logo
     logo: Optional[Any] = False
@@ -46,15 +46,15 @@ class Layout:
     # 侧边菜单宽度
     sider_width: int = 208
 
-    # 网站版权 time.Now().Format("2006") + " QuarkGo"
+    # 网站版权 time.Now().Format("2006") + " QuarkPy"
     copyright: str = time.strftime("%Y") + " QuarkCloud"
 
     # 友情链接
     links: List[Dict[str, Any]] = field(default_factory=lambda: [
             {
                 "key": "1",
-                "title": "QuarkGo",
-                "href": "https://github.com/quarkcloudio/quark-go",
+                "title": "QuarkPy",
+                "href": "https://github.com/quarkcloudio/quark-py",
             },
             {
                 "key": "2",
@@ -181,7 +181,7 @@ class Layout:
         # 获取管理员菜单
         get_menus = self.get_menus()
 
-        # 网站版权 time.Now().Format("2006") + " QuarkGo"
+        # 网站版权 time.Now().Format("2006") + " QuarkPy"
         copyright = self.get_copyright()
 
         # 友情链接
@@ -198,7 +198,7 @@ class Layout:
             )
 
         component = (
-                LayoutComponent().
+            LayoutComponent().
                 set_title(title).
                 set_logo(logo).
                 set_menu(get_menus).
