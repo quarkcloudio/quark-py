@@ -1,5 +1,5 @@
-from pydantic import Field
-from typing import Any, List
+from pydantic import Field, model_validator
+from typing import List
 from ..component.element import Element
 
 class Component(Element):
@@ -7,8 +7,10 @@ class Component(Element):
     copyright: str = Field("", description="版权信息")
     links: List[dict] = Field([], description="链接信息")
 
-    class Config:
-        validate_by_name = True
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        return self
 
     def set_style(self, style: dict):
         """Set style."""

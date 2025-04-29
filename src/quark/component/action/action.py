@@ -1,4 +1,4 @@
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from typing import Any, List, Optional, Union
 from ..component.element import Element
 from ..drawer.drawer import Component as Drawer
@@ -39,6 +39,11 @@ class Component(Element):
         elif isinstance(v, list):
             return [f"icon-{item}" for item in v]
         return v
+
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key("action")
+        return self
 
     def set_style(self, style: dict):
         self.style = style

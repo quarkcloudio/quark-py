@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, model_validator
 from typing import Any, List, Optional
 from ..component.element import Element
 
@@ -19,8 +19,10 @@ class Component(Element):
     init_api: Optional[Any] = Field(None, alias="initApi", description="数据初始化接口")
     body: Any = Field(None, description="容器控件里面的内容")
 
-    class Config:
-        validate_by_name = True
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key("modal")
+        return self
 
     def set_style(self, style: Any):
         """Set style."""
