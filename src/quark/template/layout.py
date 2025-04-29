@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import time
 from ..service.auth import AuthService
@@ -9,66 +9,48 @@ from ..component.layout.layout import Component as LayoutComponent
 
 @dataclass
 class Layout:
-    index_path: str = ""
-    title: str = ""
-    logo: Optional[Any] = None
+    
+    # layout 的左上角 的 title
+    title: str = "QuarkGo"
+
+    # layout 的左上角 的 logo
+    logo: Optional[Any] = False
+
+    # layout 的头部行为
     actions: Optional[Any] = None
-    layout: str = ""
+
+    # layout 的菜单模式,side：右侧导航，top：顶部导航，mix：混合模式
+    layout: str = "mix"
+
+    # layout 的菜单模式为mix时，是否自动分割菜单
     split_menus: bool = False
-    content_width: str = ""
-    primary_color: str = ""
-    fixed_header: bool = False
-    fix_siderbar: bool = False
-    iconfont_url: str = ""
-    locale: str = ""
-    sider_width: int = 0
-    copyright: str = ""
-    links: List[Dict[str, Any]] = None
-    right_menus: List[Any] = None
 
-    def __post_init__(self):
+    # layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
+    content_width: str = "Fluid"
 
-        # layout 的左上角 的 title
-        self.title = "QuarkGo"
+    # 主题色,"#1890ff"
+    primary_color: str = "#1890ff"
 
-        # layout 的左上角 的 logo
-        self.logo = False
+    # 是否固定 header 到顶部
+    fixed_header: bool = True
 
-        # layout 的头部行为
-        self.actions = None
+    # 是否固定导航
+    fix_siderbar: bool = True
 
-        # layout 的菜单模式,side：右侧导航，top：顶部导航，mix：混合模式
-        self.layout = "mix"
+    # 使用 IconFont 的图标配置
+    iconfont_url: str = "//at.alicdn.com/t/font_1615691_3pgkh5uyob.js"
 
-        # layout 的菜单模式为mix时，是否自动分割菜单
-        self.split_menus = False
+    # 当前 layout 的语言设置，'zh-CN' | 'zh-TW' | 'en-US'
+    locale: str = "zh-CN"
 
-        # layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
-        self.content_width = "Fluid"
+    # 侧边菜单宽度
+    sider_width: int = 208
 
-        # 主题色,"#1890ff"
-        self.primary_color = "#1890ff"
+    # 网站版权 time.Now().Format("2006") + " QuarkGo"
+    copyright: str = time.strftime("%Y") + " QuarkCloud"
 
-        # 是否固定 header 到顶部
-        self.fixed_header = True
-
-        # 是否固定导航
-        self.fix_siderbar = True
-
-        # 使用 IconFont 的图标配置
-        self.iconfont_url = "//at.alicdn.com/t/font_1615691_3pgkh5uyob.js"
-
-        # 当前 layout 的语言设置，'zh-CN' | 'zh-TW' | 'en-US'
-        self.locale = "zh-CN"
-
-        # 侧边菜单宽度
-        self.sider_width = 208
-
-        # 网站版权 time.Now().Format("2006") + " QuarkCloud"
-        self.copyright = time.strftime("%Y") + " QuarkCloud"
-
-        # 友情链接
-        self.links = [
+    # 友情链接
+    links: List[Dict[str, Any]] = field(default_factory=lambda: [
             {
                 "key": "1",
                 "title": "QuarkGo",
@@ -84,28 +66,26 @@ class Layout:
                 "title": "Github",
                 "href": "https://github.com/quarkcloudio",
             },
-        ]
-
-        # 右上角菜单
-        self.right_menus = [
+        ])
+    
+    # 右上角菜单
+    right_menus: List[Any] = field(default_factory=lambda: [
             ActionComponent().set_label("个人设置").
             set_action_type("link").
             set_type("link", False).
             set_icon("setting").
-            set_style({"color": "rgb(0 0 0 / 88%)"})
-            .set_href("#/layout/index?api=/api/admin/account/form").
+            set_style({"color": "rgb(0 0 0 / 88%)"}).
+            set_href("#/layout/index?api=/api/admin/account/form").
             set_size("small"),
 
             ActionComponent().set_label("退出登录").
             set_action_type("ajax").
             set_type("link", False).
             set_icon("logout").
-            set_style({"color": "rgb(0 0 0 / 88%)"})
-            .set_api("/api/admin/logout/index/handle").
+            set_style({"color": "rgb(0 0 0 / 88%)"}).
+            set_api("/api/admin/logout/index/handle").
             set_size("small"),
-        ]
-
-        return self
+        ])
 
     def get_title(self) -> str:
         return self.title
@@ -211,8 +191,29 @@ class Layout:
         right_menus = self.get_right_menus()
 
         # 页脚
-        footer = FooterComponent().set_copyright(copyright).set_links(links)
+        footer = (
+            FooterComponent().
+                set_copyright(copyright).
+                set_links(links)
+            )
 
-        component = LayoutComponent().set_title(title).set_logo(logo).set_menu(get_menus).set_actions(actions).set_layout(layout_mode).set_split_menus(split_menus).set_content_width(content_width).set_primary_color(primary_color).set_fix_siderbar(fix_siderbar).set_fixed_header(fixed_header).set_iconfont_url(iconfont_url).set_locale(locale).set_sider_width(sider_width).set_right_menus(right_menus).set_footer(footer).to_json()
+        component = (
+                LayoutComponent().
+                set_title(title).
+                set_logo(logo).
+                set_menu(get_menus).
+                set_actions(actions).
+                set_layout(layout_mode).
+                set_split_menus(split_menus).
+                set_content_width(content_width).
+                set_primary_color(primary_color).
+                set_fix_siderbar(fix_siderbar).
+                set_fixed_header(fixed_header).
+                set_iconfont_url(iconfont_url).
+                set_locale(locale).
+                set_sider_width(sider_width).
+                set_right_menus(right_menus).
+                set_footer(footer).to_json()
+            )
 
         return component
