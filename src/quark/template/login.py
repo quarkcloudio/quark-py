@@ -14,33 +14,24 @@ from ..cache import cache
 
 @dataclass
 class Login:
-    index_path: str = ""
-    handle_path: str = ""
-    captcha_id_path: str = ""
-    captcha_path: str = ""
-    logout_path: str = ""
-    api: str = ""
-    redirect: str = ""
+
+    # 登录接口
+    api: str = "/api/admin/login/index/handle"
+
+    # 登录后跳转地址
+    redirect: str = "/layout/index?api=/api/admin/dashboard/index/index"
+
+    # logo
     logo: Optional[Any] = None
-    title: str = ""
-    sub_title: str = ""
+
+    # 标题
+    title: str = "QuarkGo"
+
+    # 子标题
+    sub_title: str = "信息丰富的世界里，唯一稀缺的就是人类的注意力"
+
+    # 组件
     body: Optional[Any] = None
-
-    def __post_init__(self):
-
-        # 登录接口
-        self.api =  "/api/admin/login/index/handle"
-
-        # 标题
-        self.title = "QuarkGo"
-
-        # 跳转地址
-        self.redirect = "/layout/index?api=/api/admin/dashboard/index/index"
-
-        # 子标题
-        self.sub_title = "信息丰富的世界里，唯一稀缺的就是人类的注意力"
-
-        return self
 
     def get_api(self) -> str:
         return self.api
