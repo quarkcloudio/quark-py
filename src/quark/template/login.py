@@ -5,7 +5,7 @@ import random
 import string
 from io import BytesIO
 from captcha.image import ImageCaptcha
-from flask import redirect, send_file, make_response
+from flask import send_file, make_response
 from ..component.message.message import Component as Message
 from ..component.divider.divider import Component as Divider
 from ..component.login.login import Component as LoginComponent
