@@ -1,18 +1,9 @@
 from ..db import db
 from ..model.attachment import Attachment
+from ..service.config import ConfigService
 from datetime import datetime
 import json
 import openpyxl
-
-# 假设的ConfigService类
-class ConfigService:
-    def get_value(self, key):
-        # 这里添加实际的配置获取逻辑
-        config = {
-            "WEB_SITE_DOMAIN": "example.com",
-            "SSL_OPEN": "1"
-        }
-        return config.get(key, "")
 
 # AttachmentService类
 class AttachmentService:
@@ -196,3 +187,6 @@ class AttachmentService:
             return data, None
         except Exception as e:
             return [], e
+        
+    def count_by_type(self, file_type):
+        return Attachment.query.filter_by(type=file_type).count()

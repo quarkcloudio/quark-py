@@ -34,3 +34,6 @@ class UserService:
         user.last_login_time = last_login_time
         db.session.commit()
         return None
+    
+    def count(self):
+        return User.query.count()

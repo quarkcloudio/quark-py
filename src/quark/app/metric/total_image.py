@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from quark.component.statistic.statistic import Component as StatisticComponent
 from quark.template.metric.value import Value
+from quark.service.attachment import AttachmentService
 
 @dataclass
 class TotalImage(Value):
@@ -9,6 +10,7 @@ class TotalImage(Value):
 
     def calculate(self) -> StatisticComponent:
         """计算数值"""
+        count = AttachmentService().count_by_type("IMAGE")
         return (self
-                .count(10)
+                .count(count)
                 .set_value_style({"color": "#cf1322"}))

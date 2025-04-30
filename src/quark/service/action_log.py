@@ -15,3 +15,6 @@ class ActionLogService:
         db.session.add(action_log)
         db.session.commit()
         return action_log.id
+    
+    def count(self):
+        return ActionLog.query.count()
