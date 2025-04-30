@@ -25,6 +25,6 @@ def handle(resource):
     return loader.load_resource_object('Login').handle()
 
 # 退出
-@login_bp.route('/api/admin/login/<resource>/logout', methods=['POST'])
+@login_bp.route('/api/admin/logout/<resource>/handle', methods=['GET'])
 def logout(resource):
     return loader.load_resource_object('Login').logout()

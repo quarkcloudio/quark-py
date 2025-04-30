@@ -83,7 +83,7 @@ class Login:
         return Message.error("请实现登录方法")
 
     def logout(self):
-        return redirect("/", code=302)
+        return Message.success("退出成功", None, "/")
 
     def fields_within_components(self):
 
