@@ -5,6 +5,8 @@ from quark.app.metric.total_admin import TotalAdmin
 from quark.app.metric.total_file import TotalFile
 from quark.app.metric.total_image import TotalImage
 from quark.app.metric.total_log import TotalLog
+from quark.app.metric.team_info import TeamInfo
+from quark.app.metric.system_info import SystemInfo
 
 @dataclass
 class Index(Dashboard):
@@ -15,5 +17,7 @@ class Index(Dashboard):
             TotalAdmin(),
             TotalFile(),
             TotalImage(),
-            TotalLog()
+            TotalLog(),
+            SystemInfo(),
+            TeamInfo()
         ]

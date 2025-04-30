@@ -4,7 +4,6 @@ from ...component.element import Element
 
 class Text(Element):
     component: str = "text"
-    element: str = Field(..., alias='Component')
     label: str = Field("", description="内容的描述")
     tooltip: str = Field("", description="内容的补充描述，hover 后显示")
     ellipsis: bool = Field(False, description="是否自动缩略")

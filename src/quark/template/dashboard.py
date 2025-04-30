@@ -71,9 +71,7 @@ class Dashboard:
 
         for key, v in enumerate(cards):
             # 断言statistic组件类型
-            if hasattr(v, 'calculate') and isinstance(v.calculate(), StatisticComponent):
-                item = CardComponent().set_body(v.calculate())
-            elif hasattr(v, 'calculate') and isinstance(v.calculate(), DescriptionsComponent):
+            if hasattr(v, 'calculate'):
                 item = CardComponent().set_body(v.calculate())
             else:
                 item = CardComponent()
