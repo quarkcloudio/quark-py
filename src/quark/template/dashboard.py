@@ -1,5 +1,5 @@
 from typing import Any, List
-from pydantic import Field
+from dataclasses import dataclass, field
 from ..component.card.card import Component as CardComponent
 from ..component.descriptions.descriptions import Component as DescriptionsComponent
 from ..component.grid.row import Row
@@ -8,10 +8,11 @@ from ..component.pagecontainer.pagecontainer import Component as PageContainerCo
 from ..component.pagecontainer.pageheader import PageHeader
 from ..component.statistic.statistic import Component as StatisticComponent
 
+@dataclass
 class Dashboard:
-    title: str = Field("仪表盘", description="页面标题")
-    sub_title: str = Field(..., description="页面子标题")
-    back_icon: bool = Field(False, description="页面是否携带返回Icon")
+    title: str = "仪表盘"
+    sub_title: str = None
+    back_icon: bool = False
 
     def get_title(self) -> str:
         """获取页面标题"""

@@ -4,7 +4,7 @@ from ..component.element import Element
 
 class Component(Element):
     component: str = Field(default="pageContainer")
-    content: Any = Field(..., description="内容区")
+    content: Any = Field(None, description="内容区")
     extra_content: Optional[Any] = Field(None, description="额外内容区，位于 content 的右侧")
     tab_list: Optional[List[Dict[str, str]]] = Field(None, description="tab 标题列表")
     tab_active_key: Optional[str] = Field(None, description="当前高亮的 tab 项")
