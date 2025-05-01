@@ -1,12 +1,10 @@
 from typing import Any, List
 from dataclasses import dataclass, field
 from ..component.card.card import Component as CardComponent
-from ..component.descriptions.descriptions import Component as DescriptionsComponent
 from ..component.grid.row import Row
 from ..component.grid.col import Col
 from ..component.pagecontainer.pagecontainer import Component as PageContainerComponent
 from ..component.pagecontainer.pageheader import PageHeader
-from ..component.statistic.statistic import Component as StatisticComponent
 
 @dataclass
 class Dashboard:
