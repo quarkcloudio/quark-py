@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from flask import request
+from dataclasses import dataclass, field
 from typing import Any, List, Dict, Optional
 from ..component.form.form import Component as FormComponent
 from ..component.table.table import Component as TableComponent
@@ -8,6 +9,7 @@ from ..component.table.tool_bar import ToolBar as TableToolBar
 from ..component.table.tree_bar import TreeBar as TableTreeBar
 from ..component.pagecontainer.pagecontainer import Component as PageContainerComponent
 from ..component.pagecontainer.pageheader import PageHeader
+from ..utils.lister import list_to_tree
 
 @dataclass
 class Resource:
@@ -15,64 +17,117 @@ class Resource:
     增删改查模板类
     """
 
-    # 路径配置
-    index_path: str = "/api/admin/:resource/index"
-    editable_path: str = "/api/admin/:resource/editable"
-    action_path: str = "/api/admin/:resource/action/:uriKey"
-    action_values_path: str = "/api/admin/:resource/action/:uriKey/values"
-    create_path: str = "/api/admin/:resource/create"
-    store_path: str = "/api/admin/:resource/store"
-    edit_path: str = "/api/admin/:resource/edit"
-    edit_values_path: str = "/api/admin/:resource/edit/values"
-    save_path: str = "/api/admin/:resource/save"
-    import_path: str = "/api/admin/:resource/import"
-    export_path: str = "/api/admin/:resource/export"
-    detail_path: str = "/api/admin/:resource/detail"
-    detail_values_path: str = "/api/admin/:resource/detail/values"
-    import_template_path: str = "/api/admin/:resource/import/template"
-    form_path: str = "/api/admin/:resource/form"
-    content_path: str = ""
-
-    # 页面标题与子标题
-    title: str = "默认标题"
-    sub_title: str = "默认副标题"
-    back_icon: bool = True
-
-    # 组件实例
-    form: FormComponent = FormComponent()
-    table: TableComponent = TableComponent()
-    table_search: TableSearch = TableSearch()
-    table_column: TableColumn = TableColumn()
-    table_tool_bar: TableToolBar = TableToolBar()
-    table_tree_bar: TableTreeBar = TableTreeBar()
-
-    # 表格配置
+    title: str = "页面标题"  # 页面标题
+    sub_title: str = "页面子标题"  # 页面子标题
+    back_icon: bool = True  # 页面是否携带返回Icon
+    table_polling: int = 0  # 表格是否轮询数据
+    export: bool = False  # 是否具有导出功能
+    export_text: str = "导出"  # 导出按钮文字内容
+    page_size: Optional[int] = 10  # 分页配置，默认每页10条
+    page_size_options: List[int] = field(default_factory=lambda: [10, 20, 50, 100])  # 每页显示条数
+    query_order: str = "created_at desc"  # 全局排序规则
+    model: Optional[Any] = None  # 挂载模型
+    form: FormComponent = field(default_factory=FormComponent)
+    table: TableComponent = field(default_factory=TableComponent)
+    table_search: TableSearch = field(default_factory=TableSearch)
+    table_column: TableColumn = field(default_factory=TableColumn)
+    table_tool_bar: TableToolBar = field(default_factory=TableToolBar)
+    table_tree_bar: TableTreeBar = field(default_factory=TableTreeBar)
     table_title_suffix: str = "列表"
     table_action_column_title: str = "操作"
     table_action_column_width: int = 150
     table_polling: int = 0  # 轮询间隔（秒）
-    table_list_to_tree: Optional[Dict[str, Any]] = None  # 树状结构设置
-    export: bool = False
-    export_text: str = "导出"
-    page_size: Any = 20
-    page_size_options: List[int] = (10, 20, 50, 100)
-    query_order: str = ""
-    index_query_order: str = ""
-    export_query_order: str = ""
+    table_list_to_tree: bool = False  # 列表数据是否转换为树形结构
+    index_query_order: str = ""  # 列表页排序规则
+    export_query_order: str = ""  # 导出数据排序规则
 
-    model: Any = None  # 模型实例
+    # 获取Model结构体
+    def get_model(self):
+        return self.model
 
-    def index_render(self) -> Any:
-        """列表页渲染"""
-        pass
+    # 获取标题
+    def get_title(self):
+        return self.title
 
-    def editable_render(self) -> Any:
-        """行内编辑渲染"""
-        pass
+    # 获取子标题
+    def get_sub_title(self):
+        return self.sub_title
 
-    def action_render(self) -> Any:
-        """执行行为"""
-        pass
+    # 页面是否携带返回Icon
+    def get_back_icon(self):
+        return self.back_icon
+
+    # 获取表单页Form实例
+    def get_form(self):
+        return self.form
+
+    # 获取列表页Table实例
+    def get_table(self):
+        return self.table
+
+    # 获取TableSearch实例
+    def get_table_search(self):
+        return self.table_search
+
+    # 获取TableColumn实例
+    def get_table_column(self):
+        return self.table_column
+
+    # 获取工具栏实例
+    def get_table_tool_bar(self):
+        return self.table_tool_bar
+
+    # 获取树形实例
+    def get_table_tree_bar(self):
+        return self.table_tree_bar
+
+    # 列表页表格标题后缀
+    def get_table_title_suffix(self):
+        return self.table_title_suffix
+
+    # 列表页表格行为列显示文字
+    def get_table_action_column_title(self):
+        return self.table_action_column_title
+
+    # 列表页表格行为列的宽度
+    def get_table_action_column_width(self):
+        return self.table_action_column_width
+
+    # 获取轮询数据
+    def get_table_polling(self):
+        return self.table_polling
+
+    # 获取分页配置
+    def get_page_size(self):
+        return self.page_size
+
+    # 指定每页可以显示多少条
+    def get_page_size_options(self):
+        return self.page_size_options
+
+    # 列表页列表数据转换为树形结构
+    def get_table_list_to_tree(self):
+        return self.table_list_to_tree
+
+    # 获取全局排序规则
+    def get_query_order(self):
+        return self.query_order
+
+    # 获取列表页排序规则
+    def get_index_query_order(self):
+        return self.index_query_order
+
+    # 获取导出数据排序规则
+    def get_export_query_order(self):
+        return self.export_query_order
+
+    # 获取是否具有导出功能
+    def get_export(self):
+        return self.export
+
+    # 获取导出按钮文字内容
+    def get_export_text(self):
+        return self.export_text
 
     def fields(self) -> List[Dict]:
         """字段定义"""
@@ -144,3 +199,133 @@ class Resource:
         if not self.get_back_icon():
             header.set_back_icon(False)
         return PageContainerComponent().set_header(header).set_body(body)
+    
+    def index_table_list_to_tree(self, list_data: List[Any]) -> List[Any]:
+        """
+        列表页数据转换成树结构
+        """
+        data = request.args.to_dict()
+        if isinstance(data.get("search"), dict) and data["search"]:
+            return list_data
+
+        pk_name = "id"
+        pid_name = "pid"
+        children_name = "children"
+        root_id = 0
+
+        table_list_to_tree = self.get_table_list_to_tree()
+
+        if isinstance(table_list_to_tree, bool):
+            if not table_list_to_tree:
+                return list_data
+        elif isinstance(table_list_to_tree, dict):
+            pk_name = table_list_to_tree.get("pkName", "id")
+            pid_name = table_list_to_tree.get("pidName", "pid")
+            children_name = table_list_to_tree.get("childrenName", "children")
+            root_id = table_list_to_tree.get("rootId", 0)
+
+        # 假设 lister.ListToTree 是一个可用函数
+        tree, _ = list_to_tree(list_data, pk_name, pid_name, children_name, root_id)
+        return tree
+
+    def index_table_extra_render(self) -> Any:
+        """
+        列表页表格主体
+        """
+        return None
+
+    def index_table_tool_bar(self) -> Any:
+        """
+        列表页工具栏组件
+        """
+        return (
+            self.get_table_tool_bar()
+            .set_title(self.index_table_title())
+            .set_actions(self.index_table_actions())
+            .set_menu(self.index_table_menu())
+        )
+
+    def index_table_tree_bar(self) -> Any:
+        """
+        列表页树形结构组件
+        """
+        return self.get_table_tree_bar()
+
+    def index_table_title(self) -> str:
+        """
+        获取列表标题
+        """
+        return f"{self.get_title()}{self.get_table_title_suffix()}"
+
+    def index_component_render(self, data: Any) -> Any:
+        """
+        列表页组件渲染主逻辑
+        """
+        table = self.get_table()
+        table_title = self.index_table_title()
+        table_polling = self.get_table_polling()
+        table_extra_render = self.index_table_extra_render()
+        table_tool_bar = self.index_table_tool_bar()
+        table_tree_bar = self.index_table_tree_bar()
+        table_columns = self.index_table_columns()
+        index_table_alert_actions = self.index_table_alert_actions()
+        index_searches = self.index_searches()
+
+        # 是否开启树形表格
+        table_list_to_tree = self.get_table_list_to_tree()
+        if table_list_to_tree is not None:
+            data = self.index_table_list_to_tree(data)
+
+        # 构建表格配置
+        table = (
+            table.set_polling(int(table_polling))
+            .set_title(table_title)
+            .set_table_extra_render(table_extra_render)
+            .set_tool_bar(table_tool_bar)
+            .set_tree_bar(table_tree_bar)
+            .set_columns(table_columns)
+            .set_batch_actions(index_table_alert_actions)
+            .set_searches(index_searches)
+        )
+
+        page_size = self.get_page_size()
+        if page_size is None:
+            return table.set_datasource(data)
+
+        # 如果不是整数分页配置，直接返回数据
+        if not isinstance(page_size, int):
+            return table.set_datasource(data)
+        else:
+            current = data.get("page")
+            page_size_val = data.get("pageSize")
+            page_size_options = data.get("pageSizeOptions")
+            total = data.get("total")
+            items = data.get("items")
+
+            return (
+                table.set_pagination(current, page_size_val, int(total), 1, page_size_options)
+                .set_datasource(items)
+            )
+
+    def before_index_showing(
+        self, list_data: List[Dict[str, Any]]
+    ) -> List[Any]:
+        """
+        页面显示前回调
+        """
+        result = []
+        for item in list_data:
+            result.append(item)
+        return result
+
+    def index_render(self) -> Any:
+        """列表页渲染"""
+        pass
+    
+    def editable_render(self) -> Any:
+        """行内编辑渲染"""
+        pass
+
+    def action_render(self) -> Any:
+        """执行行为"""
+        pass
