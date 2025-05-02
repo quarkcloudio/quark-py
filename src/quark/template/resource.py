@@ -1,91 +1,16 @@
-from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, List, Dict, Optional, Callable
-from abc import ABC, abstractmethod
-
-
-@dataclass
-class FormComponent:
-    """表单组件"""
-    def init(self):
-        return self
-
-
-@dataclass
-class TableComponent:
-    """表格组件"""
-    def init(self):
-        return self
-
+from typing import Any, List, Dict, Optional
+from ..component.form.form import Component as FormComponent
+from ..component.table.table import Component as TableComponent
+from ..component.table.search import Search as TableSearch
+from ..component.table.column import Column as TableColumn
+from ..component.table.tool_bar import ToolBar as TableToolBar
+from ..component.table.tree_bar import TreeBar as TableTreeBar
+from ..component.pagecontainer.pagecontainer import Component as PageContainerComponent
+from ..component.pagecontainer.pageheader import PageHeader
 
 @dataclass
-class TableSearch:
-    """表格搜索组件"""
-    def init(self):
-        return self
-
-
-@dataclass
-class TableColumn:
-    """表格列组件"""
-    def init(self):
-        return self
-
-
-@dataclass
-class TableToolBar:
-    """表格工具栏组件"""
-    def init(self):
-        return self
-
-
-@dataclass
-class TableTreeBar:
-    """表格树形结构组件"""
-    def init(self):
-        return self
-
-
-@dataclass
-class PageHeader:
-    """页面头部组件"""
-    title: str = ""
-    sub_title: str = ""
-    back_icon: bool = True
-
-    def set_title(self, title: str) -> PageHeader:
-        self.title = title
-        return self
-
-    def set_sub_title(self, sub_title: str) -> PageHeader:
-        self.sub_title = sub_title
-        return self
-
-    def set_back_icon(self, enable: bool) -> PageHeader:
-        self.back_icon = enable
-        return self
-
-
-@dataclass
-class PageContainerComponent:
-    """页面容器组件"""
-    header: PageHeader = None
-    body: Any = None
-
-    def init(self):
-        return self
-
-    def set_header(self, header: PageHeader) -> PageContainerComponent:
-        self.header = header
-        return self
-
-    def set_body(self, body: Any) -> PageContainerComponent:
-        self.body = body
-        return self
-
-
-@dataclass
-class Template(ABC):
+class Resource:
     """
     增删改查模板类
     """
@@ -135,55 +60,33 @@ class Template(ABC):
     index_query_order: str = ""
     export_query_order: str = ""
 
-    model: Optional[Any] = None  # 模型实例
+    model: Any = None  # 模型实例
 
-    def bootstrap(self) -> Template:
-        """初始化路径"""
-        return self
-
-    def load_init_route(self) -> Template:
-        """加载初始路由"""
-        # 示例占位符
-        self.GET(self.index_path, self.index_render)
-        self.GET(self.editable_path, self.editable_render)
-        self.ANY(self.action_path, self.action_render)
-        return self
-
-    def GET(self, path: str, handler: Callable):
-        print(f"GET route registered: {path}")
-
-    def ANY(self, path: str, handler: Callable):
-        print(f"ANY route registered: {path}")
-
-    def index_render(self, ctx: Any) -> Any:
+    def index_render(self) -> Any:
         """列表页渲染"""
         pass
 
-    def editable_render(self, ctx: Any) -> Any:
+    def editable_render(self) -> Any:
         """行内编辑渲染"""
         pass
 
-    def action_render(self, ctx: Any) -> Any:
+    def action_render(self) -> Any:
         """执行行为"""
         pass
 
-    @abstractmethod
-    def fields(self, ctx: Any) -> List[Dict]:
+    def fields(self) -> List[Dict]:
         """字段定义"""
         return []
 
-    @abstractmethod
-    def searches(self, ctx: Any) -> List[Dict]:
+    def searches(self) -> List[Dict]:
         """搜索项定义"""
         return []
 
-    @abstractmethod
-    def actions(self, ctx: Any) -> List[Dict]:
+    def actions(self) -> List[Dict]:
         """行为定义"""
         return []
 
-    @abstractmethod
-    def menu_items(self, ctx: Any) -> List[Dict[str, str]]:
+    def menu_items(self) -> List[Dict[str, str]]:
         """菜单项定义"""
         return []
 
@@ -211,31 +114,31 @@ class Template(ABC):
         """获取导出按钮文本"""
         return self.export_text
 
-    def before_exporting(self, ctx: Any, data: List[Dict]) -> List[Any]:
+    def before_exporting(self, data: List[Dict]) -> List[Any]:
         """导出前处理"""
         return [item for item in data]
 
-    def after_exporting(self, ctx: Any, result: Any) -> Any:
+    def after_exporting(self, result: Any) -> Any:
         """导出后处理"""
         return result
 
-    def before_importing(self, ctx: Any, data: List[List[Any]]) -> List[List[Any]]:
+    def before_importing(self, data: List[List[Any]]) -> List[List[Any]]:
         """导入前处理"""
         return data
 
-    def before_editable(self, ctx: Any, id: Any, field: str, value: Any) -> Optional[str]:
+    def before_editable(self, id: Any, field: str, value: Any) -> Optional[str]:
         """行内编辑前处理"""
         return None
 
-    def after_editable(self, ctx: Any, id: Any, field: str, value: Any) -> Optional[str]:
+    def after_editable(self, id: Any, field: str, value: Any) -> Optional[str]:
         """行内编辑后处理"""
         return None
 
-    def page_component_render(self, ctx: Any, body: Any) -> Any:
+    def page_component_render(self, body: Any) -> Any:
         """页面组件渲染"""
-        return self.page_container_component_render(ctx, body)
+        return self.page_container_component_render(body)
 
-    def page_container_component_render(self, ctx: Any, body: Any) -> PageContainerComponent:
+    def page_container_component_render(self, body: Any) -> PageContainerComponent:
         """页面容器组件渲染"""
         header = PageHeader().set_title(self.get_title()).set_sub_title(self.get_sub_title())
         if not self.get_back_icon():
