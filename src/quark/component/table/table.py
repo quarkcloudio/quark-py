@@ -72,6 +72,14 @@ class Component(Element):
         self.header_title = title
         return self
 
+    def set_header_title(self, title: str):
+        self.header_title = title
+        return self
+
+    def set_searches(self, search: Any):
+        self.search = search
+        return self
+
     def set_columns(self, columns: Any):
         self.columns = columns
         return self
@@ -92,11 +100,11 @@ class Component(Element):
         self.column_empty_text = text
         return self
 
-    def set_toolbar(self, toolbar: Any):
+    def set_tool_bar(self, toolbar: Any):
         self.tool_bar = toolbar
         return self
 
-    def set_treebar(self, treebar: Any):
+    def set_tree_bar(self, treebar: Any):
         self.tree_bar = treebar
         return self
 
