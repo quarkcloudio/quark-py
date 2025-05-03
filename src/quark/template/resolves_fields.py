@@ -1,21 +1,23 @@
+from flask import request
 from typing import Any, List, Dict, Optional
-import re
+from ..component.table.column import Column as ColumnComponent
+from ..component.descriptions.descriptions import Component as DescriptionsComponent
 
-def snake_case_name(name: str) -> str:
-    """Convert camelCase to snake_case"""
-    return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
+class ResolvesFields:
 
-class Template:
-    def __init__(self):
-        super().__init__()
+    # 字段
+    fields: Optional[Any] = None
 
-    def fields(self, ctx: Context) -> List[FieldInterface]:
-        return []
+    def set_fields(self, fields) -> 'ResolvesFields':
+        """设置字段"""
+        self.fields = fields
 
-    def get_fields(self, ctx: Context, include_when: bool = True) -> List[FieldInterface]:
-        return self._find_fields(self.fields(ctx), include_when)
+        return self
 
-    def _find_fields(self, fields: List[FieldInterface], include_when: bool) -> List[FieldInterface]:
+    def get_fields(self, include_when: bool = True) -> List[Any]:
+        return self._find_fields(self.fields, include_when)
+
+    def _find_fields(self, fields: List[Any], include_when: bool) -> List[Any]:
         result = []
         for field in fields:
             if not hasattr(field, "body"):
@@ -27,7 +29,7 @@ class Template:
                 result.extend(sub_fields)
         return result
 
-    def _get_when_fields(self, item: FieldInterface) -> List[FieldInterface]:
+    def _get_when_fields(self, item: Any) -> List[Any]:
         when_fields = []
         if not hasattr(item, "when") or getattr(item, "when") is None:
             return when_fields
@@ -40,19 +42,19 @@ class Template:
                     when_fields.append(option.body)
         return when_fields
 
-    def index_fields(self, ctx: Context) -> List[FieldInterface]:
-        return [f for f in self.get_fields(ctx) if f.is_shown_on_index()]
+    def index_fields(self) -> List[Any]:
+        return [f for f in self.get_fields() if f.is_shown_on_index()]
 
-    def index_table_columns(self, ctx: Context) -> List[ColumnComponent]:
+    def index_table_columns(self) -> List[ColumnComponent]:
         columns = []
-        for field in self.index_fields(ctx):
-            col = self._field_to_column(ctx, field)
+        for field in self.index_fields():
+            col = self._field_to_column(field)
             if col:
                 columns.append(col)
-        row_actions = self.index_table_row_actions(ctx)
+        row_actions = self.index_table_row_actions()
         if row_actions:
             action_col = (
-                self.get_table_column(ctx)
+                self.get_table_column()
                 .set_title(self.get_table_action_column_title())
                 .set_width(self.get_table_action_column_width())
                 .set_attribute("action")
@@ -63,7 +65,7 @@ class Template:
             columns.append(action_col)
         return columns
 
-    def _field_to_column(self, ctx: Context, field: FieldInterface) -> ColumnComponent:
+    def _field_to_column(self, field: Any) -> ColumnComponent:
         name = getattr(field, "name", "")
         label = getattr(field, "label", "")
         component = getattr(field, "component", "")
@@ -135,32 +137,32 @@ class Template:
             col.set_value_type(component)
 
         if editable:
-            editable_api = ctx.path.replace("/index", "/editable")
+            editable_api = request.path.replace("/index", "/editable")
             col.set_editable(component, field.get_options(), editable_api)
 
         return col
 
-    def creation_fields(self, ctx: Context) -> List[FieldInterface]:
-        return [f for f in self.get_fields(ctx) if f.is_shown_on_creation()]
+    def creation_fields(self) -> List[Any]:
+        return [f for f in self.get_fields() if f.is_shown_on_creation()]
 
-    def update_fields(self, ctx: Context) -> List[FieldInterface]:
-        return [f for f in self.get_fields(ctx) if f.is_shown_on_update()]
+    def update_fields(self) -> List[Any]:
+        return [f for f in self.get_fields() if f.is_shown_on_update()]
 
-    def detail_fields(self, ctx: Context) -> List[FieldInterface]:
-        return [f for f in self.get_fields(ctx) if f.is_shown_on_detail()]
+    def detail_fields(self) -> List[Any]:
+        return [f for f in self.get_fields() if f.is_shown_on_detail()]
 
-    def export_fields(self, ctx: Context) -> List[FieldInterface]:
-        return [f for f in self.get_fields(ctx) if getattr(f, "is_shown_on_export", lambda: False)()]
+    def export_fields(self) -> List[Any]:
+        return [f for f in self.get_fields() if getattr(f, "is_shown_on_export", lambda: False)()]
 
-    def import_fields(self, ctx: Context) -> List[FieldInterface]:
-        return [f for f in self.get_fields(ctx) if getattr(f, "is_shown_on_import", lambda: False)()]
+    def import_fields(self) -> List[Any]:
+        return [f for f in self.get_fields() if getattr(f, "is_shown_on_import", lambda: False)()]
 
-    def creation_form_fields_parser(self, ctx: Context, fields: List[Any]) -> List[Any]:
+    def creation_form_fields_parser(self, fields: List[Any]) -> List[Any]:
         result = []
         for field in fields:
             if hasattr(field, "body"):
                 body = getattr(field, "body")
-                parsed_body = self.creation_form_fields_parser(ctx, body)
+                parsed_body = self.creation_form_fields_parser(body)
                 setattr(field, "body", parsed_body)
                 result.append(field)
             else:
@@ -171,22 +173,22 @@ class Template:
                         for item in when.items:
                             if item.body:
                                 if isinstance(item.body, list):
-                                    item.body = self.creation_form_fields_parser(ctx, item.body)
+                                    item.body = self.creation_form_fields_parser(item.body)
                                 else:
-                                    item.body.build_frontend_rules(ctx.path)
+                                    item.body.build_frontend_rules()
                     if field.is_shown_on_creation():
-                        field.build_frontend_rules(ctx.path)
+                        field.build_frontend_rules()
                         result.append(field)
                 else:
                     result.append(field)
         return result
 
-    def update_form_fields_parser(self, ctx: Context, fields: List[Any]) -> List[Any]:
+    def update_form_fields_parser(self, fields: List[Any]) -> List[Any]:
         result = []
         for field in fields:
             if hasattr(field, "body"):
                 body = getattr(field, "body")
-                parsed_body = self.update_form_fields_parser(ctx, body)
+                parsed_body = self.update_form_fields_parser(body)
                 setattr(field, "body", parsed_body)
                 result.append(field)
             else:
@@ -197,40 +199,39 @@ class Template:
                         for item in when.items:
                             if item.body:
                                 if isinstance(item.body, list):
-                                    item.body = self.update_form_fields_parser(ctx, item.body)
+                                    item.body = self.update_form_fields_parser(item.body)
                                 else:
-                                    item.body.build_frontend_rules(ctx.path)
+                                    item.body.build_frontend_rules()
                     if field.is_shown_on_update():
-                        field.build_frontend_rules(ctx.path)
+                        field.build_frontend_rules()
                         result.append(field)
                 else:
                     result.append(field)
         return result
 
-    def detail_fields_parser(self, ctx: Context, init_api: Any, fields: List[Any], data: Dict[str, Any]) -> DescriptionsComponent:
+    def detail_fields_parser(self, init_api: Any, fields: List[Any], data: Dict[str, Any]) -> DescriptionsComponent:
         cols = []
         for field in fields:
             if hasattr(field, "body"):
                 body = getattr(field, "body")
-                parsed_body = self.detail_fields_parser(ctx, init_api, body, data)
+                parsed_body = self.detail_fields_parser(init_api, body, data)
                 setattr(field, "body", parsed_body)
                 cols.append(field)
             elif field.is_shown_on_detail():
-                col = self._field_to_column(ctx, field)
+                col = self._field_to_column(field)
                 if col:
                     cols.append(col)
 
         return (
             DescriptionsComponent()
-            .init()
             .set_style({"padding": "24px"})
             .set_init_api(init_api)
             .set_title("")
             .set_column(2)
             .set_columns(cols)
             .set_data_source(data)
-            .set_actions(self.detail_actions(ctx))
+            .set_actions(self.detail_actions())
         )
 
-    def detail_actions(self, ctx: Context) -> List[Any]:
+    def detail_actions(self) -> List[Any]:
         return []

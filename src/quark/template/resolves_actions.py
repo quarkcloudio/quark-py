@@ -8,10 +8,16 @@ from ..component.dropdown.dropdown import Component as DropdownComponent
 from ..component.space.space import Component as SpaceComponent
 
 @dataclass
-class ResolvesAction:
+class ResolvesActions:
 
     # 行为
     actions: Optional[Any] = None
+
+    def set_actions(self, actions) -> 'ResolvesActions':
+        """设置行为"""
+        self.actions = actions
+
+        return self
 
     def index_table_actions(self) -> List[Any]:
         """获取列表页顶部工具栏中的动作"""
