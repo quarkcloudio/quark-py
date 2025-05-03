@@ -259,6 +259,23 @@ class Resource:
         """
         return f"{self.get_title()}{self.get_table_title_suffix()}"
 
+    def index_table_menu_items(self, ctx) -> List[Dict[str, str]]:
+        # 假设 ctx.template 是一个 Resourcer 类型的实例，返回对应的 MenuItems
+        template = ctx.template  # 这里假设ctx对象有template属性
+        return template.menu_items(ctx)
+    
+    def index_table_menu(self, ctx) -> Dict[str, Any]:
+        # 获取菜单项
+        items = self.index_table_menu_items(ctx)
+        if items is None:
+            return {}
+        
+        # 返回表格菜单
+        return {
+            "type": "tab",
+            "items": items
+        }
+
     def index_component_render(self, data: Any) -> Any:
         """
         列表页组件渲染主逻辑
