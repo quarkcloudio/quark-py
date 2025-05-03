@@ -1,23 +1,55 @@
-import inspect
+from flask import request
+from typing import Any, Optional
+from ..component.table.search import Search as TableSearch
 
-class Template:
-    def __init__(self, template):
-        self.template = template
+class ResolvesSearches:
+
+    # 搜索组件
+    search: TableSearch = None
+
+    # 搜索字段
+    searches: Optional[Any] = None
+
+    # 导出功能
+    export = False
+
+    # 导出文字
+    export_text = None
+
+    # 导出路径
+    export_path = None
+
+    def set_search(self, search) -> 'ResolvesSearches':
+        """设置搜索组件"""
+        self.search = search
+        return self
+
+    def set_searches(self, searches) -> 'ResolvesSearches':
+        """设置字段"""
+        self.searches = searches
+        return self
     
-    def index_searches(self, ctx):
-        # 模版实例
-        template = ctx.template  # 假设 ctx 对象有 template 属性
-        searches = template.searches(ctx)
+    def set_export(self, export: bool, export_text: str, export_path: str) -> 'ResolvesSearches':
+        """设置导出功能"""
+        self.export = export
+        self.export_text = export_text
+        self.export_path = export_path
+        return self
+
+    def index_searches(self):
 
         # 搜索组件
-        search = template.get_table_search(ctx)
+        search = self.search
+
+        # 搜索字段
+        searches = self.searches
 
         # 是否携带导出功能
-        export = template.get_export()
+        export = self.export
         if export:
-            export_text = template.get_export_text()  # 导出按钮文字内容
-            export_path = getattr(ctx.template, 'export_path', '')
-            search.set_export_text(export_text).set_export_api(export_path.replace(":resource", ctx.param('resource')))
+            export_text = self.export_text # 导出按钮文字内容
+            export_path = self.export_path
+            search.set_export_text(export_text).set_export_api(export_path.replace("<resource>", request.view_args.get('resource')))
         
         # 解析搜索项
         for v in searches:
@@ -26,10 +58,6 @@ class Template:
             field = Field()  # 创建表单字段实例
             
             search_instance = v  # 假设每个 search 是一个 Searcher 实例
-
-            # 初始化模板
-            search_instance.new(ctx)
-            search_instance.init(ctx)
 
             # 获取组件名称
             component = search_instance.get_component()
@@ -44,10 +72,10 @@ class Template:
             api = search_instance.get_api()
 
             # 获取属性
-            options = search_instance.options(ctx)
+            options = search_instance.options()
 
             # 获取 Select 组件的 Load
-            load = search_instance.load(ctx)
+            load = search_instance.load()
 
             # 根据组件类型创建相应的表单项
             if component == "textField":

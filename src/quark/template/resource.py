@@ -24,6 +24,7 @@ class Resource:
     table_polling: int = 0  # 表格是否轮询数据
     export: bool = False  # 是否具有导出功能
     export_text: str = "导出"  # 导出按钮文字内容
+    export_path: str = "/api/admin/<resource>/export"  # 导出接口路径
     page_size: Optional[int] = 10  # 分页配置，默认每页10条
     page_size_options: List[int] = field(default_factory=lambda: [10, 20, 50, 100])  # 每页显示条数
     query_order: str = "created_at desc"  # 全局排序规则
