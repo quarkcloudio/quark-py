@@ -1,7 +1,7 @@
 from flask import request
 from typing import Any, Optional
 from ..component.table.search import Search as TableSearch
-
+from ..component.form import field
 class ResolvesSearches:
 
     # 搜索组件
@@ -55,9 +55,9 @@ class ResolvesSearches:
         for v in searches:
             # 搜索栏表单项
             item = None
-            field = Field()  # 创建表单字段实例
             
-            search_instance = v  # 假设每个 search 是一个 Searcher 实例
+            # 假设每个 search 是一个 Searcher 实例
+            search_instance = v
 
             # 获取组件名称
             component = search_instance.get_component()
