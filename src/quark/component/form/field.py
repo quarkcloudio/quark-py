@@ -38,17 +38,17 @@ def hidden(*params) -> 'HiddenComponent':
     """生成隐藏字段组件"""
     return field_parser(HiddenComponent(), params, "")
 
-def text(*params) -> 'TextComponent':
+def text(*params) -> 'Text':
     """生成文本框字段组件"""
-    return field_parser(TextComponent(), params, "请输入")
+    return field_parser(Text(), params, "请输入")
 
 def text_area(*params) -> 'TextAreaComponent':
     """生成文本域字段组件"""
     return field_parser(TextAreaComponent(), params, "请输入")
 
-def password(*params) -> 'PasswordComponent':
+def password(*params) -> 'Password':
     """生成密码框字段组件"""
-    return field_parser(PasswordComponent(), params, "请输入")
+    return field_parser(Password(), params, "请输入")
 
 def radio(*params) -> 'RadioComponent':
     """生成单选框字段组件"""
@@ -213,30 +213,30 @@ def field_set(*params) -> 'FieldSetComponent':
     """生成字段集合组件"""
     return field_parser(FieldSetComponent(), params, "")
 
-def dependency():
+def dependency() -> 'DependencyComponent':
     """数据联动组件"""
     return DependencyComponent()
 
-def transfer(*params):
+def transfer(*params) -> 'TransferComponent':
     """穿梭框组件"""
-    return TransferComponent().parse(params)
+    return field_parser(TransferComponent(), params, "")
 
-def image_captcha(*params):
+def image_captcha(*params) -> 'ImageCaptcha':
     """图形验证码组件"""
-    return ImageCaptchaComponent().parse(params)
+    return field_parser(ImageCaptcha(), params, "")
 
-def sms_captcha(*params):
+def sms_captcha(*params) -> 'SmsCaptchaComponent':
     """短信验证码组件"""
-    return SmsCaptchaComponent().parse(params)
+    return field_parser(SmsCaptchaComponent(), params, "")
 
-def image_picker(*params):
+def image_picker(*params) -> 'ImagePickerComponent':
     """图片选择器组件"""
-    return ImagePickerComponent().parse(params)
+    return field_parser(ImagePickerComponent(), params, "")
 
-def sku(*params):
+def sku(*params) -> 'SkuComponent':
     """商品Sku组件"""
-    return SkuComponent().set_params(params)
+    return field_parser(SkuComponent(), params, "")
 
-def action(*params):
+def action(*params) -> 'ActionComponent':
     """行为组件"""
-    return ActionComponent().parse(params)
+    return field_parser(ActionComponent(), params, "")
