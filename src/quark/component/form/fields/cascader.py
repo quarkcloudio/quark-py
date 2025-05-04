@@ -8,7 +8,6 @@ class FieldNames(Component):
     value: str = None  # 选项的实际值
     children: str = None  # 子选项列表的字段名
 
-
 class Option(Component):
     label: Optional[str] = None
     value: Any = None
@@ -106,7 +105,7 @@ class Cascader(Base):
     控制浮层显隐
     """
 
-    options: List[Option] = None
+    options: List[Option] = []
     """
     可选项数据源
     """
