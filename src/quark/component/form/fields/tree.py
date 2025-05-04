@@ -1,0 +1,1694 @@
+"""
+此模块实现了 Tree 组件，用于构建树形结构的表单字段。
+包含组件的初始化、属性设置、数据转换等功能。
+"""
+import json
+from typing import Dict, List, Optional, Any, Callable, Union
+from pydantic import BaseModel
+from cases import Title  # 替代 strings.Title
+
+# 模拟依赖的模块和类
+class TableColumn:
+    """模拟表格列对象，用于配置列表和详情页的列属性。"""
+    def __init__(self):
+        self.init()
+
+    def init(self):
+        """初始化列对象。"""
+        return self
+
+
+class Rule(BaseModel):
+    """模拟验证规则对象，用于字段验证。"""
+    name: Optional[str] = None
+
+
+class WhenComponent(BaseModel):
+    """模拟 When 组件对象，用于条件显示逻辑。"""
+    items: List[Any] = []
+
+    def set_items(self, items: List[Any]):
+        """
+        设置 When 组件的条件项列表。
+
+        Args:
+            items (List[Any]): 条件项列表。
+
+        Returns:
+            WhenComponent: 返回当前实例，支持链式调用。
+        """
+        self.items = items
+        return self
+
+
+class WhenItem(BaseModel):
+    """模拟 When 组件的条件项对象，定义条件项属性。"""
+    body: Any = None
+    condition: str = ""
+    condition_name: str = ""
+    condition_operator: str = ""
+    option: Any = None
+
+
+class FieldNames(BaseModel):
+    """
+    表示 Tree 组件字段名映射的类。
+
+    Attributes:
+        title (str): 对应树节点标题的字段名。
+        key (str): 对应树节点键的字段名。
+        children (str): 对应树节点子节点的字段名。
+    """
+    title: str
+    key: str
+    children: str
+
+
+class TreeData(BaseModel):
+    """
+    表示 Tree 组件树节点数据的类。
+
+    Attributes:
+        checkable (bool): 当树为 checkable 时，设置独立节点是否展示 Checkbox。
+        disable_checkbox (bool): 禁掉 checkbox。
+        disabled (bool): 禁掉响应。
+        icon (Optional[Any]): 自定义图标。可接收组件，props 为当前节点 props。
+        is_leaf (bool): 设置为叶子节点 (设置了 loadData 时有效)。为 false 时会强制将其作为父节点。
+        key (Any): 被树的 (default)ExpandedKeys / (default)CheckedKeys / (default)SelectedKeys 属性所用。
+            注意：整个树范围内的所有节点的 key 值不能重复！
+        selectable (bool): 设置节点是否可被选中。
+        title (str): 标题。
+        children (List['TreeData']): 子节点。
+    """
+    checkable: bool = False
+    disable_checkbox: bool = False
+    disabled: bool = False
+    icon: Optional[Any] = None
+    is_leaf: bool = False
+    key: Any
+    selectable: bool = True
+    title: str
+    children: List['TreeData'] = []
+
+
+TreeData.update_forward_refs()
+
+
+class Component(BaseModel):
+    """
+    表示 Tree 组件的类，使用 pydantic 进行数据验证和序列化。
+
+    Attributes:
+        component_key (str): 组件标识。
+        component (str): 组件名称，默认为 "treeField"。
+        row_props (Optional[Dict[str, Any]]): 开启 grid 模式时传递给 Row 的属性，
+            仅在 ProFormGroup、ProFormList、ProFormFieldSet 中有效，默认值为 None。
+        col_props (Optional[Dict[str, Any]]): 开启 grid 模式时传递给 Col 的属性，默认值为 None。
+        secondary (bool): 是否是次要控件，只针对 LightFilter 下有效，默认值为 False。
+        colon (bool): 配合 label 属性使用，表示是否显示 label 后面的冒号，默认值为 True。
+        extra (Optional[str]): 额外的提示信息，和 help 类似，
+            当需要错误信息和提示文案同时出现时使用，默认值为 None。
+        has_feedback (bool): 配合 validate_status 属性使用，展示校验状态图标，
+            建议只配合 Input 组件使用，默认值为 False。
+        help (Optional[str]): 提示信息，如不设置，则会根据校验规则自动生成，默认值为 None。
+        hidden (bool): 是否隐藏字段（依然会收集和校验字段），默认值为 False。
+        initial_value (Optional[Any]): 设置子元素默认值，如果与 Form 的 initial_values 冲突则以 Form 为准，默认值为 None。
+        label (Optional[str]): label 标签的文本，默认值为 None。
+        label_align (str): 标签文本对齐方式，默认为 "right"。
+        label_col (Optional[Any]): label 标签布局，同 <Col> 组件，设置 span offset 值，
+            可以通过 Form 的 label_col 进行统一设置，默认值为 None。
+        name (Optional[str]): 字段名，支持数组，默认值为 None。
+        no_style (bool): 为 True 时不带样式，作为纯字段控件使用，默认值为 False。
+        required (bool): 必填样式设置。如不设置，则会根据校验规则自动生成，默认值为 False。
+        tooltip (Optional[str]): 会在 label 旁增加一个 icon，悬浮后展示配置的信息，默认值为 None。
+        value_prop_name (Optional[str]): 子节点的值的属性，如 Switch 的是 'checked'，默认值为 None。
+        wrapper_col (Optional[Any]): 需要为输入控件设置布局样式时使用，用法同 label_col，默认值为 None。
+
+        column (TableColumn): 列表页、详情页中列属性。
+        align (str): 设置列的对齐方式,left | right | center，只在列表页、详情页中有效，默认值为 ""。
+        fixed (Optional[Any]): （IE 下无效）列是否固定，可选 true (等效于 left) left rightr，只在列表页中有效。
+        editable (bool): 表格列是否可编辑，只在列表页中有效，默认值为 False。
+        ellipsis (bool): 是否自动缩略，只在列表页、详情页中有效，默认值为 False。
+        copyable (bool): 是否支持复制，只在列表页、详情页中有效，默认值为 False。
+        filters (Optional[Any]): 表头的筛选菜单项，当值为 true 时，自动使用 value_enum 生成，只在列表页中有效。
+        order (int): 查询表单中的权重，权重大排序靠前，只在列表页中有效，默认值为 0。
+        sorter (Optional[Any]): 可排序列，只在列表页中有效。
+        span (int): 包含列的数量，只在详情页中有效，默认值为 0。
+        column_width (int): 设置列宽，只在列表页中有效，默认值为 0。
+
+        api (Optional[str]): 获取数据接口。
+        ignore (bool): 是否忽略保存到数据库，默认为 False。
+        rules (List[Rule]): 全局校验规则。
+        creation_rules (List[Rule]): 创建页校验规则。
+        update_rules (List[Rule]): 编辑页校验规则。
+        frontend_rules (List[Rule]): 前端校验规则，设置字段的校验逻辑。
+        when (WhenComponent): When 组件。
+        when_item (List[WhenItem]): When 组件条件项列表。
+        show_on_index (bool): 在列表页展示，默认值为 True。
+        show_on_detail (bool): 在详情页展示，默认值为 True。
+        show_on_creation (bool): 在创建页面展示，默认值为 True。
+        show_on_update (bool): 在编辑页面展示，默认值为 True。
+        show_on_export (bool): 在导出的 Excel 上展示，默认值为 True。
+        show_on_import (bool): 在导入 Excel 上展示，默认值为 True。
+        callback (Optional[Any]): 回调函数。
+
+        auto_expand_parent (bool): 是否自动展开父节点，默认值为 False。
+        block_node (bool): 是否节点占据一行，默认值为 False。
+        checkable (bool): 节点前添加 Checkbox 复选框，默认值为 True。
+        checked_keys (List[Any]): （受控）选中复选框的树节点，默认值为 []。
+        check_strictly (bool): checkable 状态下节点选择完全受控（父子节点选中状态不再关联），默认值为 False。
+        default_checked_keys (List[Any]): 默认选中复选框的树节点，默认值为 []。
+        default_expand_all (bool): 默认展开所有树节点，默认值为 False。
+        default_expanded_keys (List[Any]): 默认展开指定的树节点，默认值为 []。
+        default_expand_parent (bool): 默认展开父节点，默认值为 False。
+        default_selected_keys (List[Any]): 默认选中的树节点，默认值为 []。
+        default_value (Optional[Any]): 默认选中的选项，默认值为 None。
+        disabled (bool): 整组失效，默认值为 False。
+        draggable (bool): 设置节点可拖拽，可以通过 icon: false 关闭拖拽提示图标，默认值为 False。
+        expanded_keys (List[Any]): （受控）展开指定的树节点，默认值为 []。
+        field_names (Optional[FieldNames]): 自定义 options 中 label value children 的字段，默认值为 None。
+        height (int): 设置虚拟滚动容器高度，设置后内部节点不再支持横向滚动，默认值为 0。
+        icon (Optional[Any]): 自定义树节点图标，默认值为 None。
+        multiple (bool): 支持点选多个节点（节点本身），默认值为 False。
+        placeholder (Optional[str]): 占位文本，默认值为 None。
+        root_class_name (str): 添加在 Tree 最外层的 className，默认值为 ""。
+        root_style (Optional[Any]): 添加在 Tree 最外层的 style，默认值为 None。
+        selectable (bool): 是否可选中，默认值为 True。
+        selected_keys (List[Any]): （受控）设置选中的树节点，默认值为 []。
+        show_icon (bool): 是否展示 TreeNode title 前的图标，没有默认样式，
+            如设置为 true，需要自行定义图标相关样式，默认值为 False。
+        show_line (bool): 是否展示连接线，默认值为 False。
+        switcher_icon (Optional[Any]): 自定义树节点的展开/折叠图标，默认值为 None。
+        tree_data (List[TreeData]): treeNodes 数据，如果设置则不需要手动构造 TreeNode 节点，默认值为 []。
+        value (Optional[Any]): 指定当前选中的条目，多选时为一个数组，默认值为 None。
+        virtual (bool): 设置 false 时关闭虚拟滚动，默认值为 True。
+        style (Optional[Dict[str, Any]]): 自定义样式，默认值为 None。
+    """
+    component_key: str = ""
+    component: str = "treeField"
+
+    row_props: Optional[Dict[str, Any]] = None
+    col_props: Optional[Dict[str, Any]] = None
+    secondary: bool = False
+    colon: bool = True
+    extra: Optional[str] = None
+    has_feedback: bool = False
+    help: Optional[str] = None
+    hidden: bool = False
+    initial_value: Optional[Any] = None
+    label: Optional[str] = None
+    label_align: str = "right"
+    label_col: Optional[Any] = None
+    name: Optional[str] = None
+    no_style: bool = False
+    required: bool = False
+    tooltip: Optional[str] = None
+    value_prop_name: Optional[str] = None
+    wrapper_col: Optional[Any] = None
+
+    column: TableColumn = TableColumn()
+    align: str = ""
+    fixed: Optional[Any] = None
+    editable: bool = False
+    ellipsis: bool = False
+    copyable: bool = False
+    filters: Optional[Any] = None
+    order: int = 0
+    sorter: Optional[Any] = None
+    span: int = 0
+    column_width: int = 0
+
+    api: Optional[str] = None
+    ignore: bool = False
+    rules: List[Rule] = []
+    creation_rules: List[Rule] = []
+    update_rules: List[Rule] = []
+    frontend_rules: List[Rule] = []
+    when: WhenComponent = WhenComponent()
+    when_item: List[WhenItem] = []
+    show_on_index: bool = True
+    show_on_detail: bool = True
+    show_on_creation: bool = True
+    show_on_update: bool = True
+    show_on_export: bool = True
+    show_on_import: bool = True
+    callback: Optional[Any] = None
+
+    auto_expand_parent: bool = False
+    block_node: bool = False
+    checkable: bool = True
+    checked_keys: List[Any] = []
+    check_strictly: bool = False
+    default_checked_keys: List[Any] = []
+    default_expand_all: bool = False
+    default_expanded_keys: List[Any] = []
+    default_expand_parent: bool = False
+    default_selected_keys: List[Any] = []
+    default_value: Optional[Any] = None
+    disabled: bool = False
+    draggable: bool = False
+    expanded_keys: List[Any] = []
+    field_names: Optional[FieldNames] = None
+    height: int = 0
+    icon: Optional[Any] = None
+    multiple: bool = False
+    placeholder: Optional[str] = None
+    root_class_name: str = ""
+    root_style: Optional[Any] = None
+    selectable: bool = True
+    selected_keys: List[Any] = []
+    show_icon: bool = False
+    show_line: bool = False
+    switcher_icon: Optional[Any] = None
+    tree_data: List[TreeData] = []
+    value: Optional[Any] = None
+    virtual: bool = True
+    style: Optional[Dict[str, Any]] = None
+
+    class Config:
+        """pydantic 配置类，允许使用别名。"""
+        arbitrary_types_allowed = True
+
+    @classmethod
+    def new(cls):
+        """
+        创建并初始化组件实例。
+
+        Returns:
+            Component: 初始化后的组件实例。
+        """
+        return cls().init()
+
+    def init(self):
+        """
+        初始化组件属性。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.component = "treeField"
+        self.checkable = True
+        self.colon = True
+        self.label_align = "right"
+        self.show_on_index = True
+        self.show_on_detail = True
+        self.show_on_creation = True
+        self.show_on_update = True
+        self.show_on_export = True
+        self.show_on_import = True
+        self.column = TableColumn().init()
+        self.set_width(200)
+        self.set_key("DEFAULT_KEY", False)
+
+        return self
+
+    def set_key(self, key: str, crypt: bool):
+        """
+        设置组件 key。
+
+        Args:
+            key (str): 要设置的 key 值。
+            crypt (bool): 是否加密。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        # 模拟 hex.Make 函数
+        self.component_key = key
+        return self
+
+    def set_tooltip(self, tooltip: str):
+        """
+        设置 label 旁提示信息。
+
+        Args:
+            tooltip (str): 提示信息内容。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.tooltip = tooltip
+        return self
+
+    def set_width(self, width: Any):
+        """
+        设置组件宽度。
+
+        Args:
+            width (Any): 宽度值。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        style = self.style.copy() if self.style else {}
+        style["width"] = width
+        self.style = style
+        return self
+
+    def set_row_props(self, row_props: Dict[str, Any]):
+        """
+        设置 grid 模式下 Row 属性。
+
+        Args:
+            row_props (Dict[str, Any]): 属性字典。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.row_props = row_props
+        return self
+
+    def set_col_props(self, col_props: Dict[str, Any]):
+        """
+        设置 grid 模式下 Col 属性。
+
+        Args:
+            col_props (Dict[str, Any]): 属性字典。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.col_props = col_props
+        return self
+
+    def set_secondary(self, secondary: bool):
+        """
+        设置是否为次要控件。
+
+        Args:
+            secondary (bool): 是否为次要控件。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.secondary = secondary
+        return self
+
+    def set_colon(self, colon: bool):
+        """
+        设置是否显示 label 后的冒号。
+
+        Args:
+            colon (bool): 是否显示冒号。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.colon = colon
+        return self
+
+    def set_extra(self, extra: str):
+        """
+        设置额外提示信息。
+
+        Args:
+            extra (str): 额外提示信息内容。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.extra = extra
+        return self
+
+    def set_has_feedback(self, has_feedback: bool):
+        """
+        设置是否展示校验状态图标。
+
+        Args:
+            has_feedback (bool): 是否展示图标。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.has_feedback = has_feedback
+        return self
+
+    def set_help(self, help_text: str):
+        """
+        设置提示信息。
+
+        Args:
+            help_text (str): 提示信息内容。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.help = help_text
+        return self
+
+    def set_no_style(self):
+        """
+        设置组件无样式。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.no_style = True
+        return self
+
+    def set_label(self, label: str):
+        """
+        设置 label 标签文本。
+
+        Args:
+            label (str): 标签文本内容。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.label = label
+        return self
+
+    def set_label_align(self, align: str):
+        """
+        设置标签文本对齐方式。
+
+        Args:
+            align (str): 对齐方式，如 'left', 'right', 'center'。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.label_align = align
+        return self
+
+    def set_label_col(self, col: Any):
+        """
+        设置 label 标签布局。
+
+        Args:
+            col (Any): 布局信息。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.label_col = col
+        return self
+
+    def set_name(self, name: str):
+        """
+        设置字段名。
+
+        Args:
+            name (str): 字段名。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.name = name
+        return self
+
+    def set_name_as_label(self):
+        """
+        将字段名转为 label 标签文本。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        if self.name:
+            self.label = Title(self.name)
+        return self
+
+    def set_required(self):
+        """
+        设置字段为必填项。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.required = True
+        return self
+
+    def build_frontend_rules(self, path: str):
+        """
+        生成前端验证规则。
+
+        Args:
+            path (str): 当前路径，判断创建或编辑操作。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        frontend_rules: List[Rule] = []
+        rules: List[Rule] = []
+        creation_rules: List[Rule] = []
+        update_rules: List[Rule] = []
+
+        uri = path.split("/")
+        is_creating = uri[-1] in ["create", "store"]
+        is_editing = uri[-1] in ["edit", "update"]
+
+        if self.rules:
+            rules = self.rules
+        if is_creating and self.creation_rules:
+            creation_rules = self.creation_rules
+        if is_editing and self.update_rules:
+            update_rules = self.update_rules
+
+        frontend_rules.extend(rules)
+        frontend_rules.extend(creation_rules)
+        frontend_rules.extend(update_rules)
+
+        self.frontend_rules = frontend_rules
+        return self
+
+    def set_rules(self, rules: List[Rule]):
+        """
+        设置全局校验规则。
+
+        Args:
+            rules (List[Rule]): 校验规则列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        for rule in rules:
+            rule.name = self.name
+        self.rules = rules
+        return self
+
+    def set_creation_rules(self, rules: List[Rule]):
+        """
+        设置创建页校验规则。
+
+        Args:
+            rules (List[Rule]): 校验规则列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        for rule in rules:
+            rule.name = self.name
+        self.creation_rules = rules
+        return self
+
+    def set_update_rules(self, rules: List[Rule]):
+        """
+        设置编辑页校验规则。
+
+        Args:
+            rules (List[Rule]): 校验规则列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        for rule in rules:
+            rule.name = self.name
+        self.update_rules = rules
+        return self
+
+    def get_rules(self) -> List[Rule]:
+        """
+        获取全局校验规则。
+
+        Returns:
+            List[Rule]: 全局校验规则列表。
+        """
+        return self.rules
+
+    def get_creation_rules(self) -> List[Rule]:
+        """
+        获取创建页校验规则。
+
+        Returns:
+            List[Rule]: 创建页校验规则列表。
+        """
+        return self.creation_rules
+
+    def get_update_rules(self) -> List[Rule]:
+        """
+        获取编辑页校验规则。
+
+        Returns:
+            List[Rule]: 编辑页校验规则列表。
+        """
+        return self.update_rules
+
+    def set_value_prop_name(self, value_prop_name: str):
+        """
+        设置子节点值属性名。
+
+        Args:
+            value_prop_name (str): 属性名。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.value_prop_name = value_prop_name
+        return self
+
+    def set_wrapper_col(self, col: Any):
+        """
+        设置输入控件布局样式。
+
+        Args:
+            col (Any): 布局信息。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.wrapper_col = col
+        return self
+
+    def set_column(self, f: Callable[[TableColumn], TableColumn]):
+        """
+        设置列表页、详情页中列属性。
+
+        Args:
+            f (Callable[[TableColumn], TableColumn]): 处理列属性的函数。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.column = f(self.column)
+        return self
+
+    def set_align(self, align: str):
+        """
+        设置列的对齐方式。
+
+        Args:
+            align (str): 对齐方式，如 'left', 'right', 'center'。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.align = align
+        return self
+
+    def set_fixed(self, fixed: Any):
+        """
+        设置列是否固定。
+
+        Args:
+            fixed (Any): 固定状态。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.fixed = fixed
+        return self
+
+    def set_editable(self, editable: bool):
+        """
+        设置表格列是否可编辑。
+
+        Args:
+            editable (bool): 是否可编辑。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.editable = editable
+        return self
+
+    def set_ellipsis(self, ellipsis: bool):
+        """
+        设置是否自动缩略。
+
+        Args:
+            ellipsis (bool): 是否自动缩略。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.ellipsis = ellipsis
+        return self
+
+    def set_copyable(self, copyable: bool):
+        """
+        设置是否支持复制。
+
+        Args:
+            copyable (bool): 是否支持复制。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.copyable = copyable
+        return self
+
+    def set_filters(self, filters: Any):
+        """
+        设置表头筛选菜单项。
+
+        Args:
+            filters (Any): 筛选菜单项信息。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        try:
+            get_filters = dict(filters)
+            tmp_filters = []
+            for k, v in get_filters.items():
+                tmp_filters.append({"text": v, "value": k})
+            self.filters = tmp_filters
+        except (TypeError, ValueError):
+            self.filters = filters
+        return self
+
+    def set_order(self, order: int):
+        """
+        设置查询表单权重。
+
+        Args:
+            order (int): 权重值。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.order = order
+        return self
+
+    def set_sorter(self, sorter: bool):
+        """
+        设置可排序列。
+
+        Args:
+            sorter (bool): 是否可排序。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.sorter = sorter
+        return self
+
+    def set_span(self, span: int):
+        """
+        设置详情页包含列数量。
+
+        Args:
+            span (int): 列数量。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.span = span
+        return self
+
+    def set_column_width(self, width: int):
+        """
+        设置列表页列宽。
+
+        Args:
+            width (int): 列宽值。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.column_width = width
+        return self
+
+    def set_value(self, value: Any):
+        """
+        设置当前选中的值。
+
+        Args:
+            value (Any): 选中的值。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.value = value
+        return self
+
+    def set_default(self, value: Any):
+        """
+        设置默认值。
+
+        Args:
+            value (Any): 默认值。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.default_value = value
+        return self
+
+    def set_disabled(self, disabled: bool):
+        """
+        设置是否禁用。
+
+        Args:
+            disabled (bool): 是否禁用。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.disabled = disabled
+        return self
+
+    def set_ignore(self, ignore: bool):
+        """
+        设置是否忽略保存到数据库。
+
+        Args:
+            ignore (bool): 是否忽略。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.ignore = ignore
+        return self
+
+    def set_when(self, *value: Any):
+        """
+        设置 When 组件数据。
+
+        Args:
+            *value: 可变参数，不同数量有不同含义。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        w = WhenComponent()
+        i = WhenItem()
+        operator: str = ""
+        option: Any = None
+
+        if len(value) == 2:
+            operator = "="
+            option = value[0]
+            callback = value[1]
+            if callable(callback):
+                i.body = callback()
+        elif len(value) == 3:
+            operator = value[0]
+            option = value[1]
+            callback = value[2]
+            if callable(callback):
+                i.body = callback()
+
+        def any_to_string(o: Any) -> str:
+            return str(o)
+
+        get_option = any_to_string(option)
+        if self.name:
+            if operator == "!=":
+                i.condition = f"<%=String({self.name}) !== '{get_option}' %>"
+            elif operator == "=":
+                i.condition = f"<%=String({self.name}) === '{get_option}' %>"
+            elif operator == ">":
+                i.condition = f"<%=String({self.name}) > '{get_option}' %>"
+            elif operator == "<":
+                i.condition = f"<%=String({self.name}) < '{get_option}' %>"
+            elif operator == "<=":
+                i.condition = f"<%=String({self.name}) <= '{get_option}' %>"
+            elif operator == ">=":
+                i.condition = f"<%=String({self.name}) >= '{get_option}' %>"
+            elif operator == "has":
+                i.condition = f"<%=(String({self.name}).indexOf('{get_option}') != -1) %>"
+            elif operator == "in":
+                json_str = json.dumps(option)
+                i.condition = f"<%=({json_str}.indexOf({self.name}) != -1) %>"
+            else:
+                i.condition = f"<%=String({self.name}) === '{get_option}' %>"
+
+            i.condition_name = self.name
+            i.condition_operator = operator
+            i.option = option
+            self.when_item.append(i)
+            self.when = w.set_items(self.when_item)
+        return self
+
+    def get_when(self) -> WhenComponent:
+        """
+        获取 When 组件数据。
+
+        Returns:
+            WhenComponent: When 组件实例。
+        """
+        return self.when
+
+    def hide_from_index(self, callback: bool):
+        """
+        指定元素是否在列表页隐藏。
+
+        Args:
+            callback (bool): 是否隐藏。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = not callback
+        return self
+
+    def hide_from_detail(self, callback: bool):
+        """
+        指定元素是否在详情页隐藏。
+
+        Args:
+            callback (bool): 是否隐藏。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_detail = not callback
+        return self
+
+    def hide_when_creating(self, callback: bool):
+        """
+        指定元素是否在创建页隐藏。
+
+        Args:
+            callback (bool): 是否隐藏。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_creation = not callback
+        return self
+
+    def hide_when_updating(self, callback: bool):
+        """
+        指定元素是否在编辑页隐藏。
+
+        Args:
+            callback (bool): 是否隐藏。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_update = not callback
+        return self
+
+    def hide_when_exporting(self, callback: bool):
+        """
+        指定元素是否在导出 Excel 隐藏。
+
+        Args:
+            callback (bool): 是否隐藏。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_export = not callback
+        return self
+
+    def hide_when_importing(self, callback: bool):
+        """
+        指定元素是否在导入 Excel 隐藏。
+
+        Args:
+            callback (bool): 是否隐藏。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_import = not callback
+        return self
+
+    def on_index_showing(self, callback: bool):
+        """
+        指定元素是否在列表页显示。
+
+        Args:
+            callback (bool): 是否显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = callback
+        return self
+
+    def on_detail_showing(self, callback: bool):
+        """
+        指定元素是否在详情页显示。
+
+        Args:
+            callback (bool): 是否显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_detail = callback
+        return self
+
+    def show_on_creating(self, callback: bool):
+        """
+        指定元素是否在创建页显示。
+
+        Args:
+            callback (bool): 是否显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_creation = callback
+        return self
+
+    def show_on_updating(self, callback: bool):
+        """
+        指定元素是否在编辑页显示。
+
+        Args:
+            callback (bool): 是否显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_update = callback
+        return self
+
+    def show_on_exporting(self, callback: bool):
+        """
+        指定元素是否在导出 Excel 显示。
+
+        Args:
+            callback (bool): 是否显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_export = callback
+        return self
+
+    def show_on_importing(self, callback: bool):
+        """
+        指定元素是否在导入 Excel 显示。
+
+        Args:
+            callback (bool): 是否显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_import = callback
+        return self
+
+    def only_on_index(self):
+        """
+        指定元素只在列表页显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = True
+        self.show_on_detail = False
+        self.show_on_creation = False
+        self.show_on_update = False
+        self.show_on_export = False
+        self.show_on_import = False
+        return self
+
+    def only_on_detail(self):
+        """
+        指定元素只在详情页显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = False
+        self.show_on_detail = True
+        self.show_on_creation = False
+        self.show_on_update = False
+        self.show_on_export = False
+        self.show_on_import = False
+        return self
+
+    def only_on_forms(self):
+        """
+        指定元素只在表单页显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = False
+        self.show_on_detail = False
+        self.show_on_creation = True
+        self.show_on_update = True
+        self.show_on_export = False
+        self.show_on_import = False
+        return self
+
+    def only_on_creating(self):
+        """
+        指定元素只在创建页显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = False
+        self.show_on_detail = False
+        self.show_on_creation = True
+        self.show_on_update = False
+        self.show_on_export = False
+        self.show_on_import = False
+        return self
+
+    def only_on_updating(self):
+        """
+        指定元素只在编辑页显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = False
+        self.show_on_detail = False
+        self.show_on_creation = False
+        self.show_on_update = True
+        self.show_on_export = False
+        self.show_on_import = False
+        return self
+
+    def only_on_export(self):
+        """
+        指定元素只在导出 Excel 显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = False
+        self.show_on_detail = False
+        self.show_on_creation = False
+        self.show_on_update = False
+        self.show_on_export = True
+        self.show_on_import = False
+        return self
+
+    def only_on_import(self):
+        """
+        指定元素只在导入 Excel 显示。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = False
+        self.show_on_detail = False
+        self.show_on_creation = False
+        self.show_on_update = False
+        self.show_on_export = False
+        self.show_on_import = True
+        return self
+
+    def except_on_forms(self):
+        """
+        指定元素在表单页隐藏。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_on_index = True
+        self.show_on_detail = True
+        self.show_on_creation = False
+        self.show_on_update = False
+        self.show_on_export = True
+        self.show_on_import = True
+        return self
+
+    def is_shown_on_update(self) -> bool:
+        """
+        检查元素是否在编辑页显示。
+
+        Returns:
+            bool: 是否显示。
+        """
+        return self.show_on_update
+
+    def is_shown_on_index(self) -> bool:
+        """
+        检查元素是否在列表页显示。
+
+        Returns:
+            bool: 是否显示。
+        """
+        return self.show_on_index
+
+    def is_shown_on_detail(self) -> bool:
+        """
+        检查元素是否在详情页显示。
+
+        Returns:
+            bool: 是否显示。
+        """
+        return self.show_on_detail
+
+    def is_shown_on_creation(self) -> bool:
+        """
+        检查元素是否在创建页显示。
+
+        Returns:
+            bool: 是否显示。
+        """
+        return self.show_on_creation
+
+    def is_shown_on_export(self) -> bool:
+        """
+        检查元素是否在导出 Excel 显示。
+
+        Returns:
+            bool: 是否显示。
+        """
+        return self.show_on_export
+
+    def is_shown_on_import(self) -> bool:
+        """
+        检查元素是否在导入 Excel 显示。
+
+        Returns:
+            bool: 是否显示。
+        """
+        return self.show_on_import
+
+    def get_options(self) -> List[TreeData]:
+        """
+        获取当前可选项。
+
+        Returns:
+            List[TreeData]: 当前可选项列表。
+        """
+        return self.tree_data
+
+    def set_callback(self, closure: Optional[Callable[[Dict[str, Any]], Any]]):
+        """
+        设置回调函数。
+
+        Args:
+            closure (Optional[Callable[[Dict[str, Any]], Any]]): 回调函数。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        if closure is not None:
+            self.callback = closure
+        return self
+
+    def get_callback(self) -> Any:
+        """
+        获取回调函数。
+
+        Returns:
+            Any: 回调函数。
+        """
+        return self.callback
+
+    def set_api(self, api: str):
+        """
+        设置获取数据接口。
+
+        Args:
+            api (str): 接口地址。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.api = api
+        return self
+
+    def set_auto_expand_parent(self, auto_expand_parent: bool):
+        """
+        设置是否自动展开父节点。
+
+        Args:
+            auto_expand_parent (bool): 是否自动展开父节点。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.auto_expand_parent = auto_expand_parent
+        return self
+
+    def set_block_node(self, block_node: bool):
+        """
+        设置是否节点占据一行。
+
+        Args:
+            block_node (bool): 是否节点占据一行。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.block_node = block_node
+        return self
+
+    def set_checkable(self, checkable: bool):
+        """
+        设置节点前是否添加 Checkbox 复选框。
+
+        Args:
+            checkable (bool): 是否添加复选框。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.checkable = checkable
+        return self
+
+    def set_checked_keys(self, checked_keys: List[Any]):
+        """
+        设置（受控）选中复选框的树节点。
+
+        Args:
+            checked_keys (List[Any]): 选中的树节点 key 列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.checked_keys = checked_keys
+        return self
+
+    def set_check_strictly(self, check_strictly: bool):
+        """
+        设置 checkable 状态下节点选择是否完全受控。
+
+        Args:
+            check_strictly (bool): 是否完全受控。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.check_strictly = check_strictly
+        return self
+
+    def set_default_checked_keys(self, default_checked_keys: List[Any]):
+        """
+        设置默认选中复选框的树节点。
+
+        Args:
+            default_checked_keys (List[Any]): 默认选中的树节点 key 列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.default_checked_keys = default_checked_keys
+        return self
+
+    def set_default_expand_all(self, default_expand_all: bool):
+        """
+        设置默认是否展开所有树节点。
+
+        Args:
+            default_expand_all (bool): 是否展开所有树节点。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.default_expand_all = default_expand_all
+        return self
+
+    def set_default_expanded_keys(self, default_expanded_keys: List[Any]):
+        """
+        设置默认展开指定的树节点。
+
+        Args:
+            default_expanded_keys (List[Any]): 默认展开的树节点 key 列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.default_expanded_keys = default_expanded_keys
+        return self
+
+    def set_default_expand_parent(self, default_expand_parent: bool):
+        """
+        设置默认是否展开父节点。
+
+        Args:
+            default_expand_parent (bool): 是否展开父节点。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.default_expand_parent = default_expand_parent
+        return self
+
+    def set_default_selected_keys(self, default_selected_keys: List[Any]):
+        """
+        设置默认选中的树节点。
+
+        Args:
+            default_selected_keys (List[Any]): 默认选中的树节点 key 列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.default_selected_keys = default_selected_keys
+        return self
+
+    def set_draggable(self, draggable: bool):
+        """
+        设置节点是否可拖拽。
+
+        Args:
+            draggable (bool): 是否可拖拽。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.draggable = draggable
+        return self
+
+    def set_expanded_keys(self, expanded_keys: List[Any]):
+        """
+        设置（受控）展开指定的树节点。
+
+        Args:
+            expanded_keys (List[Any]): 展开的树节点 key 列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.expanded_keys = expanded_keys
+        return self
+
+    def set_field_names(self, field_names: Optional[FieldNames]):
+        """
+        设置自定义 options 中 label value children 的字段。
+
+        Args:
+            field_names (Optional[FieldNames]): 字段名映射对象。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.field_names = field_names
+        return self
+
+    def set_height(self, height: int):
+        """
+        设置虚拟滚动容器高度。
+
+        Args:
+            height (int): 容器高度。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.height = height
+        return self
+
+    def set_icon(self, icon: Any):
+        """
+        设置自定义树节点图标。
+
+        Args:
+            icon (Any): 树节点图标。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.icon = icon
+        return self
+
+    def set_multiple(self, multiple: bool):
+        """
+        设置是否支持点选多个节点。
+
+        Args:
+            multiple (bool): 是否支持多选。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.multiple = multiple
+        return self
+
+    def set_placeholder(self, placeholder: str):
+        """
+        设置占位文本。
+
+        Args:
+            placeholder (str): 占位文本内容。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.placeholder = placeholder
+        return self
+
+    def set_root_class_name(self, root_class_name: str):
+        """
+        设置添加在 Tree 最外层的 className。
+
+        Args:
+            root_class_name (str): className 名称。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.root_class_name = root_class_name
+        return self
+
+    def set_root_style(self, root_style: Any):
+        """
+        设置添加在 Tree 最外层的 style。
+
+        Args:
+            root_style (Any): 样式信息。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.root_style = root_style
+        return self
+
+    def set_selectable(self, selectable: bool):
+        """
+        设置节点是否可选中。
+
+        Args:
+            selectable (bool): 是否可选中。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.selectable = selectable
+        return self
+
+    def set_selected_keys(self, selected_keys: List[Any]):
+        """
+        设置（受控）选中的树节点。
+
+        Args:
+            selected_keys (List[Any]): 选中的树节点 key 列表。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.selected_keys = selected_keys
+        return self
+
+    def set_show_icon(self, show_icon: bool):
+        """
+        设置是否展示 TreeNode title 前的图标。
+
+        Args:
+            show_icon (bool): 是否展示图标。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_icon = show_icon
+        return self
+
+    def set_show_line(self, show_line: bool):
+        """
+        设置是否展示连接线。
+
+        Args:
+            show_line (bool): 是否展示连接线。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.show_line = show_line
+        return self
+
+    def set_switcher_icon(self, switcher_icon: Any):
+        """
+        设置自定义树节点的展开/折叠图标。
+
+        Args:
+            switcher_icon (Any): 展开/折叠图标。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.switcher_icon = switcher_icon
+        return self
+
+    def build_tree(self, items: Any, pid: int, parent_key_name: str, key_name: str, title_name: str) -> List[TreeData]:
+        """
+        使用反射构建树结构。
+
+        Args:
+            items (Any): 包含树节点数据的对象。
+            pid (int): 父节点 ID。
+            parent_key_name (str): 父节点键名。
+            key_name (str): 节点键名。
+            title_name (str): 节点标题名。
+
+        Returns:
+            List[TreeData]: 构建好的树节点数据列表。
+        """
+        tree: List[TreeData] = []
+
+        if not isinstance(items, list):
+            return tree
+
+        for item in items:
+            if isinstance(item, dict):
+                key = item.get(key_name)
+                parent_key = item.get(parent_key_name)
+                title = item.get(title_name, "")
+            else:
+                key = getattr(item, key_name, None)
+                parent_key = getattr(item, parent_key_name, None)
+                title = getattr(item, title_name, "")
+
+            if key is not None and parent_key is not None and title:
+                if parent_key == pid:
+                    children = self.build_tree(items, key, parent_key_name, key_name, title_name)
+                    option = TreeData(key=key, title=title, children=children)
+                    tree.append(option)
+
+        return tree
+
+    def list_to_tree_data(self, list_: Any, root_id: int, parent_key_name: str, key_name: str, title_name: str) -> List[TreeData]:
+        """
+        将列表转换为树节点数据。
+
+        Args:
+            list_ (Any): 包含树节点数据的列表。
+            root_id (int): 根节点 ID。
+            parent_key_name (str): 父节点键名。
+            key_name (str): 节点键名。
+            title_name (str): 节点标题名。
+
+        Returns:
+            List[TreeData]: 转换后的树节点数据列表。
+        """
+        return self.build_tree(list_, root_id, parent_key_name, key_name, title_name)
+
+    def set_tree_data(self, *tree_data: Any):
+        """
+        设置可选项数据源。
+
+        Args:
+            *tree_data: 可变参数，不同数量有不同含义。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        if len(tree_data) == 1:
+            if isinstance(tree_data[0], list) and all(isinstance(item, TreeData) for item in tree_data[0]):
+                self.tree_data = tree_data[0]
+        elif len(tree_data) == 4:
+            self.tree_data = self.list_to_tree_data(tree_data[0], 0, tree_data[1], tree_data[2], tree_data[3])
+        elif len(tree_data) == 5:
+            self.tree_data = self.list_to_tree_data(tree_data[0], tree_data[1], tree_data[2], tree_data[3], tree_data[4])
+        return self
+
+    def set_style(self, style: Dict[str, Any]):
+        """
+        设置自定义样式。
+
+        Args:
+            style (Dict[str, Any]): 样式字典。
+
+        Returns:
+            Component: 返回当前实例，支持链式调用。
+        """
+        self.style = style
+        return self
