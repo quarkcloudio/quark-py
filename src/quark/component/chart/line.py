@@ -101,7 +101,3 @@ class Line(Component):
         self.key = key
         self.crypt = crypt
         return self
-
-# 折线图表
-def new_line(data: Any) -> Line:
-    return Line().init().set_data(data)

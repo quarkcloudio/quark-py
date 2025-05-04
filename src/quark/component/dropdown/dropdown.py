@@ -1,12 +1,9 @@
 from pydantic import model_validator
 from typing import Union, List, Dict, Optional
 from ..component import Component
-from .item import Item as DropdownItem
+from .item import Item
 
 class Dropdown(Component):
-    """
-    Dropdown 组件模型
-    """
     component: str = "dropdown"
     label: Optional[Union[str, List[str]]] = None  # 按钮文字
     block: Optional[bool] = False  # 是否调整按钮为父元素宽度
@@ -19,7 +16,7 @@ class Dropdown(Component):
     type: Optional[str] = "default"  # 按钮类型
     arrow: Optional[bool] = False  # 下拉框箭头是否显示
     destroy_popup_on_hide: Optional[bool] = False  # 关闭后是否销毁 Dropdown
-    menu: Optional[Union[List[DropdownItem], str]] = None  # 下拉菜单内容
+    menu: Optional[Union[List[Item], str]] = None  # 下拉菜单内容
     overlay_class_name: Optional[str] = None  # 下拉根元素的类名称
     overlay_style: Optional[Dict[str, str]] = None  # 下拉根元素的样式
     placement: Optional[str] = "bottomLeft"  # 菜单弹出位置
@@ -156,7 +153,7 @@ class Dropdown(Component):
         self.destroy_popup_on_hide = destroy_popup_on_hide
         return self
 
-    def set_menu(self, menu: Union[List[DropdownItem], str]) -> 'Dropdown':
+    def set_menu(self, menu: Union[List[Item], str]) -> 'Dropdown':
         """
         设置菜单内容
 
