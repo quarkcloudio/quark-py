@@ -6,10 +6,10 @@ import string
 from io import BytesIO
 from captcha.image import ImageCaptcha
 from flask import send_file, make_response
-from ..component.message.message import Component as Message
-from ..component.divider.divider import Component as Divider
-from ..component.login.login import Component as LoginComponent
-from ..component.tabs.tabs import Component as TabsComponent
+from ..component.message.message import Message
+from ..component.divider.divider import Divider
+from ..component.tabs.tabs import Tabs
+from ..component.login.login import Login as LoginComponent
 from ..cache import cache
 
 @dataclass
@@ -153,7 +153,7 @@ class Login:
             component_name = getattr(fields[0], "component", "")
 
             if component_name == "tabPane":
-                tab_component = TabsComponent().set_tab_panes(fields).set_centered(True)
+                tab_component = Tabs().set_tab_panes(fields).set_centered(True)
 
                 # 组件
                 component = (

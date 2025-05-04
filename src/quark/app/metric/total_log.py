@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from quark.component.statistic.statistic import Component as StatisticComponent
+from quark.component.statistic.statistic import Statistic
 from quark.template.metric.value import Value
 from quark.service.action_log import ActionLogService
 
@@ -8,7 +8,7 @@ class TotalLog(Value):
     title: str = "日志数量"
     col: int = 6
 
-    def calculate(self) -> StatisticComponent:
+    def calculate(self) -> Statistic:
         """计算数值"""
         count = ActionLogService().count()
         return (self

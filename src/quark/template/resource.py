@@ -1,13 +1,13 @@
 from flask import request
 from dataclasses import dataclass, field
 from typing import Any, List, Dict, Optional
-from ..component.form.form import Component as FormComponent
-from ..component.table.table import Component as TableComponent
-from ..component.table.search import Search as TableSearch
-from ..component.table.column import Column as TableColumn
-from ..component.table.tool_bar import ToolBar as TableToolBar
-from ..component.table.tree_bar import TreeBar as TableTreeBar
-from ..component.pagecontainer.pagecontainer import Component as PageContainerComponent
+from ..component.form.form import Form
+from ..component.table.table import Table
+from ..component.table.search import Search
+from ..component.table.column import Column
+from ..component.table.tool_bar import ToolBar
+from ..component.table.tree_bar import TreeBar
+from ..component.pagecontainer.pagecontainer import PageContainer
 from ..component.pagecontainer.pageheader import PageHeader
 from ..utils.lister import list_to_tree
 from .resolves_fields import index_table_columns
@@ -29,12 +29,12 @@ class Resource:
     page_size_options: List[int] = field(default_factory=lambda: [10, 20, 50, 100])  # 每页显示条数
     query_order: str = "created_at desc"  # 全局排序规则
     model: Optional[Any] = None  # 挂载模型
-    form: FormComponent = field(default_factory=FormComponent)
-    table: TableComponent = field(default_factory=TableComponent)
-    table_search: TableSearch = field(default_factory=TableSearch)
-    table_column: TableColumn = field(default_factory=TableColumn)
-    table_tool_bar: TableToolBar = field(default_factory=TableToolBar)
-    table_tree_bar: TableTreeBar = field(default_factory=TableTreeBar)
+    form: Form = field(default_factory=Form)
+    table: Table = field(default_factory=Table)
+    table_search: Search = field(default_factory=Search)
+    table_column: Column = field(default_factory=Column)
+    table_tool_bar: ToolBar = field(default_factory=ToolBar)
+    table_tree_bar: TreeBar = field(default_factory=TreeBar)
     table_title_suffix: str = "列表"
     table_action_column_title: str = "操作"
     table_action_column_width: int = 150
@@ -67,11 +67,11 @@ class Resource:
     def get_table(self):
         return self.table
 
-    # 获取TableSearch实例
+    # 获取Search实例
     def get_table_search(self):
         return self.table_search
 
-    # 获取TableColumn实例
+    # 获取Column实例
     def get_table_column(self):
         return self.table_column
 
@@ -195,12 +195,12 @@ class Resource:
         """页面组件渲染"""
         return self.page_container_component_render(body)
 
-    def page_container_component_render(self, body: Any) -> PageContainerComponent:
+    def page_container_component_render(self, body: Any) -> PageContainer:
         """页面容器组件渲染"""
         header = PageHeader().set_title(self.get_title()).set_sub_title(self.get_sub_title())
         if not self.get_back_icon():
             header.set_back_icon(False)
-        return PageContainerComponent().set_header(header).set_body(body)
+        return PageContainer().set_header(header).set_body(body)
     
     def index_table_list_to_tree(self, list_data: List[Any]) -> List[Any]:
         """

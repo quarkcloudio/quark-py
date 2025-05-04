@@ -1,9 +1,9 @@
 from typing import Any, List
-from dataclasses import dataclass, field
-from ..component.card.card import Component as CardComponent
+from dataclasses import dataclass
+from ..component.card.card import Card
 from ..component.grid.row import Row
 from ..component.grid.col import Col
-from ..component.pagecontainer.pagecontainer import Component as PageContainerComponent
+from ..component.pagecontainer.pagecontainer import PageContainer
 from ..component.pagecontainer.pageheader import PageHeader
 
 @dataclass
@@ -53,7 +53,7 @@ class Dashboard:
             header.set_back_icon(False)
 
         # 返回页面容器组件
-        return PageContainerComponent().set_header(header).set_body(body).to_json()
+        return PageContainer().set_header(header).set_body(body).to_json()
 
     def render(self) -> None:
         """组件渲染"""
@@ -70,9 +70,9 @@ class Dashboard:
         for key, v in enumerate(cards):
             # 断言statistic组件类型
             if hasattr(v, 'calculate'):
-                item = CardComponent().set_body(v.calculate())
+                item = Card().set_body(v.calculate())
             else:
-                item = CardComponent()
+                item = Card()
 
             # 获取卡片的列数
             col = getattr(v, 'col', 0)

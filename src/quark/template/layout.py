@@ -3,9 +3,9 @@ from typing import Any, Dict, List, Optional
 import time
 from ..service.auth import AuthService
 from ..service.user import UserService
-from ..component.action.action import Component as ActionComponent
-from ..component.footer.footer import Component as FooterComponent
-from ..component.layout.layout import Component as LayoutComponent
+from ..component.action.action import Action
+from ..component.footer.footer import Footer
+from ..component.layout.layout import Layout as LayoutComponent
 
 @dataclass
 class Layout:
@@ -70,7 +70,7 @@ class Layout:
     
     # 右上角菜单
     right_menus: List[Any] = field(default_factory=lambda: [
-            ActionComponent().set_label("个人设置").
+            Action().set_label("个人设置").
             set_action_type("link").
             set_type("link", False).
             set_icon("setting").
@@ -78,7 +78,7 @@ class Layout:
             set_href("#/layout/index?api=/api/admin/account/form").
             set_size("small"),
 
-            ActionComponent().set_label("退出登录").
+            Action().set_label("退出登录").
             set_action_type("ajax").
             set_type("link", False).
             set_icon("logout").
@@ -192,7 +192,7 @@ class Layout:
 
         # 页脚
         footer = (
-            FooterComponent().
+            Footer().
                 set_copyright(copyright).
                 set_links(links)
             )
