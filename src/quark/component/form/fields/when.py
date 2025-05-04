@@ -10,7 +10,7 @@ class Item(Component):
     option: Optional[Any] = None    # 条件符合的属性值
     body: Optional[Any] = None      # 内容
 
-class Component(Component):
+class When(Component):
     component: str = "when"
     items: List[Item] = Field(default_factory=list)
 
@@ -20,6 +20,6 @@ class Component(Component):
         return self
 
     # 设置When组件中需要解析的元素
-    def set_items(self, items: List[Item]) -> 'Component':
+    def set_items(self, items: List[Item]) -> 'When':
         self.items = items
         return self

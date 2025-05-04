@@ -1,12 +1,12 @@
+from flask import request
 from pydantic import Field, model_validator
 from typing import Any, List, Optional, Union, Callable
-from flask import request
+import json
+import string
 from ...component import Component
 from ...table.column import Column
 from ..rule import Rule
-from .when import Component as When, Item as WhenItem
-import json
-import string
+from .when import When, Item
 
 class Component(Component):
     component: str = "textField"
@@ -48,7 +48,7 @@ class Component(Component):
     update_rules: List[Rule] = Field(default_factory=list)
     frontend_rules: List[Rule] = Field(default_factory=list)
     when: Optional[When] = None
-    when_item: List[WhenItem] = Field(default_factory=list)
+    when_item: List[Item] = Field(default_factory=list)
     show_on_index: bool = True
     show_on_detail: bool = True
     show_on_creation: bool = True
@@ -262,7 +262,7 @@ class Component(Component):
 
     def set_when(self, *value):
         w = When()
-        i = WhenItem("", "", "", None, None)
+        i = Item("", "", "", None, None)
 
         if len(value) == 2:
             operator = "="
