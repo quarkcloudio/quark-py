@@ -1,9 +1,9 @@
 from typing import Optional, List, Dict, Any, Union, Callable, TypeVar
 from pydantic import BaseModel, Field
-from enum import Enum
+from ...component import Component
 
 # 主组件类
-class ActionField(BaseModel):
+class Action(Component):
     component_key: str = Field("", description="组件标识")
     component: str = Field("actionField", description="组件名称")
 

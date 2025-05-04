@@ -2,7 +2,7 @@ from pydantic import model_validator
 from typing import Union, Dict, List, Optional
 from ..component import Component
 
-class Component(Component):
+class Icon(Component):
     """
     Component 类表示一个图标组件，包含图标的各种属性和方法。
     """
@@ -22,7 +22,7 @@ class Component(Component):
         self.set_key()
         return self
 
-    def set_script_url(self, script_url: Union[str, List[str]]) -> 'Component':
+    def set_script_url(self, script_url: Union[str, List[str]]) -> 'Icon':
         """
         设置 iconfont.cn 项目在线生成的 js 地址。
 
@@ -32,7 +32,7 @@ class Component(Component):
         self.script_url = script_url
         return self
 
-    def set_extra_common_props(self, extra_common_props: Dict[str, Union[str, int, float, bool, None]]) -> 'Component':
+    def set_extra_common_props(self, extra_common_props: Dict[str, Union[str, int, float, bool, None]]) -> 'Icon':
         """
         设置给所有的 svg 图标 <Icon /> 组件的额外属性。
 
@@ -42,7 +42,7 @@ class Component(Component):
         self.extra_common_props = extra_common_props
         return self
 
-    def set_class_name(self, class_name: str) -> 'Component':
+    def set_class_name(self, class_name: str) -> 'Icon':
         """
         设置计算后的 svg 类名。
 
@@ -52,7 +52,7 @@ class Component(Component):
         self.class_name = class_name
         return self
 
-    def set_height(self, height: Union[int, float, str, None]) -> 'Component':
+    def set_height(self, height: Union[int, float, str, None]) -> 'Icon':
         """
         设置 svg 元素的高度。
 
@@ -62,7 +62,7 @@ class Component(Component):
         self.height = height
         return self
 
-    def set_width(self, width: Union[int, float, str, None]) -> 'Component':
+    def set_width(self, width: Union[int, float, str, None]) -> 'Icon':
         """
         设置 svg 元素的宽度。
 
@@ -72,7 +72,7 @@ class Component(Component):
         self.width = width
         return self
 
-    def set_type(self, icon_type: str) -> 'Component':
+    def set_type(self, icon_type: str) -> 'Icon':
         """
         设置图标类型。
 

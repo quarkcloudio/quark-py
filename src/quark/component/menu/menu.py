@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Any, Optional, Callable
+from ..component import Component
 
 # 模拟 component.Element
 class Element(BaseModel):
@@ -83,7 +84,7 @@ class SubMenu(BaseModel):
         return self
 
 
-class Component(BaseModel):
+class Menu(Component):
     element: Element = Element()
     default_open_keys: Any = None
     default_selected_keys: Any = None

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Any
+from ..component import Component
 
 # 模拟 component.Element
 class Element(BaseModel):
@@ -11,7 +12,7 @@ class Element(BaseModel):
         return self
 
 
-class SubMenu(BaseModel):
+class SubMenu(Component):
     element: Element = Element()
     disabled: bool = False
     icon: str = ""

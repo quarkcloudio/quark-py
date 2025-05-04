@@ -1,7 +1,7 @@
 from typing import Any, List, Optional, Dict, Union, Callable
 from pydantic import BaseModel, Field
 from enum import Enum
-
+from ...component import Component
 
 class LabelValueChild(BaseModel):
     """
@@ -88,7 +88,7 @@ class CascaderFieldRule(BaseModel):
     max_length: Optional[int] = Field(None, description="最大长度限制")
 
 
-class CascaderFieldComponent(BaseModel):
+class Cascader(Component):
     """
     级联选择组件的核心配置。
     """

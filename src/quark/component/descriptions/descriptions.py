@@ -2,7 +2,7 @@ from pydantic import Field, model_validator
 from typing import Any, Dict, Optional, Union
 from ..component import Component
 
-class Component(Component):
+class Descriptions(Component):
     component: str = "descriptions"
     title: str = Field("", description="标题")
     tooltip: str = Field("", description="内容的补充描述，hover 后显示")

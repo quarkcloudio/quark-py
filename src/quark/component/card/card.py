@@ -2,7 +2,7 @@ from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
 from ..component import Component
 
-class Component(Component):
+class Card(Component):
     component: str = Field(default="card")
     title: str = Field("", description="标题文字")
     sub_title: str = Field("", description="二级标题文字")

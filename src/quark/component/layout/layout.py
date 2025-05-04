@@ -2,7 +2,7 @@ from pydantic import model_validator
 from typing import Any, Dict, List, Optional
 from ..component import Component
 
-class Component(Component):
+class Layout(Component):
     component: str = "layout"
     cache: bool = True
     title: Optional[str] = None

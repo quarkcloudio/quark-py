@@ -2,7 +2,7 @@ from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
 from ..component import Component
 
-class Component(Component):
+class Statistic(Component):
     component: str = "statistic"
     decimal_separator: str = Field(".", description="小数点")
     group_separator: str = Field(",", description="千分位标识符")

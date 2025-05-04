@@ -2,7 +2,7 @@ from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
 from ..component import Component
 
-class Component(Component):
+class Tabs(Component):
     centered: bool = False
     default_active_key: str = None
     size: str = "default"

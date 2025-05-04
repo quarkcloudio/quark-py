@@ -9,6 +9,7 @@ import string
 from functools import reduce
 from operator import getitem
 from collections.abc import Mapping
+from ...component import Component
 
 T = TypeVar("T")
 
@@ -79,7 +80,7 @@ class WhenComponent(BaseModel):
 # 主组件类
 # ----------------------------
 
-class Component(BaseModel):
+class Checkbox(Component):
     """
     复选框组件主类，封装了所有与复选框相关的属性和方法。
     """

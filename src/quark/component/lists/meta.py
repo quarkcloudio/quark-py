@@ -1,13 +1,8 @@
 from pydantic import BaseModel
 from typing import Any, Optional
+from ..component import Component
 
-# 模拟 component.Element
-class Element(BaseModel):
-    pass
-
-
-class Meta(BaseModel):
-    element: Element
+class Meta(Component):
     title: str = ""
     attribute: str = ""
     data_index: str = ""

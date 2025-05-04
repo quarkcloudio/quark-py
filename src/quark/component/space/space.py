@@ -1,7 +1,7 @@
 from typing import Union, List, Dict, Optional
 from ..component import Component
 
-class Component(Component):
+class Space(Component):
     # 组件属性定义
     component: str = "space"
     align: Optional[str] = None

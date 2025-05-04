@@ -17,7 +17,7 @@ class Expandable(Component):
     row_expandable: bool = False
     show_expand_column: bool = False
 
-class Component(Component):
+class Table(Component):
     component: str = "table"
     row_key: str = "id"
     api: str = None

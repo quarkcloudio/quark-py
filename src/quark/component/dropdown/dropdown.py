@@ -3,7 +3,7 @@ from typing import Union, List, Dict, Optional
 from ..component import Component
 from .item import Item as DropdownItem
 
-class Component(Component):
+class Dropdown(Component):
     """
     Dropdown 组件模型
     """
@@ -31,7 +31,7 @@ class Component(Component):
         self.set_key()
         return self
 
-    def set_style(self, style: Dict[str, str]) -> "Component":
+    def set_style(self, style: Dict[str, str]) -> 'Dropdown':
         """
         设置组件样式
 
@@ -41,7 +41,7 @@ class Component(Component):
         self.overlay_style = style
         return self
 
-    def set_label(self, label: Union[str, List[str]]) -> "Component":
+    def set_label(self, label: Union[str, List[str]]) -> 'Dropdown':
         """
         设置按钮文字
 
@@ -51,7 +51,7 @@ class Component(Component):
         self.label = label
         return self
 
-    def set_block(self, block: bool) -> "Component":
+    def set_block(self, block: bool) -> 'Dropdown':
         """
         设置按钮宽度调整为其父宽度
 
@@ -61,7 +61,7 @@ class Component(Component):
         self.block = block
         return self
 
-    def set_danger(self, danger: bool) -> "Component":
+    def set_danger(self, danger: bool) -> 'Dropdown':
         """
         设置是否为危险按钮
 
@@ -71,7 +71,7 @@ class Component(Component):
         self.danger = danger
         return self
 
-    def set_disabled(self, disabled: bool) -> "Component":
+    def set_disabled(self, disabled: bool) -> 'Dropdown':
         """
         设置按钮是否禁用
 
@@ -81,7 +81,7 @@ class Component(Component):
         self.disabled = disabled
         return self
 
-    def set_ghost(self, ghost: bool) -> "Component":
+    def set_ghost(self, ghost: bool) -> 'Dropdown':
         """
         设置幽灵按钮，背景透明
 
@@ -91,7 +91,7 @@ class Component(Component):
         self.ghost = ghost
         return self
 
-    def set_icon(self, icon: Union[str, List[str]]) -> "Component":
+    def set_icon(self, icon: Union[str, List[str]]) -> 'Dropdown':
         """
         设置按钮图标
 
@@ -104,7 +104,7 @@ class Component(Component):
             self.icon = [f"icon-{icon[0]}", f"icon-{icon[1]}"]
         return self
 
-    def set_shape(self, shape: str) -> "Component":
+    def set_shape(self, shape: str) -> 'Dropdown':
         """
         设置按钮形状
 
@@ -114,7 +114,7 @@ class Component(Component):
         self.shape = shape
         return self
 
-    def set_type(self, button_type: str, danger: bool) -> "Component":
+    def set_type(self, button_type: str, danger: bool) -> 'Dropdown':
         """
         设置按钮类型
 
@@ -126,7 +126,7 @@ class Component(Component):
         self.danger = danger
         return self
 
-    def set_size(self, size: str) -> "Component":
+    def set_size(self, size: str) -> 'Dropdown':
         """
         设置按钮大小
 
@@ -136,7 +136,7 @@ class Component(Component):
         self.size = size
         return self
 
-    def set_arrow(self, arrow: bool) -> "Component":
+    def set_arrow(self, arrow: bool) -> 'Dropdown':
         """
         设置下拉框箭头是否显示
 
@@ -146,7 +146,7 @@ class Component(Component):
         self.arrow = arrow
         return self
 
-    def set_destroy_popup_on_hide(self, destroy_popup_on_hide: bool) -> "Component":
+    def set_destroy_popup_on_hide(self, destroy_popup_on_hide: bool) -> 'Dropdown':
         """
         设置关闭后是否销毁 Dropdown
 
@@ -156,7 +156,7 @@ class Component(Component):
         self.destroy_popup_on_hide = destroy_popup_on_hide
         return self
 
-    def set_menu(self, menu: Union[List[DropdownItem], str]) -> "Component":
+    def set_menu(self, menu: Union[List[DropdownItem], str]) -> 'Dropdown':
         """
         设置菜单内容
 
@@ -166,7 +166,7 @@ class Component(Component):
         self.menu = menu
         return self
 
-    def set_overlay_class_name(self, overlay_class_name: str) -> "Component":
+    def set_overlay_class_name(self, overlay_class_name: str) -> 'Dropdown':
         """
         设置下拉根元素的类名称
 
@@ -176,7 +176,7 @@ class Component(Component):
         self.overlay_class_name = overlay_class_name
         return self
 
-    def set_overlay_style(self, overlay_style: Dict[str, str]) -> "Component":
+    def set_overlay_style(self, overlay_style: Dict[str, str]) -> 'Dropdown':
         """
         设置下拉根元素的样式
 
@@ -186,7 +186,7 @@ class Component(Component):
         self.overlay_style = overlay_style
         return self
 
-    def set_placement(self, placement: str) -> "Component":
+    def set_placement(self, placement: str) -> 'Dropdown':
         """
         设置菜单弹出位置
 
@@ -196,7 +196,7 @@ class Component(Component):
         self.placement = placement
         return self
 
-    def set_trigger(self, trigger: List[str]) -> "Component":
+    def set_trigger(self, trigger: List[str]) -> 'Dropdown':
         """
         设置触发下拉的行为
 
@@ -206,7 +206,7 @@ class Component(Component):
         self.trigger = trigger
         return self
 
-    def set_visible(self, visible: bool) -> "Component":
+    def set_visible(self, visible: bool) -> 'Dropdown':
         """
         设置菜单是否显示
 

@@ -1,8 +1,8 @@
 from pydantic import Field, field_validator, model_validator
 from typing import Any, List, Optional, Union
 from ..component import Component
-from ..drawer.drawer import Component as Drawer
-from ..modal.modal import Component as Modal
+from ..drawer.drawer import Drawer
+from ..modal.modal import Modal
 
 class Action(Component):
     component: str = Field(default="action")

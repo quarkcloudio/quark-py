@@ -9,7 +9,7 @@ class ActivityConfig(Component):
     action: Any = None
     style: Dict[str, Any] = Field(default_factory=dict)
 
-class Component(Component):
+class Login(Component):
     component: str = "login"
     api: str = None
     redirect: str = None

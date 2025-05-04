@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Any, Callable, Optional
+from ..component import Component
 
 # 模拟 component.Element
 class Element(BaseModel):
@@ -26,7 +27,7 @@ class DrawerComponent(BaseModel):
         return self
 
 
-class Item(BaseModel):
+class Item(Component):
     element: Element = Element()
     title: str = ""
     label: str = ""

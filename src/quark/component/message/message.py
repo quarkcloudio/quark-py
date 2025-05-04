@@ -2,7 +2,7 @@ from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
 from ..component import Component
 
-class Component(Component):
+class Message(Component):
     component: str = Field(default="message")
     class_name: str = Field(default=None, alias="className")
     type: str = Field(default="success")

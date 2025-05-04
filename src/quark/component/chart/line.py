@@ -1,14 +1,9 @@
-from pydantic import BaseModel
-from typing import Any, Optional
+from typing import Any
+from ..component import Component
 
-class Element(BaseModel):
-    """模拟 component.Element 类"""
-    pass
-
-class Line(BaseModel):
+class Line(Component):
     """折线图表类"""
     component: str = "line"
-    element: Element = Element()
     api: str = ""
     width: int = 0
     height: int = 0

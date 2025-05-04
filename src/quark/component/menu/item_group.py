@@ -1,18 +1,7 @@
-from pydantic import BaseModel
+from ..component import Component
 from typing import Any
 
-# 模拟 component.Element
-class Element(BaseModel):
-    component: str = ""
-    key: str = ""
-
-    def set_key(self, key: str, crypt: bool) -> 'Element':
-        self.key = key
-        return self
-
-
-class ItemGroup(BaseModel):
-    element: Element = Element()
+class ItemGroup(Component):
     title: str
     items: Any
 

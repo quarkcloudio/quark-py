@@ -15,7 +15,7 @@ def parse_initial_values(values: Dict[str, Any]) -> Dict[str, Any]:
             parsed[k] = v
     return parsed
 
-class Component(Component):
+class Form(Component):
     component: str = "form"
     title: str = None
     width: str = None
