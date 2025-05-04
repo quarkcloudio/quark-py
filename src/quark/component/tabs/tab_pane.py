@@ -1,8 +1,8 @@
 from pydantic import model_validator
 from typing import Any, Dict
-from ..component.element import Element
+from ..component import Component
 
-class TabPane(Element):
+class TabPane(Component):
     title: str = None
     body: Any = None
     component: str = "tabPane"

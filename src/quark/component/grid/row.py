@@ -1,9 +1,9 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, Optional, Union, List
 from .col import Col
-from ..component.element import Element
+from ..component import Component
 
-class Row(Element):
+class Row(Component):
     component: str = "row"
     align: str = Field("", description="垂直对齐方式")
     gutter: Optional[Union[int, Dict[str, int], List[int]]] = Field(None, description="栅格间隔")

@@ -1,10 +1,10 @@
 from pydantic import Field, field_validator, model_validator
 from typing import Any, List, Optional, Union
-from ..component.element import Element
+from ..component import Component
 from ..drawer.drawer import Component as Drawer
 from ..modal.modal import Component as Modal
 
-class Component(Element):
+class Action(Component):
     component: str = Field(default="action")
     label: Any = Field(default=None)
     block: bool = Field(default=False)

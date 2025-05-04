@@ -1,7 +1,7 @@
 from pydantic import Field, model_validator, field_validator
 from typing import Any, Dict, List
 import json
-from ..component.element import Element
+from ..component import Component
 
 def parse_initial_values(values: Dict[str, Any]) -> Dict[str, Any]:
     parsed = {}
@@ -15,7 +15,7 @@ def parse_initial_values(values: Dict[str, Any]) -> Dict[str, Any]:
             parsed[k] = v
     return parsed
 
-class Component(Element):
+class Component(Component):
     component: str = "form"
     title: str = None
     width: str = None

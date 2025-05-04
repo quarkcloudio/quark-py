@@ -1,8 +1,8 @@
 from pydantic import model_validator
 from typing import Any, Dict, Optional
-from ..component.element import Element
+from ..component import Component
 
-class ToolBar(Element):
+class ToolBar(Component):
     component: str = "toolBar"
     title: Optional[str] = None
     sub_title: Optional[str] = None

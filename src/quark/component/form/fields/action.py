@@ -2,57 +2,6 @@ from typing import Optional, List, Dict, Any, Union, Callable, TypeVar
 from pydantic import BaseModel, Field
 from enum import Enum
 
-T = TypeVar("T")
-
-# 引用其他模块（模拟）
-class Table:
-    class Column(BaseModel):
-        width: int = 0
-
-        def init(self):
-            return self
-
-class When:
-    class Component(BaseModel):
-        items: List["When.Item"] = []
-
-        def set_items(self, items: list) -> "When.Component":
-            self.items = items
-            return self
-
-    class Item(BaseModel):
-        body: Optional[Any] = None
-        condition: str = ""
-        condition_name: str = ""
-        condition_operator: str = ""
-        option: Optional[Any] = None
-
-class Rule(BaseModel):
-    name: str = ""
-    message: str = ""
-
-    @staticmethod
-    def required(required: bool, message: str) -> "Rule":
-        return Rule(name="required", message=message)
-
-    @staticmethod
-    def min(length: int, message: str) -> "Rule":
-        return Rule(name="min", message=message)
-
-    @staticmethod
-    def max(length: int, message: str) -> "Rule":
-        return Rule(name="max", message=message)
-
-    @staticmethod
-    def unique(table: str, field: str, message: str, id_value: Optional[str] = None) -> "Rule":
-        return Rule(name="unique", message=message)
-
-
-# 组件标识常量
-DEFAULT_KEY = "default_key"
-DEFAULT_CRYPT = True
-
-
 # 主组件类
 class ActionField(BaseModel):
     component_key: str = Field("", description="组件标识")

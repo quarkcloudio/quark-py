@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, List, Optional
-from ...component.element import Element
+from ...component import Component
 
-class Item(Element):
+class Item(Component):
     component: str = "whenItem"     # 组件名称
     condition: str = None           # 条件：js表达式语句
     condition_name: str = None      # 需要对比的字段名称
@@ -10,7 +10,7 @@ class Item(Element):
     option: Optional[Any] = None    # 条件符合的属性值
     body: Optional[Any] = None      # 内容
 
-class Component(Element):
+class Component(Component):
     component: str = "when"
     items: List[Item] = Field(default_factory=list)
 

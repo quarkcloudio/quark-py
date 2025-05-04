@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
-from ...component.element import Element
+from ...component import Component
 
-class Text(Element):
+class Text(Component):
     component: str = "text"
     label: str = Field("", description="内容的描述")
     tooltip: str = Field("", description="内容的补充描述，hover 后显示")

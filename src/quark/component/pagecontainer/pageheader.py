@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
-from ..component.element import Element
+from ..component import Component
 
-class PageHeader(Element):
+class PageHeader(Component):
     component: str = Field(default="pageHeader")
     avatar: Optional[Any] = Field(None, description="标题栏旁的头像")
     back_icon: Optional[Any] = Field(None, description="自定义 back icon ，如果为 false 不渲染 back icon")

@@ -1,9 +1,9 @@
 from pydantic import model_validator
 from typing import Union, List, Dict, Optional
-from ..component.element import Element
+from ..component import Component
 from .item import Item as DropdownItem
 
-class Component(Element):
+class Component(Component):
     """
     Dropdown 组件模型
     """

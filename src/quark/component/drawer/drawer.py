@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, List, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     component: str = Field(default="drawer")
     title: Any = Field(None, description="标题")
     body_style: Any = Field(None, alias="bodyStyle", description="Modal body 样式")

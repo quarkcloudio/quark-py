@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, List, Optional, Dict
-from ..component.element import Element
+from ..component import Component
 
-class Expandable(Element):
+class Expandable(Component):
     children_column_name: Optional[str] = None
     column_title: Optional[Any] = None
     column_width: Optional[Any] = None
@@ -17,7 +17,7 @@ class Expandable(Element):
     row_expandable: bool = False
     show_expand_column: bool = False
 
-class Component(Element):
+class Component(Component):
     component: str = "table"
     row_key: str = "id"
     api: str = None

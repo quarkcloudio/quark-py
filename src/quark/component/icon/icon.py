@@ -1,8 +1,8 @@
 from pydantic import model_validator
 from typing import Union, Dict, List, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     """
     Component 类表示一个图标组件，包含图标的各种属性和方法。
     """

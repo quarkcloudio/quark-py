@@ -7,7 +7,7 @@ def to_camel(string: str) -> str:
     parts = string.split('_')
     return parts[0] + ''.join(word.capitalize() for word in parts[1:])
 
-class Element(BaseModel):
+class Component(BaseModel):
     model_config = ConfigDict(
         alias_generator=to_camel,
         populate_by_name=True,
@@ -18,12 +18,12 @@ class Element(BaseModel):
     component_key: str = None
     style: dict = None
 
-    def set_component(self, component: str) -> 'Element':
+    def set_component(self, component: str) -> 'Component':
         self.component = component
         self.set_key(component, crypt=True)
         return self
 
-    def set_key(self, key: Optional[str] = "", crypt: bool = True) -> 'Element':
+    def set_key(self, key: Optional[str] = "", crypt: bool = True) -> 'Component':
         if not key:
             key = str(uuid.uuid4())
         if crypt:

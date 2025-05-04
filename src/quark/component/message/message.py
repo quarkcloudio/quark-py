@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     component: str = Field(default="message")
     class_name: str = Field(default=None, alias="className")
     type: str = Field(default="success")

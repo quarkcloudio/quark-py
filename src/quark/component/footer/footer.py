@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import List
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     component: str = Field(default="footer")
     copyright: str = Field("", description="版权信息")
     links: List[dict] = Field([], description="链接信息")

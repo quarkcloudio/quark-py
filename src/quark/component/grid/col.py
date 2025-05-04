@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, Optional, Union
-from ..component.element import Element
+from ..component import Component
 
-class Col(Element):
+class Col(Component):
     component: str = "col"
     flex: str = Field("", description="布局属性")
     offset: int = Field(0, description="栅格左侧的间隔格数，间隔内不可以有栅格")

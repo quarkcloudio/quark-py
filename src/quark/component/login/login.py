@@ -1,15 +1,15 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, List, Optional
 import json
-from ..component.element import Element
+from ..component import Component
 
-class ActivityConfig(Element):
+class ActivityConfig(Component):
     title: str = ""
     sub_title: str = ""
     action: Any = None
     style: Dict[str, Any] = Field(default_factory=dict)
 
-class Component(Element):
+class Component(Component):
     component: str = "login"
     api: str = None
     redirect: str = None

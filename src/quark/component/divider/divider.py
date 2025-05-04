@@ -1,8 +1,8 @@
 from pydantic import model_validator, field_validator
 from typing import Any, Dict, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     component: str = "divider"
     dashed: bool = False
     orientation: str = "center"

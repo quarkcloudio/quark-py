@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     centered: bool = False
     default_active_key: str = None
     size: str = "default"

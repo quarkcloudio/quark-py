@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, Union, List, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Column(Element):
+class Column(Component):
     component: str = "column"
     title: str = None
     attribute: str = None

@@ -1,8 +1,8 @@
 from pydantic import model_validator
 from typing import Any, Dict, List, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     component: str = "layout"
     cache: bool = True
     title: Optional[str] = None

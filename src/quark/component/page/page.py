@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     component: str = Field(default="page")
     title: str = Field(..., description="标题")
     body: Any = Field(..., description="内容")

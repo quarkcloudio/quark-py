@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, List, Optional, Union
-from ..component.element import Element
+from ..component import Component
 
-class FieldNames(Element):
+class FieldNames(Component):
     """
     定义树节点字段名称的结构。
 
@@ -15,7 +15,7 @@ class FieldNames(Element):
     key: str
     children: str
 
-class TreeData(Element):
+class TreeData(Component):
     """
     定义树节点的数据结构。
 
@@ -42,7 +42,7 @@ class TreeData(Element):
 
 TreeData.model_rebuild()
 
-class TreeBar(Element):
+class TreeBar(Component):
     """
     定义树形组件的数据结构和操作方法。
 

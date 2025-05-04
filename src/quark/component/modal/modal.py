@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, List, Optional
-from ..component.element import Element
+from ..component import Component
 
-class Component(Element):
+class Component(Component):
     component: str = Field(default="modal")
     title: Any = Field(None, description="标题")
     centered: bool = Field(False, description="垂直居中展示 Modal")

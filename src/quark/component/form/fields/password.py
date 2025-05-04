@@ -1,14 +1,14 @@
 from pydantic import Field, model_validator
 from typing import Any, List, Optional, Union, Callable
 from flask import request
-from ...component.element import Element
+from ...component import Component
 from ...table.column import Column
 from ..rule import Rule
 from .when import Component as When, Item as WhenItem
 import json
 import string
 
-class Component(Element):
+class Component(Component):
     component: str = "passwordField"
     row_props: Optional[dict] = None
     col_props: Optional[dict] = None

@@ -1,8 +1,8 @@
 from pydantic import Field, model_validator
 from typing import Any, List, Dict
-from ..component.element import Element
+from ..component import Component
 
-class Search(Element):
+class Search(Component):
     component: str = "search"
     filter_type: str = None
     search_text: str = None

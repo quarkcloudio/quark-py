@@ -1,8 +1,8 @@
 from pydantic import Field
-from ..component.element import Element
+from ..component import Component
 from typing import Any, List, Optional
 
-class Rule(Element):
+class Rule(Component):
     name: str = Field(None, exclude=True)  # 需要验证的字段名称
     rule_type: str = Field(None, exclude=True)  # 规则类型，max | min | unique | required
     default_field: Optional[Any] = None # 仅在 type 为 array 类型时有效，用于指定数组元素的校验规则
