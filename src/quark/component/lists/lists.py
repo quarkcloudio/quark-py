@@ -94,17 +94,3 @@ class Lists(Component):
             "default_current": default_current
         }
         return self
-
-
-# 初始化组件
-def new() -> Component:
-    return Component().init()
-
-
-# 此部分在原 Go 代码里没有对应实现，这里简单返回 None，可按需修改
-class Meta(BaseModel):
-    pass
-
-
-def new_meta() -> Meta:
-    return Meta()
