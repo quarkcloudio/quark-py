@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, Callable
+from typing import Dict, Any, List, Optional
 from .base import Base
 
 class Component(Base):
