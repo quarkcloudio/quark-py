@@ -1,106 +1,13 @@
-"""
-此模块使用 pydantic 定义了 Month 组件类，用于表示月份选择相关的组件信息。
-"""
 import json
-from typing import Dict, List, Optional, Any, Callable, Union
-from pydantic import BaseModel, validator
-from cases import Case, Style
+from typing import Dict, List, Optional, Any, Callable
+from .base import Base
 
-# 模拟依赖的类
-class TableColumn(BaseModel):
-    """模拟表格列对象，用于列表和详情页列属性配置。"""
-    def init(self):
-        """初始化列对象。"""
-        return self
-
-
-class Rule(BaseModel):
-    """模拟验证规则对象，用于字段验证逻辑。"""
-    name: Optional[str] = None
-
-
-class WhenComponent(BaseModel):
-    """模拟 When 组件对象，用于条件显示逻辑。"""
-    items: List[Any] = []
-
-    def set_items(self, items: List[Any]):
-        """
-        设置 When 组件的条件项列表。
-
-        Args:
-            items (List[Any]): 条件项列表。
-
-        Returns:
-            WhenComponent: 返回当前实例，支持链式调用。
-        """
-        self.items = items
-        return self
-
-
-class WhenItem(BaseModel):
-    """模拟 When 组件的条件项对象，定义条件项属性。"""
-    body: Any = None
-    condition: str = ""
-    condition_name: str = ""
-    condition_operator: str = ""
-    option: Any = None
-
-
-class Component(BaseModel):
+class Month(Base):
     """
     表示月份选择组件的类，使用 pydantic 进行数据验证和序列化。
 
     Attributes:
-        component_key (str): 组件标识。
         component (str): 组件名称，默认为 "monthField"。
-        row_props (Optional[Dict[str, Any]]): 开启 grid 模式时传递给 Row 的属性，
-            仅在 ProFormGroup、ProFormList、ProFormFieldSet 中有效，默认值为 None。
-        col_props (Optional[Dict[str, Any]]): 开启 grid 模式时传递给 Col 的属性，默认值为 None。
-        secondary (bool): 是否是次要控件，只针对 LightFilter 下有效，默认值为 False。
-        colon (bool): 配合 label 属性使用，表示是否显示 label 后面的冒号，默认值为 True。
-        extra (Optional[str]): 额外的提示信息，和 help 类似，
-            当需要错误信息和提示文案同时出现时使用，默认值为 None。
-        has_feedback (bool): 配合 validateStatus 属性使用，展示校验状态图标，
-            建议只配合 Input 组件使用，默认值为 False。
-        help (Optional[str]): 提示信息，如不设置，则会根据校验规则自动生成，默认值为 None。
-        hidden (bool): 是否隐藏字段（依然会收集和校验字段），默认值为 False。
-        initial_value (Optional[Any]): 设置子元素默认值，如果与 Form 的 initialValues 冲突则以 Form 为准，默认值为 None。
-        label (Optional[str]): label 标签的文本，默认值为 None。
-        label_align (str): 标签文本对齐方式，默认为 "right"。
-        label_col (Optional[Any]): label 标签布局，同 <Col> 组件，设置 span offset 值，
-            可以通过 Form 的 labelCol 进行统一设置，默认值为 None。
-        name (Optional[str]): 字段名，支持数组，默认值为 None。
-        no_style (bool): 为 True 时不带样式，作为纯字段控件使用，默认值为 False。
-        required (bool): 必填样式设置。如不设置，则会根据校验规则自动生成，默认值为 False。
-        tooltip (Optional[str]): 会在 label 旁增加一个 icon，悬浮后展示配置的信息，默认值为 None。
-        value_prop_name (Optional[str]): 子节点的值的属性，如 Switch 的是 'checked'，默认值为 None。
-        wrapper_col (Optional[Any]): 需要为输入控件设置布局样式时使用，用法同 labelCol，默认值为 None。
-        column (TableColumn): 列表页、详情页中列属性。
-        align (str): 设置列的对齐方式,left | right | center，只在列表页、详情页中有效。
-        fixed (Optional[Any]): （IE 下无效）列是否固定，可选 true (等效于 left) left rightr，只在列表页中有效。
-        editable (bool): 表格列是否可编辑，只在列表页中有效，默认值为 False。
-        ellipsis (bool): 是否自动缩略，只在列表页、详情页中有效，默认值为 False。
-        copyable (bool): 是否支持复制，只在列表页、详情页中有效，默认值为 False。
-        filters (Optional[Any]): 表头的筛选菜单项，当值为 true 时，自动使用 valueEnum 生成，只在列表页中有效。
-        order (int): 查询表单中的权重，权重大排序靠前，只在列表页中有效，默认值为 0。
-        sorter (Optional[Any]): 可排序列，只在列表页中有效。
-        span (int): 包含列的数量，只在详情页中有效，默认值为 0。
-        column_width (int): 设置列宽，只在列表页中有效，默认值为 0。
-        api (Optional[str]): 获取数据接口。
-        ignore (bool): 是否忽略保存到数据库，默认为 False。
-        rules (List[Rule]): 全局校验规则。
-        creation_rules (List[Rule]): 创建页校验规则。
-        update_rules (List[Rule]): 编辑页校验规则。
-        frontend_rules (List[Rule]): 前端校验规则，设置字段的校验逻辑。
-        when (WhenComponent): When 组件。
-        when_item (List[WhenItem]): When 组件条件项列表。
-        show_on_index (bool): 在列表页展示，默认值为 True。
-        show_on_detail (bool): 在详情页展示，默认值为 True。
-        show_on_creation (bool): 在创建页面展示，默认值为 True。
-        show_on_update (bool): 在编辑页面展示，默认值为 True。
-        show_on_export (bool): 在导出的 Excel 上展示，默认值为 True。
-        show_on_import (bool): 在导入 Excel 上展示，默认值为 True。
-        callback (Optional[Any]): 回调函数。
         allow_clear (bool): 是否支持清除，默认值为 True。
         auto_focus (bool): 自动获取焦点，默认值为 False。
         bordered (bool): 是否有边框，默认值为 True。
@@ -131,59 +38,26 @@ class Component(BaseModel):
         show_time (Optional[Any]): 增加时间选择功能。
         show_today (bool): 是否展示“今天”按钮。
     """
-    component_key: str = ""
     component: str = "monthField"
-
-    row_props: Optional[Dict[str, Any]] = None
-    col_props: Optional[Dict[str, Any]] = None
-    secondary: bool = False
-    colon: bool = True
-    extra: Optional[str] = None
-    has_feedback: bool = False
-    help: Optional[str] = None
-    hidden: bool = False
-    initial_value: Optional[Any] = None
-    label: Optional[str] = None
-    label_align: str = "right"
-    label_col: Optional[Any] = None
-    name: Optional[str] = None
-    no_style: bool = False
-    required: bool = False
-    tooltip: Optional[str] = None
-    value_prop_name: Optional[str] = None
-    wrapper_col: Optional[Any] = None
-
-    column: TableColumn = TableColumn().init()
-    align: str = ""
-    fixed: Optional[Any] = None
-    editable: bool = False
-    ellipsis: bool = False
-    copyable: bool = False
-    filters: Optional[Any] = None
-    order: int = 0
-    sorter: Optional[Any] = None
-    span: int = 0
-    column_width: int = 0
-
-    api: Optional[str] = None
-    ignore: bool = False
-    rules: List[Rule] = []
-    creation_rules: List[Rule] = []
-    update_rules: List[Rule] = []
-    frontend_rules: List[Rule] = []
-    when: WhenComponent = WhenComponent()
-    when_item: List[WhenItem] = []
-    show_on_index: bool = True
-    show_on_detail: bool = True
-    show_on_creation: bool = True
-    show_on_update: bool = True
-    show_on_export: bool = True
-    show_on_import: bool = True
-    callback: Optional[Any] = None
+    """
+    组件名称
+    """
 
     allow_clear: bool = True
+    """
+    组件名称
+    """
+
     auto_focus: bool = False
+    """
+    组件名称
+    """
+
     bordered: bool = True
+    """
+    组件名称
+    """
+
     class_name: str = ""
     default_value: Optional[Any] = None
     disabled: Optional[Any] = None
@@ -210,10 +84,6 @@ class Component(BaseModel):
     show_now: bool = False
     show_time: Optional[Any] = None
     show_today: bool = False
-
-    class Config:
-        """pydantic 配置类，允许使用别名。"""
-        arbitrary_types_allowed = True
 
     @classmethod
     def new(cls):
