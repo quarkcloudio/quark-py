@@ -1,7 +1,7 @@
 from typing import Dict, Any, List, Optional
 from .base import Base
 
-class Component(Base):
+class DatetimeRange(Base):
 
     component: str = "datetimeRangeField"
     """
