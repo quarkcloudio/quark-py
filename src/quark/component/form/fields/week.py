@@ -1,81 +1,12 @@
-from pydantic import BaseModel, Field
 from typing import Any, Dict, List, Optional, Callable
+from .base import Base
 
-# 模拟 rule.Rule 结构体
-class Rule(BaseModel):
-    name: str = ""
-    # 可以根据实际需求添加更多字段
+class Week(Base):
 
-# 模拟 when.Component 和 when.Item 结构体
-class WhenItem(BaseModel):
-    body: Any = None
-    condition: str = ""
-    condition_name: str = ""
-    condition_operator: str = ""
-    option: Any = None
-
-class WhenComponent(BaseModel):
-    items: List[WhenItem] = []
-
-    def set_items(self, items: List[WhenItem]):
-        self.items = items
-        return self
-
-# 模拟 table.Column 结构体
-class TableColumn(BaseModel):
-    def init(self):
-        return self
-
-class Component(BaseModel):
-    component_key: str = Field(alias="componentkey")  # 组件标识
     component: str = "weekField"  # 组件名称
-
-    row_props: Optional[Dict[str, Any]] = None  # 开启 grid 模式时传递给 Row, 仅在ProFormGroup, ProFormList, ProFormFieldSet 中有效，默认：{ gutter: 8 }
-    col_props: Optional[Dict[str, Any]] = None  # 开启 grid 模式时传递给 Col，默认：{ xs: 24 }
-    secondary: bool = False  # 是否是次要控件，只针对 LightFilter 下有效
-    colon: bool = True  # 配合 label 属性使用，表示是否显示 label 后面的冒号
-    extra: str = ""  # 额外的提示信息，和 help 类似，当需要错误信息和提示文案同时出现时，可以使用这个。
-    has_feedback: bool = False  # 配合 validateStatus 属性使用，展示校验状态图标，建议只配合 Input 组件使用
-    help: str = ""  # 提示信息，如不设置，则会根据校验规则自动生成
-    hidden: bool = False  # 是否隐藏字段（依然会收集和校验字段）
-    initial_value: Optional[Any] = None  # 设置子元素默认值，如果与 Form 的 initialValues 冲突则以 Form 为准
-    label: str = ""  # label 标签的文本
-    label_align: str = "right"  # 标签文本对齐方式
-    label_col: Optional[Any] = None  # label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span: 3, offset: 12}。你可以通过 Form 的 labelCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准
-    name: str = ""  # 字段名，支持数组
-    no_style: bool = False  # 为 true 时不带样式，作为纯字段控件使用
-    required: bool = False  # 必填样式设置。如不设置，则会根据校验规则自动生成
-    tooltip: str = ""  # 会在 label 旁增加一个 icon，悬浮后展示配置的信息
-    value_prop_name: str = ""  # 子节点的值的属性，如 Switch 的是 'checked'。该属性为 getValueProps 的封装，自定义 getValueProps 后会失效
-    wrapper_col: Optional[Any] = None  # 需要为输入控件设置布局样式时，使用该属性，用法同 labelCol。你可以通过 Form 的 wrapperCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准
-
-    column: Optional[TableColumn] = None  # 列表页、详情页中列属性
-    align: str = ""  # 设置列的对齐方式,left | right | center，只在列表页、详情页中有效
-    fixed: Optional[Any] = None  # （IE 下无效）列是否固定，可选 true (等效于 left) left rightr，只在列表页中有效
-    editable: bool = False  # 表格列是否可编辑，只在列表页中有效
-    ellipsis: bool = False  # 是否自动缩略，只在列表页、详情页中有效
-    copyable: bool = False  # 是否支持复制，只在列表页、详情页中有效
-    filters: Optional[Any] = None  # 表头的筛选菜单项，当值为 true 时，自动使用 valueEnum 生成，只在列表页中有效
-    order: int = 0  # 查询表单中的权重，权重大排序靠前，只在列表页中有效
-    sorter: Optional[Any] = None  # 可排序列，只在列表页中有效
-    span: int = 0  # 包含列的数量，只在详情页中有效
-    column_width: int = 0  # 设置列宽，只在列表页中有效
-
-    api: str = ""  # 获取数据接口
-    ignore: bool = False  # 是否忽略保存到数据库，默认为 false
-    rules: List[Rule] = []  # 全局校验规则
-    creation_rules: List[Rule] = []  # 创建页校验规则
-    update_rules: List[Rule] = []  # 编辑页校验规则
-    frontend_rules: List[Rule] = []  # 前端校验规则，设置字段的校验逻辑
-    when: Optional[WhenComponent] = None
-    when_item: List[WhenItem] = []
-    show_on_index: bool = True  # 在列表页展示
-    show_on_detail: bool = True  # 在详情页展示
-    show_on_creation: bool = True  # 在创建页面展示
-    show_on_update: bool = True  # 在编辑页面展示
-    show_on_export: bool = True  # 在导出的Excel上展示
-    show_on_import: bool = True  # 在导入Excel上展示
-    callback: Optional[Callable[[Dict[str, Any]], Any]] = None  # 回调函数
+    """
+    组件名称
+    """
 
     allow_clear: bool = True  # 是否支持清除，默认true
     auto_focus: bool = False  # 自动获取焦点，默认false

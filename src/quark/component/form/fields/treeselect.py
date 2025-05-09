@@ -1,12 +1,12 @@
-from pydantic import BaseModel
-from typing import Any, Dict, List, Optional, Callable, Union
+from typing import Any, Dict, List, Optional
+from .base import Base
 
-class FieldNames(BaseModel):
+class FieldNames(Base):
     label: str
     value: str
     children: str
 
-class TreeData(BaseModel):
+class TreeData(Base):
     title: str
     value: Any
     children: List['TreeData'] = []
@@ -15,99 +15,211 @@ class TreeData(BaseModel):
     selectable: bool = False
     checkable: bool = False
 
-TreeData.update_forward_refs()
-
-class Component(BaseModel):
-    component_key: str
-    component: str
-
-    row_props: Optional[Dict[str, Any]] = None
-    col_props: Optional[Dict[str, Any]] = None
-    secondary: bool = False
-    colon: bool = True
-    extra: Optional[str] = None
-    has_feedback: bool = False
-    help: Optional[str] = None
-    hidden: bool = False
-    initial_value: Optional[Any] = None
-    label: Optional[str] = None
-    label_align: str = "right"
-    label_col: Optional[Any] = None
-    name: Optional[str] = None
-    no_style: bool = False
-    required: bool = False
-    tooltip: Optional[str] = None
-    value_prop_name: Optional[str] = None
-    wrapper_col: Optional[Any] = None
-
-    column: Optional[Any] = None
-    align: str = ""
-    fixed: Optional[Any] = None
-    editable: bool = False
-    ellipsis: bool = False
-    copyable: bool = False
-    filters: Optional[Any] = None
-    order: int = 0
-    sorter: Optional[Any] = None
-    span: int = 0
-    column_width: int = 0
-
-    api: Optional[str] = None
-    ignore: bool = False
-    rules: List[Any] = []
-    creation_rules: List[Any] = []
-    update_rules: List[Any] = []
-    frontend_rules: List[Any] = []
-    when: Optional[Any] = None
-    when_item: List[Any] = []
-    show_on_index: bool = True
-    show_on_detail: bool = True
-    show_on_creation: bool = True
-    show_on_update: bool = True
-    show_on_export: bool = True
-    show_on_import: bool = True
-    callback: Optional[Callable[[Dict[str, Any]], Any]] = None
+class TreeSelect(Base):
+    component: str = "treeSelectField"
+    """
+    组件名称
+    """
 
     allow_clear: bool = True
+    """
+    可以点击清除图标删除内容
+    """
+
     auto_clear_search_value: bool = False
+    """
+    是否在选中项后清空搜索框，只在 mode 为 multiple 或 tags 时有效
+    """
+
     bordered: bool = True
+    """
+    是否有边框
+    """
+
     default_value: Optional[Any] = None
+    """
+    默认选中的选项
+    """
+
     disabled: bool = False
+    """
+    整组失效
+    """
+
     popup_class_name: Optional[str] = None
+    """
+    下拉菜单的 className 属性
+    """
+
     dropdown_match_select_width: Optional[Any] = None
+    """
+    下拉菜单和选择器同宽。默认将设置 min-width，当值小于选择框宽度时会被忽略。false 时会关闭虚拟滚动
+    """
+
     dropdown_style: Optional[Any] = None
+    """
+    下拉菜单的 style 属性
+    """
+
     field_names: Optional[FieldNames] = None
+    """
+    自定义 options 中 label value children 的字段
+    """
+
     label_in_value: bool = False
+    """
+    是否把每个选项的 label 包装到 value 中，会把 Select 的 value 类型从 string 变为 { value: string, label: ReactNode } 的格式
+    """
+
     list_height: int = 256
+    """
+    设置弹窗滚动高度 256
+    """
+
     max_tag_count: int = 0
+    """
+    最多显示多少个 tag，响应式模式会对性能产生损耗
+    """
+
     max_tag_placeholder: Optional[str] = None
+    """
+    隐藏 tag 时显示的内容
+    """
+
     max_tag_text_length: int = 0
+    """
+    最大显示的 tag 文本长度
+    """
+
     multiple: bool = False
+    """
+    支持多选（当设置 treeCheckable 时自动变为 true）
+    """
+
     not_found_content: Optional[str] = None
+    """
+    当下拉列表为空时显示的内容
+    """
+
     placeholder: Optional[str] = None
+    """
+    选择框默认文本
+    """
+
     placement: Optional[str] = None
+    """
+    选择框弹出的位置 bottomLeft bottomRight topLeft topRight
+    """
+
     search_value: Optional[str] = None
+    """
+    控制搜索文本
+    """
+
     show_arrow: bool = True
+    """
+    是否显示下拉小箭头
+    """
+
     show_search: bool = False
+    """
+    配置是否可搜索
+    """
+
     size: Optional[str] = None
+    """
+    选择框大小
+    """
+
     status: Optional[str] = None
+    """
+    设置校验状态 'error' | 'warning'
+    """
+
     suffix_icon: Optional[Any] = None
+    """
+    自定义的选择框后缀图标
+    """
+
     switcher_icon: Optional[Any] = None
+    """
+    自定义树节点的展开/折叠图标
+    """
+
     tree_checkable: bool = False
+    """
+    显示 Checkbox
+    """
+
     tree_check_strictly: bool = False
+    """
+    checkable 状态下节点选择完全受控（父子节点选中状态不再关联），会使得 labelInValue 强制为 true
+    """
+
     tree_data: List[TreeData] = []
+    """
+    treeNodes 数据，如果设置则不需要手动构造 TreeNode 节点（value 在整个树范围内唯一）
+    """
+
     tree_data_simple_mode: Optional[Any] = None
+    """
+    使用简单格式的 treeData，具体设置参考可设置的类型 (此时 treeData 应变为这样的数据结构: [{id:1, pId:0, value:'1', title:"test1",...},...]， pId 是父节点的 id)
+    """
+
     tree_default_expand_all: bool = True
+    """
+    默认展开所有树节点
+    """
+
     tree_default_expanded_keys: List[Any] = []
+    """
+    默认展开的树节点
+    """
+
     tree_expand_action: Optional[Any] = None
+    """
+    点击节点 title 时的展开逻辑，可选：false | click | doubleClick
+    """
+
     tree_expanded_keys: List[Any] = []
+    """
+    设置展开的树节点
+    """
+
     tree_icon: bool = False
+    """
+    是否展示 TreeNode title 前的图标，没有默认样式，如设置为 true，需要自行定义图标相关样式
+    """
+
     tree_line: bool = True
+    """
+    是否展示线条样式
+    """
+
     tree_node_filter_prop: Optional[str] = None
+    """
+    输入项过滤对应的 treeNode 属性
+    """
+
     tree_node_label_prop: Optional[str] = None
+    """
+    作为显示的 prop 设置
+    """
+
     value: Optional[Any] = None
+    """
+    指定当前选中的条目，多选时为一个数组。（value 数组引用未变化时，Select 不会更新）
+    """
+
     virtual: bool = True
+    """
+    设置 false 时关闭虚拟滚动
+    """
+
     style: Optional[Dict[str, Any]] = None
+    """
+    自定义样式
+    """
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -126,460 +238,103 @@ class Component(BaseModel):
         self.set_width(200)
         self.set_key("DEFAULT_KEY", False)
 
-    def set_key(self, key: str, crypt: bool) -> 'Component':
-        # 这里简单模拟 hex.Make 函数的功能，实际需要实现具体逻辑
-        self.component_key = key
-        return self
-
-    def set_tooltip(self, tooltip: str) -> 'Component':
-        self.tooltip = tooltip
-        return self
-
-    def set_width(self, width: Any) -> 'Component':
-        style = self.style or {}
-        style["width"] = width
-        self.style = style
-        return self
-
-    def set_row_props(self, row_props: Dict[str, Any]) -> 'Component':
-        self.row_props = row_props
-        return self
-
-    def set_col_props(self, col_props: Dict[str, Any]) -> 'Component':
-        self.col_props = col_props
-        return self
-
-    def set_secondary(self, secondary: bool) -> 'Component':
-        self.secondary = secondary
-        return self
-
-    def set_colon(self, colon: bool) -> 'Component':
-        self.colon = colon
-        return self
-
-    def set_extra(self, extra: str) -> 'Component':
-        self.extra = extra
-        return self
-
-    def set_has_feedback(self, has_feedback: bool) -> 'Component':
-        self.has_feedback = has_feedback
-        return self
-
-    def set_help(self, help_text: str) -> 'Component':
-        self.help = help_text
-        return self
-
-    def set_no_style(self) -> 'Component':
-        self.no_style = True
-        return self
-
-    def set_label(self, label: str) -> 'Component':
-        self.label = label
-        return self
-
-    def set_label_align(self, align: str) -> 'Component':
-        self.label_align = align
-        return self
-
-    def set_label_col(self, col: Any) -> 'Component':
-        self.label_col = col
-        return self
-
-    def set_name(self, name: str) -> 'Component':
-        self.name = name
-        return self
-
-    def set_name_as_label(self) -> 'Component':
-        # 这里简单模拟 strings.Title 函数的功能，实际需要实现具体逻辑
-        self.label = name.title()
-        return self
-
-    def set_required(self) -> 'Component':
-        self.required = True
-        return self
-
-    def build_frontend_rules(self, path: str) -> 'Component':
-        uri = path.split("/")
-        is_creating = uri[-1] in ["create", "store"]
-        is_editing = uri[-1] in ["edit", "update"]
-
-        rules = []
-        creation_rules = []
-        update_rules = []
-
-        if self.rules:
-            rules = self.rules  # 这里需要实现 ConvertToFrontendRules 函数
-        if is_creating and self.creation_rules:
-            creation_rules = self.creation_rules  # 这里需要实现 ConvertToFrontendRules 函数
-        if is_editing and self.update_rules:
-            update_rules = self.update_rules  # 这里需要实现 ConvertToFrontendRules 函数
-
-        frontend_rules = []
-        frontend_rules.extend(rules)
-        frontend_rules.extend(creation_rules)
-        frontend_rules.extend(update_rules)
-
-        self.frontend_rules = frontend_rules
-        return self
-
-    def set_rules(self, rules: List[Any]) -> 'Component':
-        for rule in rules:
-            rule.name = self.name
-        self.rules = rules
-        return self
-
-    def set_creation_rules(self, rules: List[Any]) -> 'Component':
-        for rule in rules:
-            rule.name = self.name
-        self.creation_rules = rules
-        return self
-
-    def set_update_rules(self, rules: List[Any]) -> 'Component':
-        for rule in rules:
-            rule.name = self.name
-        self.update_rules = rules
-        return self
-
-    def get_rules(self) -> List[Any]:
-        return self.rules
-
-    def get_creation_rules(self) -> List[Any]:
-        return self.creation_rules
-
-    def get_update_rules(self) -> List[Any]:
-        return self.update_rules
-
-    def set_value_prop_name(self, value_prop_name: str) -> 'Component':
-        self.value_prop_name = value_prop_name
-        return self
-
-    def set_wrapper_col(self, col: Any) -> 'Component':
-        self.wrapper_col = col
-        return self
-
-    def set_column(self, f: Callable[[Any], Any]) -> 'Component':
-        self.column = f(self.column)
-        return self
-
-    def set_align(self, align: str) -> 'Component':
-        self.align = align
-        return self
-
-    def set_fixed(self, fixed: Any) -> 'Component':
-        self.fixed = fixed
-        return self
-
-    def set_editable(self, editable: bool) -> 'Component':
-        self.editable = editable
-        return self
-
-    def set_ellipsis(self, ellipsis: bool) -> 'Component':
-        self.ellipsis = ellipsis
-        return self
-
-    def set_copyable(self, copyable: bool) -> 'Component':
-        self.copyable = copyable
-        return self
-
-    def set_filters(self, filters: Any) -> 'Component':
-        if isinstance(filters, dict):
-            tmp_filters = []
-            for k, v in filters.items():
-                tmp_filters.append({"text": v, "value": k})
-            self.filters = tmp_filters
-        else:
-            self.filters = filters
-        return self
-
-    def set_order(self, order: int) -> 'Component':
-        self.order = order
-        return self
-
-    def set_sorter(self, sorter: bool) -> 'Component':
-        self.sorter = sorter
-        return self
-
-    def set_span(self, span: int) -> 'Component':
-        self.span = span
-        return self
-
-    def set_column_width(self, width: int) -> 'Component':
-        self.column_width = width
-        return self
-
-    def set_value(self, value: Any) -> 'Component':
-        self.value = value
-        return self
-
-    def set_default(self, value: Any) -> 'Component':
-        self.default_value = value
-        return self
-
-    def set_disabled(self, disabled: bool) -> 'Component':
-        self.disabled = disabled
-        return self
-
-    def set_ignore(self, ignore: bool) -> 'Component':
-        self.ignore = ignore
-        return self
-
-    def set_when(self, *value: Any) -> 'Component':
-        # 这里需要实现 when 组件相关逻辑
-        return self
-
-    def get_when(self) -> Optional[Any]:
-        return self.when
-
-    def hide_from_index(self, callback: bool) -> 'Component':
-        self.show_on_index = not callback
-        return self
-
-    def hide_from_detail(self, callback: bool) -> 'Component':
-        self.show_on_detail = not callback
-        return self
-
-    def hide_when_creating(self, callback: bool) -> 'Component':
-        self.show_on_creation = not callback
-        return self
-
-    def hide_when_updating(self, callback: bool) -> 'Component':
-        self.show_on_update = not callback
-        return self
-
-    def hide_when_exporting(self, callback: bool) -> 'Component':
-        self.show_on_export = not callback
-        return self
-
-    def hide_when_importing(self, callback: bool) -> 'Component':
-        self.show_on_import = not callback
-        return self
-
-    def on_index_showing(self, callback: bool) -> 'Component':
-        self.show_on_index = callback
-        return self
-
-    def on_detail_showing(self, callback: bool) -> 'Component':
-        self.show_on_detail = callback
-        return self
-
-    def show_on_creating(self, callback: bool) -> 'Component':
-        self.show_on_creation = callback
-        return self
-
-    def show_on_updating(self, callback: bool) -> 'Component':
-        self.show_on_update = callback
-        return self
-
-    def show_on_exporting(self, callback: bool) -> 'Component':
-        self.show_on_export = callback
-        return self
-
-    def show_on_importing(self, callback: bool) -> 'Component':
-        self.show_on_import = callback
-        return self
-
-    def only_on_index(self) -> 'Component':
-        self.show_on_index = True
-        self.show_on_detail = False
-        self.show_on_creation = False
-        self.show_on_update = False
-        self.show_on_export = False
-        self.show_on_import = False
-        return self
-
-    def only_on_detail(self) -> 'Component':
-        self.show_on_index = False
-        self.show_on_detail = True
-        self.show_on_creation = False
-        self.show_on_update = False
-        self.show_on_export = False
-        self.show_on_import = False
-        return self
-
-    def only_on_forms(self) -> 'Component':
-        self.show_on_index = False
-        self.show_on_detail = False
-        self.show_on_creation = True
-        self.show_on_update = True
-        self.show_on_export = False
-        self.show_on_import = False
-        return self
-
-    def only_on_creating(self) -> 'Component':
-        self.show_on_index = False
-        self.show_on_detail = False
-        self.show_on_creation = True
-        self.show_on_update = False
-        self.show_on_export = False
-        self.show_on_import = False
-        return self
-
-    def only_on_updating(self) -> 'Component':
-        self.show_on_index = False
-        self.show_on_detail = False
-        self.show_on_creation = False
-        self.show_on_update = True
-        self.show_on_export = False
-        self.show_on_import = False
-        return self
-
-    def only_on_export(self) -> 'Component':
-        self.show_on_index = False
-        self.show_on_detail = False
-        self.show_on_creation = False
-        self.show_on_update = False
-        self.show_on_export = True
-        self.show_on_import = False
-        return self
-
-    def only_on_import(self) -> 'Component':
-        self.show_on_index = False
-        self.show_on_detail = False
-        self.show_on_creation = False
-        self.show_on_update = False
-        self.show_on_export = False
-        self.show_on_import = True
-        return self
-
-    def except_on_forms(self) -> 'Component':
-        self.show_on_index = True
-        self.show_on_detail = True
-        self.show_on_creation = False
-        self.show_on_update = False
-        self.show_on_export = True
-        self.show_on_import = True
-        return self
-
-    def is_shown_on_update(self) -> bool:
-        return self.show_on_update
-
-    def is_shown_on_index(self) -> bool:
-        return self.show_on_index
-
-    def is_shown_on_detail(self) -> bool:
-        return self.show_on_detail
-
-    def is_shown_on_creation(self) -> bool:
-        return self.show_on_creation
-
-    def is_shown_on_export(self) -> bool:
-        return self.show_on_export
-
-    def is_shown_on_import(self) -> bool:
-        return self.show_on_import
-
-    def get_options(self) -> List[TreeData]:
-        return self.tree_data
-
-    def set_callback(self, closure: Optional[Callable[[Dict[str, Any]], Any]]) -> 'Component':
-        if closure is not None:
-            self.callback = closure
-        return self
-
-    def get_callback(self) -> Optional[Callable[[Dict[str, Any]], Any]]:
-        return self.callback
-
-    def set_api(self, api: str) -> 'Component':
-        self.api = api
-        return self
-
-    def set_allow_clear(self, allow_clear: bool) -> 'Component':
+    def set_allow_clear(self, allow_clear: bool):
         self.allow_clear = allow_clear
         return self
 
-    def set_auto_clear_search_value(self, auto_clear_search_value: bool) -> 'Component':
+    def set_auto_clear_search_value(self, auto_clear_search_value: bool):
         self.auto_clear_search_value = auto_clear_search_value
         return self
 
-    def set_bordered(self, bordered: bool) -> 'Component':
+    def set_bordered(self, bordered: bool):
         self.bordered = bordered
         return self
 
-    def set_popup_class_name(self, popup_class_name: str) -> 'Component':
+    def set_popup_class_name(self, popup_class_name: str):
         self.popup_class_name = popup_class_name
         return self
 
-    def set_dropdown_match_select_width(self, dropdown_match_select_width: Any) -> 'Component':
+    def set_dropdown_match_select_width(self, dropdown_match_select_width: Any):
         self.dropdown_match_select_width = dropdown_match_select_width
         return self
 
-    def set_dropdown_style(self, dropdown_style: Any) -> 'Component':
+    def set_dropdown_style(self, dropdown_style: Any):
         self.dropdown_style = dropdown_style
         return self
 
-    def set_field_names(self, field_names: FieldNames) -> 'Component':
+    def set_field_names(self, field_names: FieldNames):
         self.field_names = field_names
         return self
 
-    def set_label_in_value(self, label_in_value: bool) -> 'Component':
+    def set_label_in_value(self, label_in_value: bool):
         self.label_in_value = label_in_value
         return self
 
-    def set_list_height(self, list_height: int) -> 'Component':
+    def set_list_height(self, list_height: int):
         self.list_height = list_height
         return self
 
-    def set_max_tag_count(self, max_tag_count: int) -> 'Component':
+    def set_max_tag_count(self, max_tag_count: int):
         self.max_tag_count = max_tag_count
         return self
 
-    def set_max_tag_placeholder(self, max_tag_placeholder: str) -> 'Component':
+    def set_max_tag_placeholder(self, max_tag_placeholder: str):
         self.max_tag_placeholder = max_tag_placeholder
         return self
 
-    def set_max_tag_text_length(self, max_tag_text_length: int) -> 'Component':
+    def set_max_tag_text_length(self, max_tag_text_length: int):
         self.max_tag_text_length = max_tag_text_length
         return self
 
-    def set_multiple(self, multiple: bool) -> 'Component':
+    def set_multiple(self, multiple: bool):
         self.multiple = multiple
         return self
 
-    def set_not_found_content(self, not_found_content: str) -> 'Component':
+    def set_not_found_content(self, not_found_content: str):
         self.not_found_content = not_found_content
         return self
 
-    def set_placeholder(self, placeholder: str) -> 'Component':
+    def set_placeholder(self, placeholder: str):
         self.placeholder = placeholder
         return self
 
-    def set_placement(self, placement: str) -> 'Component':
+    def set_placement(self, placement: str):
         self.placement = placement
         return self
 
-    def set_search_value(self, search_value: str) -> 'Component':
+    def set_search_value(self, search_value: str):
         self.search_value = search_value
         return self
 
-    def set_show_arrow(self, show_arrow: bool) -> 'Component':
+    def set_show_arrow(self, show_arrow: bool):
         self.show_arrow = show_arrow
         return self
 
-    def set_show_search(self, show_search: bool) -> 'Component':
+    def set_show_search(self, show_search: bool):
         self.show_search = show_search
         return self
 
-    def set_size(self, size: str) -> 'Component':
+    def set_size(self, size: str):
         self.size = size
         return self
 
-    def set_status(self, status: str) -> 'Component':
+    def set_status(self, status: str):
         self.status = status
         return self
 
-    def set_suffix_icon(self, suffix_icon: Any) -> 'Component':
+    def set_suffix_icon(self, suffix_icon: Any):
         self.suffix_icon = suffix_icon
         return self
 
-    def set_switcher_icon(self, switcher_icon: Any) -> 'Component':
+    def set_switcher_icon(self, switcher_icon: Any):
         self.switcher_icon = switcher_icon
         return self
 
-    def set_tree_checkable(self, tree_checkable: bool) -> 'Component':
+    def set_tree_checkable(self, tree_checkable: bool):
         self.tree_checkable = tree_checkable
         return self
 
-    def set_tree_check_strictly(self, tree_check_strictly: bool) -> 'Component':
+    def set_tree_check_strictly(self, tree_check_strictly: bool):
         self.tree_check_strictly = tree_check_strictly
         return self
 
@@ -590,7 +345,7 @@ class Component(BaseModel):
     def list_to_tree_data(self, list_data: Any, root_id: int, parent_key_name: str, title_name: str, value_name: str) -> List[TreeData]:
         return self.build_tree(list_data, root_id, parent_key_name, title_name, value_name)
 
-    def set_tree_data(self, *tree_data: Any) -> 'Component':
+    def set_tree_data(self, *tree_data: Any):
         if len(tree_data) == 1:
             if isinstance(tree_data[0], list) and all(isinstance(item, TreeData) for item in tree_data[0]):
                 self.tree_data = tree_data[0]
@@ -607,49 +362,46 @@ class Component(BaseModel):
     def get_data(self) -> List[TreeData]:
         return self.tree_data
 
-    def set_tree_data_simple_mode(self, tree_data_simple_mode: Any) -> 'Component':
+    def set_tree_data_simple_mode(self, tree_data_simple_mode: Any):
         self.tree_data_simple_mode = tree_data_simple_mode
         return self
 
-    def set_tree_default_expand_all(self, tree_default_expand_all: bool) -> 'Component':
+    def set_tree_default_expand_all(self, tree_default_expand_all: bool):
         self.tree_default_expand_all = tree_default_expand_all
         return self
 
-    def set_tree_default_expanded_keys(self, tree_default_expanded_keys: List[Any]) -> 'Component':
+    def set_tree_default_expanded_keys(self, tree_default_expanded_keys: List[Any]):
         self.tree_default_expanded_keys = tree_default_expanded_keys
         return self
 
-    def set_tree_expand_action(self, tree_expand_action: List[Any]) -> 'Component':
+    def set_tree_expand_action(self, tree_expand_action: List[Any]):
         self.tree_expand_action = tree_expand_action
         return self
 
-    def set_tree_expanded_keys(self, tree_expanded_keys: List[Any]) -> 'Component':
+    def set_tree_expanded_keys(self, tree_expanded_keys: List[Any]):
         self.tree_expanded_keys = tree_expanded_keys
         return self
 
-    def set_tree_icon(self, tree_icon: bool) -> 'Component':
+    def set_tree_icon(self, tree_icon: bool):
         self.tree_icon = tree_icon
         return self
 
-    def set_tree_line(self, tree_line: bool) -> 'Component':
+    def set_tree_line(self, tree_line: bool):
         self.tree_line = tree_line
         return self
 
-    def set_tree_node_filter_prop(self, tree_node_filter_prop: str) -> 'Component':
+    def set_tree_node_filter_prop(self, tree_node_filter_prop: str):
         self.tree_node_filter_prop = tree_node_filter_prop
         return self
 
-    def set_tree_node_label_prop(self, tree_node_label_prop: str) -> 'Component':
+    def set_tree_node_label_prop(self, tree_node_label_prop: str):
         self.tree_node_label_prop = tree_node_label_prop
         return self
 
-    def set_virtual(self, virtual: bool) -> 'Component':
+    def set_virtual(self, virtual: bool):
         self.virtual = virtual
         return self
 
-    def set_style(self, style: Dict[str, Any]) -> 'Component':
+    def set_style(self, style: Dict[str, Any]):
         self.style = style
         return self
-
-def new() -> Component:
-    return Component(component_key="", component="")
