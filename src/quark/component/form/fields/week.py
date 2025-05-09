@@ -18,44 +18,44 @@ class Week(Base):
     自动获取焦点，默认false
     """
 
-    bordered: bool = True  # 是否有边框，默认true
+    bordered: bool = True
     """
-    组件名称
-    """
-
-    class_name: str = ""  # 自定义类名
-    """
-    组件名称
+    是否有边框，默认true
     """
 
-    default_value: Optional[Any] = None  # 默认的选中项
+    class_name: str = ""
     """
-    组件名称
-    """
-
-    disabled: Optional[Any] = None  # 禁用
-    """
-    组件名称
+    自定义类名
     """
 
-    format: str = ""  # 设置日期格式，为数组时支持多格式匹配，展示以第一个为准。
+    default_value: Optional[Any] = None
     """
-    组件名称
-    """
-
-    popup_class_name: str = ""  # 额外的弹出日历 className
-    """
-    组件名称
+    默认的选中项
     """
 
-    input_read_only: bool = False  # 设置输入框为只读（避免在移动设备上打开虚拟键盘）
+    disabled: Optional[Any] = None
     """
-    组件名称
+    禁用
     """
 
-    locale: Optional[Any] = None  # 国际化配置
+    format: str = ""
     """
-    组件名称
+    设置日期格式，为数组时支持多格式匹配，展示以第一个为准
+    """
+
+    popup_class_name: str = ""
+    """
+    额外的弹出日历 className
+    """
+
+    input_read_only: bool = False
+    """
+    设置输入框为只读（避免在移动设备上打开虚拟键盘）
+    """
+
+    locale: Optional[Any] = None
+    """
+    国际化配置
     """
 
     mode: str = ""  # 日期面板的状态 time | date | month | year | decade
