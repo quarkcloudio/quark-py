@@ -3,41 +3,155 @@ from .base import Base
 
 class Week(Base):
 
-    component: str = "weekField"  # 组件名称
+    component: str = "weekField"
     """
     组件名称
     """
 
-    allow_clear: bool = True  # 是否支持清除，默认true
-    auto_focus: bool = False  # 自动获取焦点，默认false
+    allow_clear: bool = True
+    """
+    是否支持清除，默认true
+    """
+
+    auto_focus: bool = False
+    """
+    自动获取焦点，默认false
+    """
+
     bordered: bool = True  # 是否有边框，默认true
+    """
+    组件名称
+    """
+
     class_name: str = ""  # 自定义类名
+    """
+    组件名称
+    """
+
     default_value: Optional[Any] = None  # 默认的选中项
+    """
+    组件名称
+    """
+
     disabled: Optional[Any] = None  # 禁用
+    """
+    组件名称
+    """
+
     format: str = ""  # 设置日期格式，为数组时支持多格式匹配，展示以第一个为准。
+    """
+    组件名称
+    """
+
     popup_class_name: str = ""  # 额外的弹出日历 className
+    """
+    组件名称
+    """
+
     input_read_only: bool = False  # 设置输入框为只读（避免在移动设备上打开虚拟键盘）
+    """
+    组件名称
+    """
+
     locale: Optional[Any] = None  # 国际化配置
+    """
+    组件名称
+    """
+
     mode: str = ""  # 日期面板的状态 time | date | month | year | decade
+    """
+    组件名称
+    """
+
     next_icon: Optional[Any] = None  # 自定义下一个图标
+    """
+    组件名称
+    """
+
     open: bool = False  # 控制浮层显隐
+    """
+    组件名称
+    """
+
     picker: str = ""  # 设置选择器类型 date | week | month | quarter | year
+    """
+    组件名称
+    """
+
     placeholder: str = "请选择"  # 输入框占位文本
+    """
+    组件名称
+    """
+
     placement: str = ""  # 浮层预设位置，bottomLeft bottomRight topLeft topRight
+    """
+    组件名称
+    """
+
     popup_style: Optional[Any] = None  # 额外的弹出日历样式
+    """
+    组件名称
+    """
+
     prev_icon: Optional[Any] = None  # 自定义上一个图标
+    """
+    组件名称
+    """
+
     size: str = ""  # 输入框大小，large | middle | small
+    """
+    组件名称
+    """
+
     status: str = ""  # 设置校验状态，'error' | 'warning'
+    """
+    组件名称
+    """
+
     style: Optional[Dict[str, Any]] = None  # 自定义样式
+    """
+    组件名称
+    """
+
     suffix_icon: Optional[Any] = None  # 自定义的选择框后缀图标
+    """
+    组件名称
+    """
+
     super_next_icon: Optional[Any] = None  # 自定义 << 切换图标
+    """
+    组件名称
+    """
+
     super_prev_icon: Optional[Any] = None  # 自定义 >> 切换图标
+    """
+    组件名称
+    """
+
     value: Optional[Any] = None  # 指定选中项,string[] | number[]
+    """
+    组件名称
+    """
 
     default_picker_value: str = ""  # 默认面板日期
+    """
+    组件名称
+    """
+
     show_now: bool = False  # 当设定了 showTime 的时候，面板是否显示“此刻”按钮
+    """
+    组件名称
+    """
+
     show_time: Optional[Any] = None  # 增加时间选择功能
+    """
+    组件名称
+    """
+
     show_today: bool = False  # 是否展示“今天”按钮
+    """
+    组件名称
+    """
 
     class Config:
         allow_population_by_field_name = True
