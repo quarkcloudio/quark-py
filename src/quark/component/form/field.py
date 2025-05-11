@@ -34,18 +34,18 @@ from .fields.quarter import Quarter
 from .fields.search import Search
 from .fields.time_range import TimeRange
 from .fields.time import Time
-from.fields.week import Week
-from.fields.year import Year
-from.fields.selects import Selects
-from.fields.tree_select import TreeSelect
-from.fields.space import Space
-from.fields.compact import Compact
-from.fields.fieldset import Fieldset
-from.fields.dependency import Dependency
-from.fields.transfer import Transfer
-from.fields.sms_captcha import SmsCaptcha
-from.fields.image_picker import ImagePicker
-from.fields.action import Action
+from .fields.week import Week
+from .fields.year import Year
+from .fields.selects import Selects
+from .fields.tree_select import TreeSelect
+from .fields.space import Space
+from .fields.compact import Compact
+from .fields.fieldset import Fieldset
+from .fields.dependency import Dependency
+from .fields.transfer import Transfer
+from .fields.sms_captcha import SmsCaptcha
+from .fields.image_picker import ImagePicker
+from .fields.action import Action
 
 
 def field_parser(field: Any, params: List[Any], placeholder: str) -> Any:
