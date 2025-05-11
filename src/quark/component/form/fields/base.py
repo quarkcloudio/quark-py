@@ -206,22 +206,22 @@ class Base(Component):
     在详情页展示
     """
 
-    show_on_creation: bool = False
+    show_on_creation: bool = True
     """
     在创建页面展示
     """
 
-    show_on_update: bool = False
+    show_on_update: bool = True
     """
     在编辑页面展示
     """
 
-    show_on_export: bool = False
+    show_on_export: bool = True
     """
     在导出的Excel上展示
     """
 
-    show_on_import: bool = False
+    show_on_import: bool = True
     """
     在导入Excel上展示
     """

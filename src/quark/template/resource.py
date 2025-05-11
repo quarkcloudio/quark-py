@@ -10,7 +10,7 @@ from ..component.table.tree_bar import TreeBar
 from ..component.pagecontainer.pagecontainer import PageContainer
 from ..component.pagecontainer.pageheader import PageHeader
 from ..utils.lister import list_to_tree
-from .resolves_fields import index_table_columns
+from .resolves_fields import ResolvesFields
 
 @dataclass
 class Resource:
@@ -282,7 +282,8 @@ class Resource:
         table_extra_render = self.index_table_extra_render()
         table_tool_bar = self.index_table_tool_bar()
         table_tree_bar = self.index_table_tree_bar()
-        table_columns = index_table_columns()
+        get_fields = self.fields()
+        table_columns = ResolvesFields().set_fields(get_fields).index_table_columns()
         index_table_alert_actions = self.index_table_alert_actions()
         index_searches = self.index_searches()
 

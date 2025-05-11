@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
-from ...component.descriptions.descriptions import Component as DescriptionsComponent
+from ...component.descriptions.descriptions import Descriptions as DescriptionsComponent
 
 @dataclass
 class Descriptions:
