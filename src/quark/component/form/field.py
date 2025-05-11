@@ -1,8 +1,8 @@
 from typing import List, Any
-from .fields.when import Component as When
-from .fields.text import Component as Text
-from .fields.password import Component as Password
-from .fields.image_captcha import Component as ImageCaptcha
+from .fields.when import When
+from .fields.text import Text
+from .fields.password import Password
+from .fields.image_captcha import ImageCaptcha
 
 def field_parser(field: Any, params: List[Any], placeholder: str) -> Any:
     """
