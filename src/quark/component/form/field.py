@@ -25,7 +25,7 @@ from .fields.file import File
 from .fields.display import Display
 from .fields.editor import Editor
 from .fields.group import Group
-from .fields.list import List
+from .fields.list import List as ListField
 from .fields.map import Map
 from .fields.geofence import Geofence
 from .fields.month import Month
@@ -183,9 +183,9 @@ def group(*options) -> 'Group':
 
     return field
 
-def list(*params) -> 'List':
+def list(*params) -> 'ListField':
     """生成列表字段组件"""
-    return field_parser(List(), params, "")
+    return field_parser(ListField(), params, "")
 
 def map(*params) -> 'Map':
     """生成地图选择字段组件"""
