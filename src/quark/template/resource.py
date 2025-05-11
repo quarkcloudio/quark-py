@@ -14,10 +14,6 @@ from .resolves_fields import index_table_columns
 
 @dataclass
 class Resource:
-    """
-    增删改查模板类
-    """
-
     title: str = "页面标题"  # 页面标题
     sub_title: str = "页面子标题"  # 页面子标题
     back_icon: bool = True  # 页面是否携带返回Icon
