@@ -2,10 +2,10 @@ from flask import request
 from dataclasses import dataclass
 from typing import Any, List, Optional
 from .action.action import Action
-from ..component.action.action import Component as ActionComponent
-from ..component.form.form import Component as FormComponent
-from ..component.dropdown.dropdown import Component as DropdownComponent
-from ..component.space.space import Component as SpaceComponent
+from ..component.action.action import Action as ActionComponent
+from ..component.form.form import Form as FormComponent
+from ..component.dropdown.dropdown import Dropdown as DropdownComponent
+from ..component.space.space import Space as SpaceComponent
 
 @dataclass
 class ResolvesActions:

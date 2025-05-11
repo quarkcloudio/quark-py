@@ -1,17 +1,49 @@
 from flask import request
 from typing import Any, List, Dict, Optional
 from ..component.table.column import Column as ColumnComponent
-from ..component.descriptions.descriptions import Component as DescriptionsComponent
+from ..component.descriptions.descriptions import Descriptions as DescriptionsComponent
+from ..component.table.column import Column
 
 class ResolvesFields:
 
     # 字段
     fields: Optional[Any] = None
 
+    # 表格列组件
+    table_column: Column = None
+
+    # 行内操作
+    table_row_actions: Optional[Any] = None
+
+    # 表格行内操作列标题
+    table_action_column_title: str = "操作"
+
+    # 表格行内操作列宽度
+    table_action_column_width: int = 150
+
     def set_fields(self, fields) -> 'ResolvesFields':
         """设置字段"""
         self.fields = fields
+        return self
+    
+    def set_table_column(self, column) -> 'ResolvesFields':
+        """设置表格列组件"""
+        self.table_column = column
+        return self
 
+    def set_table_row_actions(self, actions) -> 'ResolvesFields':
+        """设置行内操作"""
+        self.table_row_actions = actions
+        return self
+
+    def set_table_action_column_title(self, title) -> 'ResolvesFields':
+        """设置行内操作列标题"""
+        self.table_action_column_title = title
+        return self
+
+    def set_table_action_column_width(self, width) -> 'ResolvesFields':
+        """设置行内操作列宽度"""
+        self.table_action_column_width = width
         return self
 
     def get_fields(self, include_when: bool = True) -> List[Any]:
@@ -51,12 +83,12 @@ class ResolvesFields:
             col = self._field_to_column(field)
             if col:
                 columns.append(col)
-        row_actions = self.index_table_row_actions()
+        row_actions = self.table_row_actions
         if row_actions:
             action_col = (
-                self.get_table_column()
-                .set_title(self.get_table_action_column_title())
-                .set_width(self.get_table_action_column_width())
+                self.table_column
+                .set_title(self.table_action_column_title)
+                .set_width(self.table_action_column_width)
                 .set_attribute("action")
                 .set_value_type("option")
                 .set_actions(row_actions)

@@ -9,8 +9,10 @@ from ..component.table.tool_bar import ToolBar
 from ..component.table.tree_bar import TreeBar
 from ..component.pagecontainer.pagecontainer import PageContainer
 from ..component.pagecontainer.pageheader import PageHeader
-from ..utils.lister import list_to_tree
 from .resolves_fields import ResolvesFields
+from .resolves_actions import ResolvesActions
+from .resolves_searches import ResolvesSearches
+from ..utils.lister import list_to_tree
 
 @dataclass
 class Resource:
@@ -236,10 +238,11 @@ class Resource:
         """
         列表页工具栏组件
         """
+        index_table_actions = ResolvesActions().set_actions(self.actions()).index_table_actions()
         return (
             self.get_table_tool_bar()
             .set_title(self.index_table_title())
-            .set_actions(self.index_table_actions())
+            .set_actions(index_table_actions)
             .set_menu(self.index_table_menu())
         )
 
@@ -255,14 +258,12 @@ class Resource:
         """
         return f"{self.get_title()}{self.get_table_title_suffix()}"
 
-    def index_table_menu_items(self, ctx) -> List[Dict[str, str]]:
-        # 假设 ctx.template 是一个 Resourcer 类型的实例，返回对应的 MenuItems
-        template = ctx.template  # 这里假设ctx对象有template属性
-        return template.menu_items(ctx)
+    def index_table_menu_items(self) -> List[Dict[str, str]]:
+        return self.menu_items()
     
-    def index_table_menu(self, ctx) -> Dict[str, Any]:
+    def index_table_menu(self) -> Dict[str, Any]:
         # 获取菜单项
-        items = self.index_table_menu_items(ctx)
+        items = self.index_table_menu_items()
         if items is None:
             return {}
         
@@ -282,10 +283,15 @@ class Resource:
         table_extra_render = self.index_table_extra_render()
         table_tool_bar = self.index_table_tool_bar()
         table_tree_bar = self.index_table_tree_bar()
-        get_fields = self.fields()
-        table_columns = ResolvesFields().set_fields(get_fields).index_table_columns()
-        index_table_alert_actions = self.index_table_alert_actions()
-        index_searches = self.index_searches()
+        table_columns = (
+                ResolvesFields().set_fields(self.fields()).
+                set_table_column(self.get_table_column).
+                set_table_action_column_title(self.get_table_action_column_title()).
+                set_table_action_column_width(self.get_table_action_column_width()).
+                index_table_columns()
+            )
+        index_table_alert_actions = ResolvesActions().set_actions(self.actions()).index_table_alert_actions()
+        index_searches = ResolvesSearches().set_searches(self.searches()).index_searches()
 
         # 是否开启树形表格
         table_list_to_tree = self.get_table_list_to_tree()
@@ -319,8 +325,7 @@ class Resource:
             items = data.get("items")
 
             return (
-                table.set_pagination(current, page_size_val, int(total), 1, page_size_options)
-                .set_datasource(items)
+                table.set_pagination(current, page_size_val, int(total), 1, page_size_options).set_datasource(items)
             )
 
     def before_index_showing(
@@ -336,7 +341,7 @@ class Resource:
 
     def index_render(self) -> Any:
         """列表页渲染"""
-        pass
+        self.index_component_render(None)
     
     def editable_render(self) -> Any:
         """行内编辑渲染"""
