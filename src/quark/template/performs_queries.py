@@ -1,14 +1,16 @@
 import json
-from sqlalchemy import or_, and_
 from flask import request
-from flask_sqlalchemy import SQLAlchemy
+from typing import Any, Optional
 
-db = SQLAlchemy()
+class PerformsQueries:
 
-class Template:
+    # 查询对象
+    query: Optional[Any] = None
 
-    def __init__(self):
-        pass
+    def set_query(self, query) -> 'PerformsQueries':
+        """设置查询对象"""
+        self.query = query
+        return self
 
     # 创建行为查询
     def build_action_query(self, ctx, query):
@@ -108,11 +110,6 @@ class Template:
         for k, v in filters.items():
             if v is not None:
                 query = query.filter(getattr(query, k).in_(v))
-        return query
-
-    # 执行过滤器查询
-    def apply_filters(self, query, filters):
-        # todo: 可根据实际需求进一步实现
         return query
 
     # 执行排序查询

@@ -1,4 +1,5 @@
 from flask import request
+import json
 from dataclasses import dataclass, field
 from typing import Any, List, Dict, Optional
 from ..component.form.form import Form
@@ -284,7 +285,8 @@ class Resource:
         table_tool_bar = self.index_table_tool_bar()
         table_tree_bar = self.index_table_tree_bar()
         table_columns = (
-                ResolvesFields().set_fields(self.fields()).
+                ResolvesFields().
+                set_fields(self.fields()).
                 set_table_column(self.get_table_column).
                 set_table_action_column_title(self.get_table_action_column_title()).
                 set_table_action_column_width(self.get_table_action_column_width()).
@@ -339,9 +341,149 @@ class Resource:
             result.append(item)
         return result
 
+    def performs_index_list(self, list_data: List[Any]) -> List[Any]:
+        """
+        处理列表字段
+        """
+        result = []
+        template = self.get_template(request)
+        index_fields = template.index_fields(request)
+
+        for item in items:
+            item_dict = item.to_dict() if hasattr(item, "to_dict") else item.__dict__
+            fields = {}
+
+            for field in index_fields:
+                component = field.get("component")
+                name = field.get("name")
+
+                if component == "actionField":
+                    # 行为字段
+                    items_func = field.get("get_callback")
+                    if items_func:
+                        action_items = items_func(item_dict)
+                    else:
+                        action_items = field.get("items", [])
+
+                    rendered_actions = []
+                    for action in action_items:
+                        # 初始化行为
+                        action.init(request)
+                        rendered_actions.append(template.build_action(request, action))
+
+                    fields[name] = rendered_actions
+                else:
+                    callback = field.get("callback")
+                    if callback:
+                        fields[name] = callback(item_dict)
+                    else:
+                        value = item_dict.get(name)
+                        if value is None:
+                            continue
+
+                        # JSON 字符串解析
+                        if isinstance(value, str):
+                            if value.startswith("[") or value.startswith("{"):
+                                try:
+                                    value = json.loads(value)
+                                except:
+                                    pass
+
+                        # 时间字段格式化
+                        if component in ["datetimeField", "dateField"]:
+                            fmt = field.get("format", "")
+                            fmt = (
+                                fmt.replace("YYYY", "%Y")
+                                .replace("MM", "%m")
+                                .replace("DD", "%d")
+                                .replace("HH", "%H")
+                                .replace("mm", "%M")
+                                .replace("ss", "%S")
+                            )
+                            if isinstance(value, datetime):
+                                value = value.strftime(fmt)
+
+                        # 图片字段处理
+                        if component in ["imageField", "imagePickerField"]:
+                            from your_app.services.attachment import get_image_url
+                            value = get_image_url(value)
+
+                        fields[name] = value
+
+            result.append(fields)
+
+        return result
+
     def index_render(self) -> Any:
         """列表页渲染"""
-        self.index_component_render(None)
+
+        """
+        查询并返回列表数据
+        """
+        query = self.get_model()  # 获取模型类
+
+        searches = self.searches(request)
+
+        filter_str = request.args.get("filter")
+        column_filters = {}
+        try:
+            column_filters = json.loads(filter_str)
+        except:
+            pass
+
+        # 获取排序规则
+        sorter_str = request.args.get("sorter")
+        orderings = {}
+        try:
+            orderings = json.loads(sorter_str)
+        except:
+            pass
+
+        # 构建查询
+        query = self.build_index_query(query, searches, column_filters, orderings)
+
+        # 获取分页配置
+        page_size = self.get_page_size()
+        page_size_options = self.get_page_size_options()
+
+        if not page_size or not isinstance(page_size, int):
+            results = query.all()
+            parsed_results = self.performs_index_list(results)
+            return parsed_results
+
+        # 分页参数
+        data = request.args.get("search")
+        search_params = {}
+        if data:
+            try:
+                search_params = json.loads(data)
+            except:
+                pass
+
+        page = int(search_params.get("current", 1))
+        page_size = int(search_params.get("pageSize", page_size))
+
+        # 获取总数
+        total = query.count()
+
+        # 获取当前页数据
+        results = query.limit(page_size).offset((page - 1) * page_size).all()
+
+        # 解析列表数据
+        parsed_items = self.performs_index_list(results)
+
+        # 列表显示前回调
+        parsed_items = self.before_index_showing(parsed_items)
+
+        data = {
+            "page": page,
+            "pageSize": page_size,
+            "pageSizeOptions": page_size_options,
+            "total": total,
+            "items": parsed_items,
+        }
+    
+        self.index_component_render(data)
     
     def editable_render(self) -> Any:
         """行内编辑渲染"""

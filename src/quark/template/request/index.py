@@ -1,11 +1,13 @@
 import json
 from datetime import datetime
+from typing import Any, Optional
 from flask import request
-from your_app import db
-from your_app.models import YourModel  # 替换为实际模型类
-
 
 class IndexRequest:
+
+    # 挂载模型
+    model: Optional[Any] = None
+
     def query_data(self, ctx):
         """
         查询并返回列表数据
@@ -159,34 +161,3 @@ class IndexRequest:
             result.append(fields)
 
         return result
-
-    def get_template(self, req):
-        """
-        获取模板实例（需根据你的业务框架替换）
-        """
-        class MockTemplate:
-            def get_model(self):
-                return YourModel
-
-            def get_page_size(self):
-                return 20
-
-            def get_page_size_options(self):
-                return [10, 20, 50, 100]
-
-            def index_fields(self, req):
-                return []
-
-            def before_index_showing(self, data):
-                return data
-
-            def build_index_query(self, query, searches, filters, column_filters, orderings):
-                return query
-
-            def actions(self, req):
-                return []
-
-            def build_action(self, req, action):
-                return action.render(req)
-
-        return MockTemplate()
