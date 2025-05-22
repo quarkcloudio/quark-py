@@ -13,6 +13,7 @@ from ..component.pagecontainer.pageheader import PageHeader
 from .resolves_fields import ResolvesFields
 from .resolves_actions import ResolvesActions
 from .resolves_searches import ResolvesSearches
+from .performs_queries import PerformsQueries
 from ..utils.lister import list_to_tree
 
 @dataclass
@@ -389,20 +390,6 @@ class Resource:
                                 except:
                                     pass
 
-                        # 时间字段格式化
-                        if component in ["datetimeField", "dateField"]:
-                            fmt = field.get("format", "")
-                            fmt = (
-                                fmt.replace("YYYY", "%Y")
-                                .replace("MM", "%m")
-                                .replace("DD", "%d")
-                                .replace("HH", "%H")
-                                .replace("mm", "%M")
-                                .replace("ss", "%S")
-                            )
-                            if isinstance(value, datetime):
-                                value = value.strftime(fmt)
-
                         # 图片字段处理
                         if component in ["imageField", "imagePickerField"]:
                             from your_app.services.attachment import get_image_url
@@ -422,7 +409,7 @@ class Resource:
         """
         query = self.get_model()  # 获取模型类
 
-        searches = self.searches(request)
+        searches = self.searches()
 
         filter_str = request.args.get("filter")
         column_filters = {}
@@ -439,8 +426,11 @@ class Resource:
         except:
             pass
 
+
         # 构建查询
-        query = self.build_index_query(query, searches, column_filters, orderings)
+        query = PerformsQueries().set_query(query).build_index_query(
+            searches, column_filters, orderings 
+        )
 
         # 获取分页配置
         page_size = self.get_page_size()
