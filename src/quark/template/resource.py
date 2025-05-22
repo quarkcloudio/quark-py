@@ -14,6 +14,7 @@ from .resolves_fields import ResolvesFields
 from .resolves_actions import ResolvesActions
 from .resolves_searches import ResolvesSearches
 from .performs_queries import PerformsQueries
+from ..service.attachment  import AttachmentService
 from ..utils.lister import list_to_tree
 
 @dataclass
@@ -394,8 +395,7 @@ class Resource:
 
                         # 图片字段处理
                         if component in ["imageField", "imagePickerField"]:
-                            from your_app.services.attachment import get_image_url
-                            value = get_image_url(value)
+                            value = AttachmentService().get_image_url(value)
 
                         fields[name] = value
 
