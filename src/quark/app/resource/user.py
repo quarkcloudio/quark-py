@@ -1,17 +1,16 @@
+from dataclasses import dataclass
 from quark.template.resource import Resource
+from quark.model.user import User as UserModel
 
+@dataclass
 class User(Resource):
-    def index(self):
-        return "Hello World"
+    """
+    用户管理
+    """
 
-    def create(self):
-        return "Hello World"
+    def __post_init__(self):
 
-    def show(self, id):
-        return "Hello World"
+        # 模型
+        self.model = UserModel
 
-    def update(self, id):
-        return "Hello World"
-
-    def delete(self, id):
-        return "Hello World"
+        return self

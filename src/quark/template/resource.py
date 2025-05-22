@@ -16,20 +16,22 @@ from .resolves_searches import ResolvesSearches
 from .performs_queries import PerformsQueries
 from ..service.attachment  import AttachmentService
 from ..utils.lister import list_to_tree
+from ..db import db
 
 @dataclass
 class Resource:
     title: str = "页面标题"  # 页面标题
     sub_title: str = "页面子标题"  # 页面子标题
     back_icon: bool = True  # 页面是否携带返回Icon
-    table_polling: int = 0  # 表格是否轮询数据
     export: bool = False  # 是否具有导出功能
     export_text: str = "导出"  # 导出按钮文字内容
     export_path: str = "/api/admin/<resource>/export"  # 导出接口路径
     page_size: Optional[int] = 10  # 分页配置，默认每页10条
     page_size_options: List[int] = field(default_factory=lambda: [10, 20, 50, 100])  # 每页显示条数
     query_order: str = "created_at desc"  # 全局排序规则
-    model: Optional[Any] = None  # 挂载模型
+    index_query_order: str = ""  # 列表页排序规则
+    export_query_order: str = ""  # 导出数据排序规则
+    model: Any = field(default=None)
     form: Form = field(default_factory=Form)
     table: Table = field(default_factory=Table)
     table_search: Search = field(default_factory=Search)
@@ -41,24 +43,46 @@ class Resource:
     table_action_column_width: int = 150
     table_polling: int = 0  # 轮询间隔（秒）
     table_list_to_tree: bool = False  # 列表数据是否转换为树形结构
-    index_query_order: str = ""  # 列表页排序规则
-    export_query_order: str = ""  # 导出数据排序规则
 
-    # 获取Model结构体
-    def get_model(self):
+    def fields(self) -> List[Dict]:
+        """字段定义"""
+        return []
+
+    def searches(self) -> List[Dict]:
+        """搜索项定义"""
+        return []
+
+    def actions(self) -> List[Dict]:
+        """行为定义"""
+        return []
+
+    def menu_items(self) -> List[Dict[str, str]]:
+        """菜单项定义"""
+        return []
+
+    def get_model(self) -> Any:
+        """获取模型实例"""
         return self.model
 
-    # 获取标题
-    def get_title(self):
+    def get_title(self) -> str:
+        """获取页面标题"""
         return self.title
 
-    # 获取子标题
-    def get_sub_title(self):
+    def get_sub_title(self) -> str:
+        """获取页面副标题"""
         return self.sub_title
 
-    # 页面是否携带返回Icon
-    def get_back_icon(self):
+    def get_back_icon(self) -> bool:
+        """是否显示返回图标"""
         return self.back_icon
+
+    def get_export(self) -> bool:
+        """是否允许导出"""
+        return self.export
+
+    def get_export_text(self) -> str:
+        """获取导出按钮文本"""
+        return self.export_text
 
     # 获取表单页Form实例
     def get_form(self):
@@ -124,54 +148,6 @@ class Resource:
     def get_export_query_order(self):
         return self.export_query_order
 
-    # 获取是否具有导出功能
-    def get_export(self):
-        return self.export
-
-    # 获取导出按钮文字内容
-    def get_export_text(self):
-        return self.export_text
-
-    def fields(self) -> List[Dict]:
-        """字段定义"""
-        return []
-
-    def searches(self) -> List[Dict]:
-        """搜索项定义"""
-        return []
-
-    def actions(self) -> List[Dict]:
-        """行为定义"""
-        return []
-
-    def menu_items(self) -> List[Dict[str, str]]:
-        """菜单项定义"""
-        return []
-
-    def get_model(self) -> Any:
-        """获取模型实例"""
-        return self.model
-
-    def get_title(self) -> str:
-        """获取页面标题"""
-        return self.title
-
-    def get_sub_title(self) -> str:
-        """获取页面副标题"""
-        return self.sub_title
-
-    def get_back_icon(self) -> bool:
-        """是否显示返回图标"""
-        return self.back_icon
-
-    def get_export(self) -> bool:
-        """是否允许导出"""
-        return self.export
-
-    def get_export_text(self) -> str:
-        """获取导出按钮文本"""
-        return self.export_text
-
     def before_exporting(self, data: List[Dict]) -> List[Any]:
         """导出前处理"""
         return [item for item in data]
@@ -201,8 +177,22 @@ class Resource:
         header = PageHeader().set_title(self.get_title()).set_sub_title(self.get_sub_title())
         if not self.get_back_icon():
             header.set_back_icon(False)
-        return PageContainer().set_header(header).set_body(body)
+        return PageContainer().set_header(header).set_body(body).to_json()
     
+    def query(self) -> Any:
+        """
+        全局查询
+        """
+
+        return db.session.query(self.get_model())
+    
+    def index_query(self) -> Any:
+        """
+        列表查询
+        """
+
+        return self.query()
+
     def index_table_list_to_tree(self, list_data: List[Any]) -> List[Any]:
         """
         列表页数据转换成树结构
@@ -335,9 +325,7 @@ class Resource:
             total = data.get("total")
             items = data.get("items")
 
-            return (
-                table.set_pagination(current, page_size_val, int(total), 1, page_size_options).set_datasource(items)
-            )
+            return table.set_pagination(current, page_size_val, int(total), 1, page_size_options).set_datasource(items)
 
     def before_index_showing(
         self, list_data: List[Dict[str, Any]]
@@ -409,7 +397,7 @@ class Resource:
         """列表页渲染"""
 
         # 获取模型类
-        query = self.get_model()
+        query = self.index_query()
 
         # 获取搜索项
         searches = self.searches()
@@ -430,18 +418,14 @@ class Resource:
             pass
 
         # 构建查询
-        query = (
-                PerformsQueries()
-                .set_query(query)
-                .build_index_query(searches, column_filters, orderings)
-            )
+        query = PerformsQueries().set_query(query).build_index_query(searches, column_filters)
 
         # 获取分页配置
         page_size = self.get_page_size()
         page_size_options = self.get_page_size_options()
 
         if not page_size or not isinstance(page_size, int):
-            results = query.all()
+            results = PerformsQueries().apply_index_orderings(query, orderings).all()
             parsed_results = self.performs_index_list(results)
             return parsed_results
 
@@ -455,13 +439,13 @@ class Resource:
                 pass
 
         page = int(search_params.get("current", 1))
-        page_size = int(search_params.get("page_size", page_size))
+        page_size = int(search_params.get("pageSize", page_size))
 
         # 获取总数
         total = query.count()
 
         # 获取当前页数据
-        results = query.limit(page_size).offset((page - 1) * page_size).all()
+        results = PerformsQueries().apply_index_orderings(query, orderings).limit(page_size).offset((page - 1) * page_size).all()
 
         # 解析列表数据
         parsed_items = self.performs_index_list(results)
@@ -477,7 +461,13 @@ class Resource:
             "items": parsed_items,
         }
     
-        self.index_component_render(data)
+        # 组件渲染
+        body = self.index_component_render(data)
+
+        # 页面组件渲染
+        component = self.page_component_render(body)
+
+        return component
     
     def editable_render(self) -> Any:
         """行内编辑渲染"""

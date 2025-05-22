@@ -1,6 +1,7 @@
 import json
 from flask import request
 from typing import Any, Optional
+from sqlalchemy import text
 
 class PerformsQueries:
 
@@ -53,28 +54,17 @@ class PerformsQueries:
         return self.editable_query(query)
 
     # 创建导出查询
-    def build_export_query(self, search, column_filters, orderings):
+    def build_export_query(self, search, column_filters):
         query = self.export_query(self.query)
         query = self.apply_search(query, search)
         query = self.apply_column_filters(query, column_filters)
-        default_order = self.query_order
-        if not default_order:
-            default_order = self.export_query_order
-        if not default_order:
-            default_order = "id desc"
-        query = self.apply_orderings(query, orderings, default_order)
         return query
 
     # 创建列表查询
-    def build_index_query(self, search, column_filters, orderings):
-        query = self.apply_search(self.query, search)
+    def build_index_query(self, search, column_filters):
+        query = self.index_query(self.query)
+        query = self.apply_search(query, search)
         query = self.apply_column_filters(query, column_filters)
-        default_order = self.query_order
-        if not default_order:
-            default_order = self.index_query_order
-        if not default_order:
-            default_order = "id desc"
-        query = self.apply_orderings(query, orderings, default_order)
         return query
 
     # 创建更新查询
@@ -109,10 +99,26 @@ class PerformsQueries:
                 query = query.filter(getattr(query, k).in_(v))
         return query
 
+    def apply_index_orderings(self, query, orderings):
+        default_order = self.query_order
+        if not default_order:
+            default_order = self.index_query_order
+        if not default_order:
+            default_order = "id desc"
+        return self.apply_orderings(query, orderings, default_order)
+
+    def apply_export_orderings(self, query, orderings):
+        default_order = self.query_order
+        if not default_order:
+            default_order = self.export_query_order
+        if not default_order:
+            default_order = "id desc"
+        return self.apply_orderings(query, orderings, default_order)
+
     # 执行排序查询
     def apply_orderings(self, query, orderings, default_order):
         if not orderings:
-            return query.order_by(default_order)
+            return query.order_by(text(default_order))
         for key, v in orderings.items():
             if v == "descend":
                 query = query.order_by(getattr(query, key).desc())
