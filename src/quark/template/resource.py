@@ -242,7 +242,8 @@ class Resource:
         """
         index_table_actions = ResolvesActions().set_actions(self.actions()).index_table_actions()
         return (
-            self.get_table_tool_bar()
+            self
+            .get_table_tool_bar()
             .set_title(self.index_table_title())
             .set_actions(index_table_actions)
             .set_menu(self.index_table_menu())
