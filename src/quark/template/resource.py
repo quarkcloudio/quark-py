@@ -452,7 +452,7 @@ class Resource:
                 pass
 
         page = int(search_params.get("current", 1))
-        page_size = int(search_params.get("pageSize", page_size))
+        page_size = int(search_params.get("page_size", page_size))
 
         # 获取总数
         total = query.count()
@@ -468,8 +468,8 @@ class Resource:
 
         data = {
             "page": page,
-            "pageSize": page_size,
-            "pageSizeOptions": page_size_options,
+            "page_size": page_size,
+            "page_size_options": page_size_options,
             "total": total,
             "items": parsed_items,
         }
