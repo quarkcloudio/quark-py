@@ -303,7 +303,8 @@ class Resource:
 
         # 构建表格配置
         table = (
-            table.set_polling(int(table_polling))
+            table
+            .set_polling(int(table_polling))
             .set_title(table_title)
             .set_table_extra_render(table_extra_render)
             .set_tool_bar(table_tool_bar)
