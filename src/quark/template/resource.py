@@ -228,7 +228,6 @@ class Resource:
             children_name = table_list_to_tree.get("childrenName", "children")
             root_id = table_list_to_tree.get("rootId", 0)
 
-        # 假设 lister.ListToTree 是一个可用函数
         tree, _ = list_to_tree(list_data, pk_name, pid_name, children_name, root_id)
         return tree
 
