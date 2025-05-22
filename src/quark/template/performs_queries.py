@@ -83,7 +83,7 @@ class PerformsQueries:
 
     # 执行搜索表单查询
     def apply_search(self, query, search):
-        queries = ctx.get('queries', {})
+        queries = request.args.get('queries', {})
         data = {}
         if "search" not in queries:
             return query

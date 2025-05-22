@@ -406,11 +406,10 @@ class Resource:
     def index_render(self) -> Any:
         """列表页渲染"""
 
-        """
-        查询并返回列表数据
-        """
-        query = self.get_model()  # 获取模型类
+        # 获取模型类
+        query = self.get_model()
 
+        # 获取搜索项
         searches = self.searches()
 
         filter_str = request.args.get("filter")
@@ -430,9 +429,11 @@ class Resource:
 
 
         # 构建查询
-        query = PerformsQueries().set_query(query).build_index_query(
-            searches, column_filters, orderings 
-        )
+        query = (
+                PerformsQueries()
+                .set_query(query)
+                .build_index_query(searches, column_filters, orderings)
+            )
 
         # 获取分页配置
         page_size = self.get_page_size()
