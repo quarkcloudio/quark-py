@@ -207,6 +207,7 @@ class Resource:
         """
         列表页数据转换成树结构
         """
+        
         data = request.args.to_dict()
         if isinstance(data.get("search"), dict) and data["search"]:
             return list_data
@@ -235,12 +236,14 @@ class Resource:
         """
         列表页表格主体
         """
+
         return None
 
     def index_table_tool_bar(self) -> Any:
         """
         列表页工具栏组件
         """
+
         index_table_actions = ResolvesActions().set_actions(self.actions()).index_table_actions()
         return (
             self
@@ -254,12 +257,14 @@ class Resource:
         """
         列表页树形结构组件
         """
+
         return self.get_table_tree_bar()
 
     def index_table_title(self) -> str:
         """
         获取列表标题
         """
+
         return f"{self.get_title()}{self.get_table_title_suffix()}"
 
     def index_table_menu_items(self) -> List[Dict[str, str]]:
@@ -281,6 +286,7 @@ class Resource:
         """
         列表页组件渲染主逻辑
         """
+
         table = self.get_table()
         table_title = self.index_table_title()
         table_polling = self.get_table_polling()
@@ -350,8 +356,7 @@ class Resource:
         处理列表字段
         """
         result = []
-        template = self.get_template(request)
-        index_fields = template.index_fields(request)
+        index_fields = ResolvesFields().set_fields(self.fields()).index_fields()
 
         for item in list_data:
             item_dict = item.to_dict() if hasattr(item, "to_dict") else item.__dict__
@@ -371,9 +376,7 @@ class Resource:
 
                     rendered_actions = []
                     for action in action_items:
-                        # 初始化行为
-                        action.init(request)
-                        rendered_actions.append(template.build_action(request, action))
+                        rendered_actions.append(ResolvesActions().build_action(action))
 
                     fields[name] = rendered_actions
                 else:
@@ -426,7 +429,6 @@ class Resource:
             orderings = json.loads(sorter_str)
         except:
             pass
-
 
         # 构建查询
         query = (
