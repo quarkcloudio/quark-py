@@ -353,7 +353,7 @@ class Resource:
         template = self.get_template(request)
         index_fields = template.index_fields(request)
 
-        for item in items:
+        for item in list_data:
             item_dict = item.to_dict() if hasattr(item, "to_dict") else item.__dict__
             fields = {}
 
