@@ -320,8 +320,8 @@ class Resource:
             return table.set_datasource(data)
         else:
             current = data.get("page")
-            page_size_val = data.get("page_size")
-            page_size_options = data.get("page_size_options")
+            page_size_val = data.get("pageSize")
+            page_size_options = data.get("pageSizeOptions")
             total = data.get("total")
             items = data.get("items")
 
@@ -455,8 +455,8 @@ class Resource:
 
         data = {
             "page": page,
-            "page_size": page_size,
-            "page_size_options": page_size_options,
+            "pageSize": page_size,
+            "pageSizeOptions": page_size_options,
             "total": total,
             "items": parsed_items,
         }
