@@ -291,7 +291,7 @@ class Resource:
                 index_table_columns()
             )
         index_table_alert_actions = ResolvesActions().set_actions(self.actions()).index_table_alert_actions()
-        index_searches = ResolvesSearches().set_searches(self.searches()).index_searches()
+        index_searches = ResolvesSearches().set_search(self.get_table_search()).set_searches(self.searches()).index_searches()
 
         # 是否开启树形表格
         table_list_to_tree = self.get_table_list_to_tree()
