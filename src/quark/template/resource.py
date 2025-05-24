@@ -378,10 +378,7 @@ class Resource:
         """
         页面显示前回调
         """
-        result = []
-        for item in list_data:
-            result.append(item)
-        return result
+        return list_data
 
     def performs_index_list(self, list_data: List[Any]) -> List[Any]:
         """
