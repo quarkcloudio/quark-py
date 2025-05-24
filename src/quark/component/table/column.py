@@ -5,7 +5,6 @@ from ..component import Component
 
 class Column(Component):
     component: str = "column"
-    componentkey: str = None
     title: str = None
     attribute: str = None
     align: str = "left"
@@ -33,7 +32,6 @@ class Column(Component):
     @model_validator(mode="after")
     def init(self):
         self.set_key()
-        self.componentkey = self.component_key
         return self
 
     # 设置方法（链式调用）
@@ -47,7 +45,6 @@ class Column(Component):
 
     def set_attribute(self, attribute: str):
         self.componentkey = attribute
-        self.component_key = attribute
         self.data_index = attribute
         self.attribute = attribute
         return self
