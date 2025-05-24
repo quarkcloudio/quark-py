@@ -1,23 +1,23 @@
 from dataclasses import dataclass
 from quark.template.resource import Resource
-from quark.model.user import User as UserModel
+from quark.model.action_log import ActionLog as ActionLogModel
 from quark.component.form import field
 from typing import List, Dict
 
 
 @dataclass
-class User(Resource):
+class ActionLog(Resource):
     """
-    用户管理
+    日志管理
     """
 
     def __post_init__(self):
 
         # 页面标题
-        self.title = "用户"
+        self.title = "日志"
 
         # 模型
-        self.model = UserModel
+        self.model = ActionLogModel
 
         return self
 
@@ -25,7 +25,4 @@ class User(Resource):
         """字段定义"""
         return [
             field.id("id", "ID"),
-            field.text("username", "用户名"),
-            field.password("password", "密码").only_on_forms(),
-            field.text("email", "邮箱"),
         ]
