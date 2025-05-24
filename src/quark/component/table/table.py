@@ -2,6 +2,7 @@ from pydantic import Field, model_validator
 from typing import Any, List, Optional, Dict
 from ..component import Component
 
+
 class Expandable(Component):
     children_column_name: Optional[str] = None
     column_title: Optional[Any] = None
@@ -17,6 +18,7 @@ class Expandable(Component):
     row_expandable: bool = False
     show_expand_column: bool = False
 
+
 class Table(Component):
     component: str = "table"
     row_key: str = "id"
@@ -26,9 +28,9 @@ class Table(Component):
     header_title: str = None
     columns: Any = None
     row_selection: Any = Field(default_factory=list)
-    options: Dict[str, bool] = Field(default_factory=lambda: {
-        "fullScreen": True, "reload": True, "setting": True
-    })
+    options: Dict[str, bool] = Field(
+        default_factory=lambda: {"fullScreen": True, "reload": True, "setting": True}
+    )
     search: Any = None
     batch_actions: Any = None
     date_formatter: str = "string"
@@ -45,8 +47,9 @@ class Table(Component):
 
     @model_validator(mode="after")
     def init(self):
-        self.set_key()
+        self.set_key("table", False)
         return self
+
     # 设置方法（链式调用）
     def set_style(self, style: dict):
         self.style = style
@@ -132,13 +135,20 @@ class Table(Component):
         self.datasource = source
         return self
 
-    def set_pagination(self, current: int, page_size: int, total: int, default_current: int, page_size_options: list):
+    def set_pagination(
+        self,
+        current: int,
+        page_size: int,
+        total: int,
+        default_current: int,
+        page_size_options: list,
+    ):
         self.pagination = {
             "current": current,
             "pageSize": page_size,
             "total": total,
             "defaultCurrent": default_current,
-            "pageSizeOptions": page_size_options
+            "pageSizeOptions": page_size_options,
         }
         return self
 

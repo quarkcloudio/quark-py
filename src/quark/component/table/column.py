@@ -27,7 +27,7 @@ class Column(Component):
     actions: Optional[Any] = None
     form_item_props: Optional[Any] = None
     field_props: Optional[Any] = None
-    style: Dict[str, Any] = Field(default_factory=dict)
+    style: Dict[str, Any] = None
 
     @model_validator(mode="after")
     def init(self):

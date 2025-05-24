@@ -2,6 +2,7 @@ from pydantic import model_validator
 from typing import Any, Dict, Optional
 from ..component import Component
 
+
 class ToolBar(Component):
     component: str = "toolBar"
     title: Optional[str] = None
@@ -16,7 +17,7 @@ class ToolBar(Component):
 
     @model_validator(mode="after")
     def init(self):
-        self.set_key()
+        self.set_key("toolBar")
         return self
 
     # 设置方法（链式调用）
