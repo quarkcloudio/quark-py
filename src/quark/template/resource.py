@@ -391,20 +391,18 @@ class Resource:
         index_fields = ResolvesFields().set_fields(self.fields()).index_fields()
 
         for item in list_data:
-            item_dict = item.to_dict() if hasattr(item, "to_dict") else item.__dict__
             fields = {}
 
             for field in index_fields:
-                component = field.get("component")
-                name = field.get("name")
+                component = field.component
+                name = field.name
 
                 if component == "actionField":
-                    # 行为字段
-                    items_func = field.get("get_callback")
-                    if items_func:
-                        action_items = items_func(item_dict)
+                    items_callback = field.callback
+                    if items_callback:
+                        action_items = items_callback(item)
                     else:
-                        action_items = field.get("items", [])
+                        action_items = field.items
 
                     rendered_actions = []
                     for action in action_items:
@@ -412,11 +410,11 @@ class Resource:
 
                     fields[name] = rendered_actions
                 else:
-                    callback = field.get("callback")
+                    callback = field.callback
                     if callback:
-                        fields[name] = callback(item_dict)
+                        fields[name] = callback(item)
                     else:
-                        value = item_dict.get(name)
+                        value = getattr(item, name, None)
                         if value is None:
                             continue
 

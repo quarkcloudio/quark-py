@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from quark.template.resource import Resource
 from quark.model.user import User as UserModel
+from typing import List, Dict
+from quark.component.form import field
 
 
 @dataclass
@@ -18,3 +20,12 @@ class User(Resource):
         self.model = UserModel
 
         return self
+
+    def fields(self) -> List[Dict]:
+        """字段定义"""
+        return [
+            field.id("id", "ID"),
+            field.text("username", "用户名"),
+            field.password("password", "密码"),
+            field.text("email", "邮箱"),
+        ]

@@ -2,21 +2,23 @@ from pydantic import Field, model_validator
 from typing import Any, Dict, Union, List, Optional
 from ..component import Component
 
+
 class Column(Component):
     component: str = "column"
+    componentkey: str = None
     title: str = None
     attribute: str = None
     align: str = "left"
     data_index: str = None
     fixed: Any = None
     tooltip: str = None
-    ellipsis: bool = False
-    copyable: bool = False
+    ellipsis: bool = None
+    copyable: bool = None
     value_enum: Optional[Union[Dict[Any, Any], List[Dict[str, Any]]]] = None
     value_type: str = None
     hide_in_search: bool = True
-    hide_in_table: bool = False
-    hide_in_form: bool = False
+    hide_in_table: bool = None
+    hide_in_form: bool = None
     filters: Optional[Union[bool, Dict[str, str], List[Dict[str, str]]]] = None
     order: int = None
     sorter: Any = None
@@ -31,6 +33,7 @@ class Column(Component):
     @model_validator(mode="after")
     def init(self):
         self.set_key()
+        self.componentkey = self.component_key
         return self
 
     # 设置方法（链式调用）
@@ -43,7 +46,7 @@ class Column(Component):
         return self
 
     def set_attribute(self, attribute: str):
-        self.key = attribute
+        self.componentkey = attribute
         self.component_key = attribute
         self.data_index = attribute
         self.attribute = attribute

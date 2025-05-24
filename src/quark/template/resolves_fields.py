@@ -4,6 +4,7 @@ from ..component.table.column import Column as ColumnComponent
 from ..component.descriptions.descriptions import Descriptions as DescriptionsComponent
 from ..component.table.column import Column
 
+
 class ResolvesFields:
 
     # 字段
@@ -21,27 +22,27 @@ class ResolvesFields:
     # 表格行内操作列宽度
     table_action_column_width: int = 150
 
-    def set_fields(self, fields) -> 'ResolvesFields':
+    def set_fields(self, fields) -> "ResolvesFields":
         """设置字段"""
         self.fields = fields
         return self
-    
-    def set_table_column(self, column) -> 'ResolvesFields':
+
+    def set_table_column(self, column) -> "ResolvesFields":
         """设置表格列组件"""
         self.table_column = column
         return self
 
-    def set_table_row_actions(self, actions) -> 'ResolvesFields':
+    def set_table_row_actions(self, actions) -> "ResolvesFields":
         """设置行内操作"""
         self.table_row_actions = actions
         return self
 
-    def set_table_action_column_title(self, title) -> 'ResolvesFields':
+    def set_table_action_column_title(self, title) -> "ResolvesFields":
         """设置行内操作列标题"""
         self.table_action_column_title = title
         return self
 
-    def set_table_action_column_width(self, width) -> 'ResolvesFields':
+    def set_table_action_column_width(self, width) -> "ResolvesFields":
         """设置行内操作列宽度"""
         self.table_action_column_width = width
         return self
@@ -86,8 +87,7 @@ class ResolvesFields:
         row_actions = self.table_row_actions
         if row_actions:
             action_col = (
-                self.table_column
-                .set_title(self.table_action_column_title)
+                self.table_column.set_title(self.table_action_column_title)
                 .set_width(self.table_action_column_width)
                 .set_attribute("action")
                 .set_value_type("option")
@@ -104,13 +104,13 @@ class ResolvesFields:
         align = getattr(field, "align", "")
         fixed = getattr(field, "fixed", None)
         editable = getattr(field, "editable", False)
-        ellipsis = getattr(field, "ellipsis", False)
-        copyable = getattr(field, "copyable", False)
+        ellipsis = getattr(field, "ellipsis", None)
+        copyable = getattr(field, "copyable", None)
         filters = getattr(field, "filters", None)
-        order = getattr(field, "order", 0)
+        order = getattr(field, "order", None)
         sorter = getattr(field, "sorter", None)
-        span = getattr(field, "span", 1)
-        column_width = getattr(field, "column_width", 0)
+        span = getattr(field, "span", None)
+        column_width = getattr(field, "column_width", None)
 
         col = (
             ColumnComponent()
@@ -141,20 +141,28 @@ class ResolvesFields:
         elif component == "editorField":
             col.set_value_type("text")
         elif component == "treeSelectField":
-            col.set_value_type("treeSelect").set_field_props({"options": field.get_options()})
+            col.set_value_type("treeSelect").set_field_props(
+                {"options": field.get_options()}
+            )
         elif component == "cascaderField":
-            col.set_value_type("cascader").set_field_props({"options": field.get_options()})
+            col.set_value_type("cascader").set_field_props(
+                {"options": field.get_options()}
+            )
         elif component == "selectField":
             opts = field.get_options()
             col.set_value_type("select").set_field_props({"options": opts})
             if isinstance(filters, bool) and filters:
                 col.set_value_enum(field.get_value_enum())
         elif component == "checkboxField":
-            col.set_value_type("checkbox").set_field_props({"options": field.get_options()})
+            col.set_value_type("checkbox").set_field_props(
+                {"options": field.get_options()}
+            )
             if isinstance(filters, bool) and filters:
                 col.set_value_enum(field.get_value_enum())
         elif component == "radioField":
-            col.set_value_type("radio").set_field_props({"options": field.get_options()})
+            col.set_value_type("radio").set_field_props(
+                {"options": field.get_options()}
+            )
             if isinstance(filters, bool) and filters:
                 col.set_value_enum(field.get_value_enum())
         elif component == "switchField":
@@ -184,10 +192,18 @@ class ResolvesFields:
         return [f for f in self.get_fields() if f.is_shown_on_detail()]
 
     def export_fields(self) -> List[Any]:
-        return [f for f in self.get_fields() if getattr(f, "is_shown_on_export", lambda: False)()]
+        return [
+            f
+            for f in self.get_fields()
+            if getattr(f, "is_shown_on_export", lambda: False)()
+        ]
 
     def import_fields(self) -> List[Any]:
-        return [f for f in self.get_fields() if getattr(f, "is_shown_on_import", lambda: False)()]
+        return [
+            f
+            for f in self.get_fields()
+            if getattr(f, "is_shown_on_import", lambda: False)()
+        ]
 
     def creation_form_fields_parser(self, fields: List[Any]) -> List[Any]:
         result = []
@@ -205,7 +221,9 @@ class ResolvesFields:
                         for item in when.items:
                             if item.body:
                                 if isinstance(item.body, list):
-                                    item.body = self.creation_form_fields_parser(item.body)
+                                    item.body = self.creation_form_fields_parser(
+                                        item.body
+                                    )
                                 else:
                                     item.body.build_frontend_rules()
                     if field.is_shown_on_creation():
@@ -231,7 +249,9 @@ class ResolvesFields:
                         for item in when.items:
                             if item.body:
                                 if isinstance(item.body, list):
-                                    item.body = self.update_form_fields_parser(item.body)
+                                    item.body = self.update_form_fields_parser(
+                                        item.body
+                                    )
                                 else:
                                     item.body.build_frontend_rules()
                     if field.is_shown_on_update():
@@ -241,7 +261,9 @@ class ResolvesFields:
                     result.append(field)
         return result
 
-    def detail_fields_parser(self, init_api: Any, fields: List[Any], data: Dict[str, Any]) -> DescriptionsComponent:
+    def detail_fields_parser(
+        self, init_api: Any, fields: List[Any], data: Dict[str, Any]
+    ) -> DescriptionsComponent:
         cols = []
         for field in fields:
             if hasattr(field, "body"):
