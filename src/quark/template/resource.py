@@ -20,29 +20,75 @@ from ..db import db
 
 @dataclass
 class Resource:
-    title: str = "页面标题"  # 页面标题
-    sub_title: str = "页面子标题"  # 页面子标题
-    back_icon: bool = True  # 页面是否携带返回Icon
-    export: bool = False  # 是否具有导出功能
-    export_text: str = "导出"  # 导出按钮文字内容
-    export_path: str = "/api/admin/<resource>/export"  # 导出接口路径
-    page_size: Optional[int] = 10  # 分页配置，默认每页10条
-    page_size_options: List[int] = field(default_factory=lambda: [10, 20, 50, 100])  # 每页显示条数
-    query_order: str = "created_at desc"  # 全局排序规则
-    index_query_order: str = ""  # 列表页排序规则
-    export_query_order: str = ""  # 导出数据排序规则
-    model: Any = field(default=None)
-    form: Form = field(default_factory=Form)
-    table: Table = field(default_factory=Table)
-    table_search: Search = field(default_factory=Search)
-    table_column: Column = field(default_factory=Column)
-    table_tool_bar: ToolBar = field(default_factory=ToolBar)
-    table_tree_bar: TreeBar = field(default_factory=TreeBar)
-    table_title_suffix: str = "列表"
-    table_action_column_title: str = "操作"
-    table_action_column_width: int = 150
-    table_polling: int = 0  # 轮询间隔（秒）
-    table_list_to_tree: bool = False  # 列表数据是否转换为树形结构
+
+    title: Any = ""  
+    """页面标题"""
+
+    sub_title: Any = ""  
+    """页面子标题"""
+
+    back_icon: Any = True  
+    """页面是否携带返回图标"""
+
+    export: bool = False  
+    """是否具有导出功能"""
+
+    export_text: str = "导出"  
+    """导出按钮的文字内容"""
+
+    export_path: str = "/api/admin/<resource>/export"  
+    """导出接口的路径"""
+
+    page_size: Optional[int] = 10  
+    """分页配置，默认每页 10 条"""
+
+    page_size_options: List[int] = field(default_factory=lambda: [10, 20, 50, 100])  
+    """每页可选择的条数选项"""
+
+    query_order: str = "created_at desc"  
+    """全局排序规则"""
+
+    index_query_order: str = ""  
+    """列表页的排序规则"""
+
+    export_query_order: str = ""  
+    """导出数据时的排序规则"""
+
+    model: Any = field(default=None)  
+    """绑定的数据模型"""
+
+    form: 'Form' = field(default_factory='Form')  
+    """表单组件"""
+
+    table: 'Table' = field(default_factory='Table')  
+    """表格组件"""
+
+    table_search: 'Search' = field(default_factory='Search')  
+    """表格搜索组件"""
+
+    table_column: 'Column' = field(default_factory='Column')  
+    """表格列配置"""
+
+    table_tool_bar: 'ToolBar' = field(default_factory='ToolBar')  
+    """表格工具栏配置"""
+
+    table_tree_bar: 'TreeBar' = field(default_factory='TreeBar')  
+    """表格树形栏配置"""
+
+    table_title_suffix: str = "列表"  
+    """表格标题后缀"""
+
+    table_action_column_title: str = "操作"  
+    """操作列标题"""
+
+    table_action_column_width: int = 150  
+    """操作列宽度"""
+
+    table_polling: Any = field(default=None)  
+    """表格轮询间隔时间（单位：秒）"""
+
+    table_list_to_tree: bool = False  
+    """是否将表格数据转换为树形结构"""
 
     def fields(self) -> List[Dict]:
         """字段定义"""
@@ -84,68 +130,68 @@ class Resource:
         """获取导出按钮文本"""
         return self.export_text
 
-    # 获取表单页Form实例
     def get_form(self):
+        """获取表单页 Form 实例"""
         return self.form
 
-    # 获取列表页Table实例
     def get_table(self):
+        """获取列表页 Table 实例"""
         return self.table
 
-    # 获取Search实例
     def get_table_search(self):
+        """获取表格搜索组件 Search 实例"""
         return self.table_search
 
-    # 获取Column实例
     def get_table_column(self):
+        """获取表格列配置 Column 实例"""
         return self.table_column
 
-    # 获取工具栏实例
     def get_table_tool_bar(self):
+        """获取表格工具栏 ToolBar 实例"""
         return self.table_tool_bar
 
-    # 获取树形实例
     def get_table_tree_bar(self):
+        """获取表格树形栏 TreeBar 实例"""
         return self.table_tree_bar
 
-    # 列表页表格标题后缀
     def get_table_title_suffix(self):
+        """获取列表页表格标题后缀"""
         return self.table_title_suffix
 
-    # 列表页表格行为列显示文字
     def get_table_action_column_title(self):
+        """获取表格操作列标题文字"""
         return self.table_action_column_title
 
-    # 列表页表格行为列的宽度
     def get_table_action_column_width(self):
+        """获取表格操作列的宽度"""
         return self.table_action_column_width
 
-    # 获取轮询数据
     def get_table_polling(self):
+        """获取表格轮询数据间隔时间"""
         return self.table_polling
 
-    # 获取分页配置
     def get_page_size(self):
+        """获取分页配置，默认每页数量"""
         return self.page_size
 
-    # 指定每页可以显示多少条
     def get_page_size_options(self):
+        """获取每页可选的数据条数配置"""
         return self.page_size_options
 
-    # 列表页列表数据转换为树形结构
     def get_table_list_to_tree(self):
+        """获取是否将表格数据转换为树形结构"""
         return self.table_list_to_tree
 
-    # 获取全局排序规则
     def get_query_order(self):
+        """获取全局排序规则"""
         return self.query_order
 
-    # 获取列表页排序规则
     def get_index_query_order(self):
+        """获取列表页排序规则"""
         return self.index_query_order
 
-    # 获取导出数据排序规则
     def get_export_query_order(self):
+        """获取导出数据的排序规则"""
         return self.export_query_order
 
     def before_exporting(self, data: List[Dict]) -> List[Any]:
@@ -301,7 +347,7 @@ class Resource:
         # 构建表格配置
         table = (
             table
-            .set_polling(int(table_polling))
+            .set_polling(table_polling)
             .set_title(table_title)
             .set_table_extra_render(table_extra_render)
             .set_tool_bar(table_tool_bar)
