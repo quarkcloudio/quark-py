@@ -14,81 +14,82 @@ from .resolves_fields import ResolvesFields
 from .resolves_actions import ResolvesActions
 from .resolves_searches import ResolvesSearches
 from .performs_queries import PerformsQueries
-from ..service.attachment  import AttachmentService
+from ..service.attachment import AttachmentService
 from ..utils.lister import list_to_tree
 from ..db import db
+
 
 @dataclass
 class Resource:
 
-    title: Any = ""  
-    """页面标题"""
+    # 页面标题
+    title: Any = ""
 
-    sub_title: Any = ""  
-    """页面子标题"""
+    # 页面副标题
+    sub_title: Any = ""
 
-    back_icon: Any = True  
-    """页面是否携带返回图标"""
+    # 是否显示返回图标
+    back_icon: Any = True
 
-    export: bool = False  
-    """是否具有导出功能"""
+    # 是否启用导出功能
+    export: bool = False
 
-    export_text: str = "导出"  
-    """导出按钮的文字内容"""
+    # 导出按钮的文本内容
+    export_text: str = "导出"
 
-    export_path: str = "/api/admin/<resource>/export"  
-    """导出接口的路径"""
+    # 导出接口的路径
+    export_path: str = "/api/admin/<resource>/export"
 
-    page_size: Optional[int] = 10  
-    """分页配置，默认每页 10 条"""
+    # 每页显示的数据条数，默认为 10
+    page_size: Optional[int] = 10
 
-    page_size_options: List[int] = field(default_factory=lambda: [10, 20, 50, 100])  
-    """每页可选择的条数选项"""
+    # 可选的每页条数选项
+    page_size_options: List[int] = field(default_factory=lambda: [10, 20, 50, 100])
 
-    query_order: str = "created_at desc"  
-    """全局排序规则"""
+    # 全局数据排序规则
+    query_order: str = "created_at desc"
 
-    index_query_order: str = ""  
-    """列表页的排序规则"""
+    # 列表页面的排序规则。
+    index_query_order: str = ""
 
-    export_query_order: str = ""  
-    """导出数据时的排序规则"""
+    # 导出数据时的排序规则
+    export_query_order: str = ""
 
-    model: Any = field(default=None)  
-    """绑定的数据模型"""
+    # 数据模型对象
+    model: Any = field(default=None)
 
-    form: 'Form' = field(default_factory='Form')  
-    """表单组件"""
+    # 表单组件实例
+    form: Form = field(default_factory=Form)
 
-    table: 'Table' = field(default_factory='Table')  
-    """表格组件"""
+    # 表格组件实例
+    table: Table = field(default_factory=Table)
 
-    table_search: 'Search' = field(default_factory='Search')  
-    """表格搜索组件"""
+    # 表格搜索组件
+    table_search: Search = field(default_factory=Search)
 
-    table_column: 'Column' = field(default_factory='Column')  
-    """表格列配置"""
+    # 表格列配置组件
+    table_column: Column = field(default_factory=Column)
 
-    table_tool_bar: 'ToolBar' = field(default_factory='ToolBar')  
-    """表格工具栏配置"""
+    # 表格工具栏组件
+    table_tool_bar: ToolBar = field(default_factory=ToolBar)
 
-    table_tree_bar: 'TreeBar' = field(default_factory='TreeBar')  
-    """表格树形栏配置"""
+    # 表格树形筛选组件
+    table_tree_bar: TreeBar = field(default_factory=TreeBar)
 
-    table_title_suffix: str = "列表"  
-    """表格标题后缀"""
+    # 表格标题后缀文字
+    table_title_suffix: str = "列表"
 
-    table_action_column_title: str = "操作"  
-    """操作列标题"""
+    # 操作列标题
+    table_action_column_title: str = "操作"
 
-    table_action_column_width: int = 150  
-    """操作列宽度"""
+    # 操作列宽度，单位为像素
+    table_action_column_width: int = 150
 
-    table_polling: Any = field(default=None)  
-    """表格轮询间隔时间（单位：秒）"""
+    # 表格数据轮询间隔时间（秒）
+    table_polling: Any = field(default=None)
 
-    table_list_to_tree: bool = False  
-    """是否将表格数据转换为树形结构"""
+    # 是否将表格数据转换为树形结构
+    table_list_to_tree: bool = False
 
     def fields(self) -> List[Dict]:
         """字段定义"""
@@ -220,17 +221,19 @@ class Resource:
 
     def page_container_component_render(self, body: Any) -> PageContainer:
         """页面容器组件渲染"""
-        header = PageHeader().set_title(self.get_title()).set_sub_title(self.get_sub_title())
+        header = (
+            PageHeader().set_title(self.get_title()).set_sub_title(self.get_sub_title())
+        )
         if not self.get_back_icon():
             header.set_back_icon(False)
         return PageContainer().set_header(header).set_body(body).to_json()
-    
+
     def query(self) -> Any:
         """
         全局查询
         """
         return db.session.query(self.get_model())
-    
+
     def index_query(self) -> Any:
         """
         列表查询
@@ -274,10 +277,11 @@ class Resource:
         """
         列表页工具栏组件
         """
-        index_table_actions = ResolvesActions().set_actions(self.actions()).index_table_actions()
+        index_table_actions = (
+            ResolvesActions().set_actions(self.actions()).index_table_actions()
+        )
         return (
-            self
-            .get_table_tool_bar()
+            self.get_table_tool_bar()
             .set_title(self.index_table_title())
             .set_actions(index_table_actions)
             .set_menu(self.index_table_menu())
@@ -297,18 +301,15 @@ class Resource:
 
     def index_table_menu_items(self) -> List[Dict[str, str]]:
         return self.menu_items()
-    
+
     def index_table_menu(self) -> Dict[str, Any]:
         # 获取菜单项
         items = self.index_table_menu_items()
         if items is None:
             return {}
-        
+
         # 返回表格菜单
-        return {
-            "type": "tab",
-            "items": items
-        }
+        return {"type": "tab", "items": items}
 
     def index_component_render(self, data: Any) -> Any:
         """
@@ -321,15 +322,22 @@ class Resource:
         table_tool_bar = self.index_table_tool_bar()
         table_tree_bar = self.index_table_tree_bar()
         table_columns = (
-                ResolvesFields().
-                set_fields(self.fields()).
-                set_table_column(self.get_table_column).
-                set_table_action_column_title(self.get_table_action_column_title()).
-                set_table_action_column_width(self.get_table_action_column_width()).
-                index_table_columns()
-            )
-        index_table_alert_actions = ResolvesActions().set_actions(self.actions()).index_table_alert_actions()
-        index_searches = ResolvesSearches().set_search(self.get_table_search()).set_searches(self.searches()).index_searches()
+            ResolvesFields()
+            .set_fields(self.fields())
+            .set_table_column(self.get_table_column)
+            .set_table_action_column_title(self.get_table_action_column_title())
+            .set_table_action_column_width(self.get_table_action_column_width())
+            .index_table_columns()
+        )
+        index_table_alert_actions = (
+            ResolvesActions().set_actions(self.actions()).index_table_alert_actions()
+        )
+        index_searches = (
+            ResolvesSearches()
+            .set_search(self.get_table_search())
+            .set_searches(self.searches())
+            .index_searches()
+        )
 
         # 是否开启树形表格
         table_list_to_tree = self.get_table_list_to_tree()
@@ -338,8 +346,7 @@ class Resource:
 
         # 构建表格配置
         table = (
-            table
-            .set_polling(table_polling)
+            table.set_polling(table_polling)
             .set_title(table_title)
             .set_table_extra_render(table_extra_render)
             .set_tool_bar(table_tool_bar)
@@ -363,11 +370,11 @@ class Resource:
             total = data.get("total")
             items = data.get("items")
 
-            return table.set_pagination(current, page_size_val, int(total), 1, page_size_options).set_datasource(items)
+            return table.set_pagination(
+                current, page_size_val, int(total), 1, page_size_options
+            ).set_datasource(items)
 
-    def before_index_showing(
-        self, list_data: List[Dict[str, Any]]
-    ) -> List[Any]:
+    def before_index_showing(self, list_data: List[Dict[str, Any]]) -> List[Any]:
         """
         页面显示前回调
         """
@@ -456,7 +463,11 @@ class Resource:
             pass
 
         # 构建查询
-        query = PerformsQueries().set_query(query).build_index_query(searches, column_filters)
+        query = (
+            PerformsQueries()
+            .set_query(query)
+            .build_index_query(searches, column_filters)
+        )
 
         # 获取分页配置
         page_size = self.get_page_size()
@@ -483,7 +494,13 @@ class Resource:
         total = query.count()
 
         # 获取当前页数据
-        results = PerformsQueries().apply_index_orderings(query, orderings).limit(page_size).offset((page - 1) * page_size).all()
+        results = (
+            PerformsQueries()
+            .apply_index_orderings(query, orderings)
+            .limit(page_size)
+            .offset((page - 1) * page_size)
+            .all()
+        )
 
         # 解析列表数据
         parsed_items = self.performs_index_list(results)
@@ -498,7 +515,7 @@ class Resource:
             "total": total,
             "items": parsed_items,
         }
-    
+
         # 组件渲染
         body = self.index_component_render(data)
 
@@ -506,7 +523,7 @@ class Resource:
         component = self.page_component_render(body)
 
         return component
-    
+
     def editable_render(self) -> Any:
         """行内编辑渲染"""
         pass
