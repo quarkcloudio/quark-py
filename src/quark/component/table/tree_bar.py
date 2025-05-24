@@ -45,9 +45,6 @@ class TreeData(Component):
     selectable: Optional[bool] = None
 
 
-TreeData.model_rebuild()
-
-
 class TreeBar(Component):
     """
     定义树形组件的数据结构和操作方法。
@@ -92,17 +89,17 @@ class TreeBar(Component):
     auto_expand_parent: bool = False
     block_node: bool = False
     checkable: bool = False
-    checked_keys: List[Any] = Field(default_factory=list)
+    checked_keys: List[Any] = None
     check_strictly: bool = False
-    default_checked_keys: List[Any] = Field(default_factory=list)
+    default_checked_keys: List[Any] = None
     default_expand_all: bool = True
-    default_expanded_keys: List[Any] = Field(default_factory=list)
+    default_expanded_keys: List[Any] = None
     default_expand_parent: bool = False
-    default_selected_keys: List[Any] = Field(default_factory=list)
+    default_selected_keys: List[Any] = None
     default_value: Optional[Any] = None
     disabled: bool = False
     draggable: bool = False
-    expanded_keys: List[Any] = Field(default_factory=list)
+    expanded_keys: List[Any] = None
     field_names: Optional[FieldNames] = None
     height: Optional[int] = None
     icon: Optional[Any] = None
@@ -111,11 +108,11 @@ class TreeBar(Component):
     root_class_name: Optional[str] = None
     root_style: Optional[Any] = None
     selectable: bool = True
-    selected_keys: List[Any] = Field(default_factory=list)
+    selected_keys: List[Any] = None
     show_icon: bool = False
     show_line: bool = True
     switcher_icon: Optional[Any] = None
-    tree_data: List[TreeData] = Field(default_factory=list)
+    tree_data: List[TreeData] = None
     value: Optional[Any] = None
     virtual: bool = False
     style: dict = Field(default_factory=dict)
