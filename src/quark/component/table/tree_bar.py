@@ -2,6 +2,7 @@ from pydantic import Field, model_validator
 from typing import Any, List, Optional, Union
 from ..component import Component
 
+
 class FieldNames(Component):
     """
     定义树节点字段名称的结构。
@@ -11,9 +12,11 @@ class FieldNames(Component):
         key (str): 树节点的键字段名称。
         children (str): 树节点的子节点字段名称。
     """
+
     title: str
     key: str
     children: str
+
 
 class TreeData(Component):
     """
@@ -30,9 +33,10 @@ class TreeData(Component):
         is_leaf (Optional[bool]): 是否为叶子节点。
         selectable (Optional[bool]): 是否可选中节点。
     """
+
     title: str
     key: Any
-    children: List['TreeData'] = Field(default_factory=list)
+    children: List["TreeData"] = Field(default_factory=list)
     checkable: Optional[bool] = None
     disable_checkbox: Optional[bool] = None
     disabled: Optional[bool] = None
@@ -40,7 +44,9 @@ class TreeData(Component):
     is_leaf: Optional[bool] = None
     selectable: Optional[bool] = None
 
+
 TreeData.model_rebuild()
+
 
 class TreeBar(Component):
     """
@@ -80,6 +86,7 @@ class TreeBar(Component):
         virtual (bool): 设置 false 时关闭虚拟滚动。
         style (dict): 自定义样式。
     """
+
     component: str = "treeBar"
     name: str = "treeBarSelectedKeys"
     auto_expand_parent: bool = False
@@ -457,7 +464,14 @@ class TreeBar(Component):
         self.switcher_icon = switcher_icon
         return self
 
-    def build_tree(self, items: List[dict], pid: int, parent_key_name: str, key_name: str, title_name: str) -> List[TreeData]:
+    def build_tree(
+        self,
+        items: List[dict],
+        pid: int,
+        parent_key_name: str,
+        key_name: str,
+        title_name: str,
+    ) -> List[TreeData]:
         """
         使用递归构建树结构。
 
@@ -479,13 +493,22 @@ class TreeBar(Component):
             title = item.get(title_name)
 
             if parent_key == pid:
-                children = self.build_tree(items, key, parent_key_name, key_name, title_name)
+                children = self.build_tree(
+                    items, key, parent_key_name, key_name, title_name
+                )
                 option = TreeData(title=title, key=key, children=children)
                 tree.append(option)
 
         return tree
 
-    def list_to_tree_data(self, list_data: List[dict], root_id: int, parent_key_name: str, key_name: str, title_name: str) -> List[TreeData]:
+    def list_to_tree_data(
+        self,
+        list_data: List[dict],
+        root_id: int,
+        parent_key_name: str,
+        key_name: str,
+        title_name: str,
+    ) -> List[TreeData]:
         """
         将列表数据转换为树结构数据。
 
@@ -499,7 +522,9 @@ class TreeBar(Component):
         Returns:
             List[TreeData]: 树结构数据列表。
         """
-        return self.build_tree(list_data, root_id, parent_key_name, key_name, title_name)
+        return self.build_tree(
+            list_data, root_id, parent_key_name, key_name, title_name
+        )
 
     def set_tree_data(self, *tree_data: Union[List[TreeData], int, str]):
         """
@@ -514,9 +539,13 @@ class TreeBar(Component):
         if len(tree_data) == 1 and isinstance(tree_data[0], list):
             self.tree_data = tree_data[0]
         elif len(tree_data) == 4:
-            self.tree_data = self.list_to_tree_data(tree_data[0], 0, tree_data[1], tree_data[2], tree_data[3])
+            self.tree_data = self.list_to_tree_data(
+                tree_data[0], 0, tree_data[1], tree_data[2], tree_data[3]
+            )
         elif len(tree_data) == 5:
-            self.tree_data = self.list_to_tree_data(tree_data[0], tree_data[1], tree_data[2], tree_data[3], tree_data[4])
+            self.tree_data = self.list_to_tree_data(
+                tree_data[0], tree_data[1], tree_data[2], tree_data[3], tree_data[4]
+            )
         return self
 
     def set_style(self, style: dict):
