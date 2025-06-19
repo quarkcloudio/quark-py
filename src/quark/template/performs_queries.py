@@ -1,97 +1,91 @@
 import json
-from flask import request
+from fastapi import Request
 from typing import Any, Optional
-from sqlalchemy import text
+from tortoise.models import Model
+
 
 class PerformsQueries:
 
+    # 请求对象
+    request: Request = None
+
     # 查询对象
-    query: Optional[Any] = None
+    query: Model = None
 
     # 全局查询排序
-    query_order: Optional[str] = None
+    query_order: str = None
 
     # 列表查询排序
-    index_query_order: Optional[str] = None
+    index_query_order: str = None
 
     # 导出查询排序
-    export_query_order: Optional[str] = None
+    export_query_order: str = None
 
-    def set_query(self, query) -> 'PerformsQueries':
-        """设置查询对象"""
+    def __init__(
+        self,
+        request: Optional[Request] = None,
+        query: Optional[Any] = None,
+        query_order: Optional[str] = None,
+        index_query_order: Optional[str] = None,
+        export_query_order: Optional[str] = None,
+    ):
+        self.request = request
         self.query = query
-        return self
-
-    def set_query_order(self, query_order) -> 'PerformsQueries':
-        """设置全局查询排序"""
         self.query_order = query_order
-        return self
-
-    def set_index_query_order(self, index_query_order) -> 'PerformsQueries':
-        """设置列表查询排序"""
         self.index_query_order = index_query_order
-        return self
-    
-    def set_export_query_order(self, export_query_order) -> 'PerformsQueries':
-        """设置导出查询排序"""
         self.export_query_order = export_query_order
-        return self
 
     # 创建行为查询
-    def build_action_query(self, query):
+    def build_action_query(self, query: Model) -> Model:
         return self.action_query(query)
 
     # 创建详情页查询
-    def build_detail_query(self, query):
+    def build_detail_query(self, query: Model) -> Model:
         return self.detail_query(query)
 
     # 创建编辑页查询
-    def build_edit_query(self, query):
+    def build_edit_query(self, query: Model) -> Model:
         return self.edit_query(query)
 
     # 创建表格行内编辑查询
-    def build_editable_query(self, query):
+    def build_editable_query(self, query: Model) -> Model:
         return self.editable_query(query)
 
     # 创建导出查询
-    def build_export_query(self, search, column_filters):
+    def build_export_query(self, search, column_filters) -> Model:
         query = self.export_query(self.query)
         query = self.apply_search(query, search)
         query = self.apply_column_filters(query, column_filters)
         return query
 
     # 创建列表查询
-    def build_index_query(self, search, column_filters):
+    def build_index_query(self, search, column_filters) -> Model:
         query = self.index_query(self.query)
         query = self.apply_search(query, search)
         query = self.apply_column_filters(query, column_filters)
         return query
 
     # 创建更新查询
-    def build_update_query(self, query):
+    def build_update_query(self, query: Model) -> Model:
         return self.update_query(query)
 
     # 执行搜索表单查询
-    def apply_search(self, query, search):
-        queries = request.args.get('queries', {})
-        data = {}
-        if "search" not in queries:
-            return query
-        try:
-            data = json.loads(queries["search"])
-        except json.JSONDecodeError:
+    def apply_search(self, query: Model, search) -> Model:
+        json_string = self.request.query_params.get("search", {})
+        if not json_string:
             return query
 
+        data = json.loads(json_string)
         for v in search:
             column = v.get_column(v)
             value = data.get(column)
             if value is not None:
-                query = v.apply(query, value)
+                query = v.apply(self.request, query, value)
 
         return query
 
     # 执行表格列上过滤器查询
-    def apply_column_filters(self, query, filters):
+    def apply_column_filters(self, query: Model, filters) -> Model:
         if not filters:
             return query
         for k, v in filters.items():
@@ -99,26 +93,26 @@ class PerformsQueries:
                 query = query.filter(getattr(query, k).in_(v))
         return query
 
-    def apply_index_orderings(self, query, orderings):
+    def apply_index_orderings(self, query: Model, orderings) -> Model:
         default_order = self.query_order
         if not default_order:
             default_order = self.index_query_order
         if not default_order:
-            default_order = "id desc"
+            default_order = "-id"
         return self.apply_orderings(query, orderings, default_order)
 
-    def apply_export_orderings(self, query, orderings):
+    def apply_export_orderings(self, query: Model, orderings) -> Model:
         default_order = self.query_order
         if not default_order:
             default_order = self.export_query_order
         if not default_order:
-            default_order = "id desc"
+            default_order = "-id"
         return self.apply_orderings(query, orderings, default_order)
 
     # 执行排序查询
-    def apply_orderings(self, query, orderings, default_order):
+    def apply_orderings(self, query: Model, orderings, default_order: str) -> Model:
         if not orderings:
-            return query.order_by(text(default_order))
+            return query.order_by(default_order)
         for key, v in orderings.items():
             if v == "descend":
                 query = query.order_by(getattr(query, key).desc())
@@ -127,50 +121,50 @@ class PerformsQueries:
         return query
 
     # 行为查询
-    def action_query(self, query):
-        id_param = request.args.get("id")
+    def action_query(self, query: Model) -> Model:
+        id_param = self.request.query_params.get("id")
         if id_param:
             ids = id_param.split(",") if "," in id_param else [id_param]
             query = query.filter(query.id.in_(ids))
         return query
 
     # 详情查询
-    def detail_query(self, query):
-        id_param = request.args.get("id")
+    def detail_query(self, query: Model) -> Model:
+        id_param = self.request.query_params.get("id")
         if id_param:
             query = query.filter(query.id == id_param)
         return query
 
     # 编辑查询
-    def edit_query(self, query):
-        id_param = request.args.get("id")
+    def edit_query(self, query: Model) -> Model:
+        id_param = self.request.query_params.get("id")
         if id_param:
             query = query.filter(query.id == id_param)
         return query
 
     # 表格行内编辑查询
-    def editable_query(self, query):
-        data = request.args
+    def editable_query(self, query: Model) -> Model:
+        data = self.request.query_params
         if data:
             if "id" in data:
                 query = query.filter(query.id == data["id"])
         return query
 
     # 导出查询
-    def export_query(self, query):
-        id_param = request.args.get("id")
+    def export_query(self, query: Model) -> Model:
+        id_param = self.request.query_params.get("id")
         if id_param:
             ids = id_param.split(",") if "," in id_param else [id_param]
             query = query.filter(query.id.in_(ids))
         return query
 
     # 列表查询
-    def index_query(self, query):
+    def index_query(self, query: Model) -> Model:
         return query
 
     # 更新查询
-    def update_query(self, query):
-        data = request.get_json() or {}
+    def update_query(self, query: Model) -> Model:
+        data = self.request.json() or {}
         if "id" in data:
             query = query.filter(query.id == data["id"])
         return query

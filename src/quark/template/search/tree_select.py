@@ -1,10 +1,10 @@
-class TreeSelect:
-    def __init__(self):
-        self.component = None
-        self.tree_select_options = []
+from pydantic import model_validator
+from .search import Search
 
-    # 加载初始化数据
-    def new(self, ctx):
+
+class TreeSelect(Search):
+    @model_validator(mode="after")
+    def init(self):
         self.component = "treeSelectField"
         return self
 

@@ -1,4 +1,4 @@
-from flask import request
+from fastapi import Request
 from typing import Any, List, Dict, Optional
 from ..component.table.column import Column as ColumnComponent
 from ..component.descriptions.descriptions import Descriptions as DescriptionsComponent
@@ -6,6 +6,9 @@ from ..component.table.column import Column
 
 
 class ResolvesFields:
+
+    # 请求
+    request: Request = None
 
     # 字段
     fields: Optional[Any] = None
@@ -21,6 +24,27 @@ class ResolvesFields:
 
     # 表格行内操作列宽度
     table_action_column_width: int = 150
+
+    def __init__(
+        self,
+        request: Request,
+        fields: Optional[Any] = None,
+        table_column: Column = None,
+        table_row_actions: Optional[Any] = None,
+        table_action_column_title: str = "操作",
+        table_action_column_width: int = 150,
+    ):
+        self.request = request
+        self.fields = fields
+        self.table_column = table_column
+        self.table_row_actions = table_row_actions
+        self.table_action_column_title = table_action_column_title
+        self.table_action_column_width = table_action_column_width
+
+    def set_request(self, request) -> "ResolvesFields":
+        """设置请求"""
+        self.request = request
+        return self
 
     def set_fields(self, fields) -> "ResolvesFields":
         """设置字段"""
@@ -48,21 +72,24 @@ class ResolvesFields:
         return self
 
     def get_fields(self, include_when: bool = True) -> List[Any]:
-        return self._find_fields(self.fields, include_when)
+        return self.find_fields(self.fields, include_when)
 
-    def _find_fields(self, fields: List[Any], include_when: bool) -> List[Any]:
+    def get_fields_without_when(self, include_when: bool = False) -> List[Any]:
+        return self.find_fields(self.fields, include_when)
+
+    def find_fields(self, fields: List[Any], include_when: bool) -> List[Any]:
         result = []
         for field in fields:
             if not hasattr(field, "body"):
                 result.append(field)
                 if include_when and hasattr(field, "when"):
-                    result.extend(self._get_when_fields(field))
+                    result.extend(self.get_when_fields(field))
             else:
-                sub_fields = self._find_fields(field.body, include_when)
+                sub_fields = self.find_fields(field.body, include_when)
                 result.extend(sub_fields)
         return result
 
-    def _get_when_fields(self, item: Any) -> List[Any]:
+    def get_when_fields(self, item: Any) -> List[Any]:
         when_fields = []
         if not hasattr(item, "when") or getattr(item, "when") is None:
             return when_fields
@@ -81,7 +108,7 @@ class ResolvesFields:
     def index_table_columns(self) -> List[ColumnComponent]:
         columns = []
         for field in self.index_fields():
-            col = self._field_to_column(field)
+            col = self.field_to_column(field)
             if col:
                 columns.append(col)
         row_actions = self.table_row_actions
@@ -97,7 +124,7 @@ class ResolvesFields:
             columns.append(action_col)
         return columns
 
-    def _field_to_column(self, field: Any) -> ColumnComponent:
+    def field_to_column(self, field: Any) -> ColumnComponent:
         name = getattr(field, "name", "")
         label = getattr(field, "label", "")
         component = getattr(field, "component", "")
@@ -177,7 +204,7 @@ class ResolvesFields:
             col.set_value_type(component)
 
         if editable:
-            editable_api = request.path.replace("/index", "/editable")
+            editable_api = self.request.url.path.replace("/index", "/editable")
             col.set_editable(component, field.get_options(), editable_api)
 
         return col
@@ -185,11 +212,28 @@ class ResolvesFields:
     def creation_fields(self) -> List[Any]:
         return [f for f in self.get_fields() if f.is_shown_on_creation()]
 
+    def creation_fields_without_when(self) -> List[Any]:
+        return [f for f in self.get_fields_without_when() if f.is_shown_on_creation()]
+
+    def creation_fields_within_components(self) -> List[Any]:
+        return self.creation_form_fields_parser(self.fields)
+
     def update_fields(self) -> List[Any]:
         return [f for f in self.get_fields() if f.is_shown_on_update()]
 
+    def update_fields_without_when(self) -> List[Any]:
+        return [f for f in self.get_fields_without_when() if f.is_shown_on_update()]
+
+    def update_fields_within_components(self) -> List[Any]:
+        return self.update_form_fields_parser(self.fields)
+
     def detail_fields(self) -> List[Any]:
         return [f for f in self.get_fields() if f.is_shown_on_detail()]
+
+    def detail_fields_within_components(
+        self, init_api: Any, data: Dict[str, Any], detail_actions: List[Any]
+    ) -> List[Any]:
+        return self.detail_fields_parser(init_api, self.fields, data, detail_actions)
 
     def export_fields(self) -> List[Any]:
         return [
@@ -204,6 +248,9 @@ class ResolvesFields:
             for f in self.get_fields()
             if getattr(f, "is_shown_on_import", lambda: False)()
         ]
+
+    def import_fields_without_when(self) -> List[Any]:
+        return [f for f in self.get_fields_without_when() if f.is_shown_on_import()]
 
     def creation_form_fields_parser(self, fields: List[Any]) -> List[Any]:
         result = []
@@ -225,9 +272,11 @@ class ResolvesFields:
                                         item.body
                                     )
                                 else:
-                                    item.body.build_frontend_rules()
+                                    item.body.build_frontend_rules(
+                                        self.request.url.path
+                                    )
                     if field.is_shown_on_creation():
-                        field.build_frontend_rules()
+                        field.build_frontend_rules(self.request.url.path)
                         result.append(field)
                 else:
                     result.append(field)
@@ -253,16 +302,22 @@ class ResolvesFields:
                                         item.body
                                     )
                                 else:
-                                    item.body.build_frontend_rules()
+                                    item.body.build_frontend_rules(
+                                        self.request.url.path
+                                    )
                     if field.is_shown_on_update():
-                        field.build_frontend_rules()
+                        field.build_frontend_rules(self.request.url.path)
                         result.append(field)
                 else:
                     result.append(field)
         return result
 
     def detail_fields_parser(
-        self, init_api: Any, fields: List[Any], data: Dict[str, Any]
+        self,
+        init_api: Any,
+        fields: List[Any],
+        data: Dict[str, Any],
+        detail_actions: List[Any],
     ) -> DescriptionsComponent:
         cols = []
         for field in fields:
@@ -272,7 +327,7 @@ class ResolvesFields:
                 setattr(field, "body", parsed_body)
                 cols.append(field)
             elif field.is_shown_on_detail():
-                col = self._field_to_column(field)
+                col = self.field_to_column(field)
                 if col:
                     cols.append(col)
 
@@ -284,8 +339,5 @@ class ResolvesFields:
             .set_column(2)
             .set_columns(cols)
             .set_data_source(data)
-            .set_actions(self.detail_actions())
+            .set_actions(detail_actions)
         )
-
-    def detail_actions(self) -> List[Any]:
-        return []

@@ -1,5 +1,5 @@
 ## 介绍
-QuarkPy是一个基于Flask + Ant Design Pro 前后端分离的管理后台
+QuarkPy是一个基于FastAPI + Ant Design Pro 前后端分离的管理后台
 
 ## 技术支持
 为了避免打扰作者日常工作，你可以在Github上提交 [Issues](https://github.com/quarkcloudio/quark-py/issues)

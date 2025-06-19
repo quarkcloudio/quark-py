@@ -1,40 +1,90 @@
 import json
-from datetime import datetime
-from typing import Any, Optional
-from flask import request
+from fastapi import Request
+from tortoise.models import Model
+from ..performs_queries import PerformsQueries
+from ..resolves_actions import ResolvesActions
+from ..performs_queries import PerformsQueries
+from ...services.attachment import AttachmentService
+
 
 class IndexRequest:
 
-    # 挂载模型
-    model: Optional[Any] = None
+    # 请求对象
+    request: Request = None
 
-    def query_data(self, ctx):
+    # 查询对象
+    query: Model = None
+
+    # 列表页字段
+    fields: list = None
+
+    # 搜索项
+    searches: list = None
+
+    # 全局数据排序规则
+    query_order: str = None
+
+    # 列表页面的排序规则
+    index_query_order: str = None
+
+    # 分页数量
+    page_size: int = None
+
+    # 分页配置
+    page_size_options: list = None
+
+    def __init__(
+        self,
+        request: Request,
+        query: Model,
+        query_order: str,
+        index_query_order: str,
+        fields: list,
+        searches: list,
+        page_size: int,
+        page_size_options: list,
+    ):
+        self.request = request
+        self.query = query
+        self.query_order = query_order
+        self.index_query_order = index_query_order
+        self.fields = fields
+        self.searches = searches
+        self.page_size = page_size
+        self.page_size_options = page_size_options
+
+    async def query_data(self):
         """
         查询并返回列表数据
         """
-        template = self.get_template(ctx)  # 需要替换为你的模板实例获取方式
-        model_instance = template.get_model()  # 获取模型类
-        query = db.session.query(model_instance)
 
-        searches = template.searches(request)
-        filters = template.filters(request)
+        # 获取列过滤条件
         column_filters = self.column_filters()
+
+        # 获取排序规则
         orderings = self.orderings()
 
         # 构建查询
-        query = template.build_index_query(query, searches, filters, column_filters, orderings)
+        query = PerformsQueries(
+            request=self.request,
+            query=self.query,
+        ).build_index_query(self.searches, column_filters)
 
         # 获取分页配置
-        page_size = template.get_page_size()
-        page_size_options = template.get_page_size_options()
-
+        page_size = self.page_size
+        page_size_options = self.page_size_options
         if not page_size or not isinstance(page_size, int):
-            results = query.all()
-            parsed_results = self.performs_list(results)
-            return parsed_results
+            index_query = PerformsQueries(
+                request=self.request,
+                query_order=self.query_order,
+                index_query_order=self.index_query_order,
+            ).apply_index_orderings(query, orderings)
+
+            results = await index_query.all()
+            return self.performs_list(results)
 
         # 分页参数
-        data = request.args.get("search")
+        data = self.request.query_params.get("search")
         search_params = {}
         if data:
             try:
@@ -46,18 +96,25 @@ class IndexRequest:
         page_size = int(search_params.get("pageSize", page_size))
 
         # 获取总数
-        total = query.count()
+        total = await query.count()
+
+        # 获取排序规则
+        index_query = PerformsQueries(
+            request=self.request,
+            query_order=self.query_order,
+            index_query_order=self.index_query_order,
+        ).apply_index_orderings(query, orderings)
 
         # 获取当前页数据
-        results = query.limit(page_size).offset((page - 1) * page_size).all()
+        results = (
+            await index_query.limit(page_size).offset((page - 1) * page_size).all()
+        )
 
         # 解析列表数据
         parsed_items = self.performs_list(results)
 
-        # 列表显示前回调
-        parsed_items = template.before_index_showing(parsed_items)
-
-        return {
+        # 构建返回数据
+        data = {
             "page": page,
             "pageSize": page_size,
             "pageSizeOptions": page_size_options,
@@ -65,67 +122,67 @@ class IndexRequest:
             "items": parsed_items,
         }
 
+        return data
+
     def column_filters(self):
         """
         获取列过滤条件
         """
-        filter_str = request.args.get("filter")
-        if not filter_str:
-            return {}
+        filter_str = self.request.query_params.get("filter")
+        column_filters = {}
         try:
-            return json.loads(filter_str)
+            column_filters = json.loads(filter_str)
         except:
-            return {}
+            pass
+        return column_filters
 
     def orderings(self):
         """
         获取排序规则
         """
-        sorter_str = request.args.get("sorter")
-        if not sorter_str:
-            return {}
+        sorter_str = self.request.query_params.get("sorter")
+        orderings = {}
         try:
-            return json.loads(sorter_str)
+            orderings = json.loads(sorter_str)
         except:
-            return {}
+            pass
+        return orderings
 
     def performs_list(self, items):
         """
         处理列表字段
         """
         result = []
-        template = self.get_template(request)
-        index_fields = template.index_fields(request)
-
+        index_fields = self.fields
         for item in items:
-            item_dict = item.to_dict() if hasattr(item, "to_dict") else item.__dict__
             fields = {}
 
             for field in index_fields:
-                component = field.get("component")
-                name = field.get("name")
+                component = field.component
+                name = field.name
 
                 if component == "actionField":
-                    # 行为字段
-                    items_func = field.get("get_callback")
-                    if items_func:
-                        action_items = items_func(item_dict)
+                    items_callback = field.callback
+                    if items_callback:
+                        action_items = items_callback(item)
                     else:
-                        action_items = field.get("items", [])
+                        action_items = field.items
 
                     rendered_actions = []
                     for action in action_items:
-                        # 初始化行为
-                        action.init(request)
-                        rendered_actions.append(template.build_action(request, action))
+                        rendered_actions.append(
+                            ResolvesActions()
+                            .set_request(self.request)
+                            .build_action(action)
+                        )
 
                     fields[name] = rendered_actions
                 else:
-                    callback = field.get("callback")
+                    callback = field.callback
                     if callback:
-                        fields[name] = callback(item_dict)
+                        fields[name] = callback(item)
                     else:
-                        value = item_dict.get(name)
+                        value = getattr(item, name, None)
                         if value is None:
                             continue
 
@@ -137,24 +194,9 @@ class IndexRequest:
                                 except:
                                     pass
 
-                        # 时间字段格式化
-                        if component in ["datetimeField", "dateField"]:
-                            fmt = field.get("format", "")
-                            fmt = (
-                                fmt.replace("YYYY", "%Y")
-                                .replace("MM", "%m")
-                                .replace("DD", "%d")
-                                .replace("HH", "%H")
-                                .replace("mm", "%M")
-                                .replace("ss", "%S")
-                            )
-                            if isinstance(value, datetime):
-                                value = value.strftime(fmt)
-
                         # 图片字段处理
                         if component in ["imageField", "imagePickerField"]:
-                            from your_app.services.attachment import get_image_url
-                            value = get_image_url(value)
+                            value = AttachmentService().get_image_url(value)
 
                         fields[name] = value
 

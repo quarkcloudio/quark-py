@@ -1,6 +1,5 @@
-from dataclasses import dataclass, field
-from typing import Optional, Any, List
-import i18n
+from dataclasses import dataclass
+
 
 @dataclass
 class Page:

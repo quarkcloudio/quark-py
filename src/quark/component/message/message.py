@@ -2,9 +2,10 @@ from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
 from ..component import Component
 
+
 class Message(Component):
     component: str = Field(default="message")
-    class_name: str = Field(default=None, alias="className")
+    class_name: str = Field(default=None)
     type: str = Field(default="success")
     content: Any = Field(default=None)
     duration: int = Field(default=0)
@@ -13,29 +14,18 @@ class Message(Component):
     data: Any = Field(default=None)
     url: str = Field(default="")
 
-    class Config:
-        validate_by_name = True
-
     # 返回成功
     @classmethod
-    def success(cls, content, data = None, url = ""):
-        return (cls()
-                .set_type("success")
-                .set_content(content)
-                .set_url(url)
-                .set_data(data)
-                .to_json()
-            )
+    def success(cls, content, data=None, url=""):
+        return (
+            cls().set_type("success").set_content(content).set_url(url).set_data(data)
+        )
 
     # 返回失败
     @classmethod
-    def error(cls, content, url = ""):
-        return (cls()
-                .set_type("error")
-                .set_content(content)
-                .set_url(url)
-                .to_json()
-            )
+    def error(cls, content, url=""):
+        return cls().set_type("error").set_content(content).set_url(url)
+
     @model_validator(mode="after")
     def init(self):
         self.component = "message"

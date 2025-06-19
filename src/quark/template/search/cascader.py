@@ -1,39 +1,29 @@
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional
+from .search import Search
+from ...component.form.fields.cascader import Option
+from pydantic import Field, model_validator
+from fastapi import Request
 
-from searches.base import Search  # 假设你已有一个 Search 基类
-from component.form.fields.cascader import Option as CascaderOption
 
-
-@dataclass
 class Cascader(Search):
     """级联选择搜索字段配置类"""
 
-    cascader_options: List[CascaderOption] = None
+    cascader_options: List[Option] = Field(default="")
 
-    def __post_init__(self):
-        self.component = "cascaderField"
-        if self.cascader_options is None:
-            self.cascader_options = []
-
-    def new(self, ctx: Any) -> "Cascader":
-        """加载初始化数据"""
+    @model_validator(mode="after")
+    def init(self):
         self.component = "cascaderField"
         return self
 
-    def init(self, ctx: Any) -> "Cascader":
-        """初始化"""
-        return self
-
-    def option(self, label: str, value: Any) -> CascaderOption:
+    def option(self, label: str, value: Any) -> Option:
         """
         创建一个选项对象
 
         :param label: 显示名称
         :param value: 值
-        :return: CascaderOption 对象
+        :return: Option 对象
         """
-        return CascaderOption(value=value, label=label)
+        return Option(value=value, label=label)
 
     def set_options(self, *options: Any) -> "Cascader":
         """
@@ -41,7 +31,7 @@ class Cascader(Search):
 
         支持以下几种调用方式：
 
-        - set_options([CascaderOption(...), CascaderOption(...)])
+        - set_options([Option(...), Option(...)])
         - set_options(options_list, parent_key, label_name, value_name)
         - set_options(options_list, level, parent_key, label_name, value_name)
 
@@ -52,12 +42,12 @@ class Cascader(Search):
             self.cascader_options = options[0]
         elif len(options) == 4:
             options_list, parent_key, label_name, value_name = options
-            self.cascader_options = CascaderOption.list_to_options(
+            self.cascader_options = Option.list_to_options(
                 options_list, 0, parent_key, label_name, value_name
             )
         elif len(options) == 5:
             options_list, level, parent_key, label_name, value_name = options
-            self.cascader_options = CascaderOption.list_to_options(
+            self.cascader_options = Option.list_to_options(
                 options_list, level, parent_key, label_name, value_name
             )
         else:
@@ -65,14 +55,14 @@ class Cascader(Search):
 
         return self
 
-    def get_cascader_options(self) -> List[CascaderOption]:
+    def get_cascader_options(self) -> List[Option]:
         """获取级联选项数据"""
         return self.cascader_options
 
-    def apply(self, ctx: Any, query: Any, value: Any) -> Any:
+    def apply(self, request: Request, query: Any, value: Any) -> Any:
         """执行查询逻辑，子类可重写此方法"""
-        return super().apply(ctx, query, value)
+        return super().apply(request, query, value)
 
-    def options(self, ctx: Any) -> Optional[Any]:
+    def options(self, request: Request) -> Optional[Any]:
         """扩展属性选项"""
-        return super().options(ctx)
+        return super().options(request)

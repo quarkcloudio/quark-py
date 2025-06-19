@@ -1,6 +1,7 @@
-from pydantic import Field
+from pydantic import Field, model_validator
 from typing import Any, Optional, Union
 from .base import Base
+
 
 class Password(Base):
     component: str = "passwordField"
@@ -22,6 +23,12 @@ class Password(Base):
     placeholder: str = "请输入"
     style: dict = Field(default_factory=dict)
     visibility_toggle: bool = None
+
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        self.set_width(200)
+        return self
 
     def set_addon_after(self, addon_after: Any):
         self.addon_after = addon_after

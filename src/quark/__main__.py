@@ -1,26 +1,20 @@
 # coding: utf-8
-from .quark import Quark
+from quark import Quark, Response
 
-# 创建一个app
-app = Quark(__name__)
-
-# 设置debug模式
-app.config["DEBUG"] = True
+# 创建对象
+app = Quark()
 
 # 配置数据库
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "mysql+pymysql://root:fK7xPGJi1gJfIief@localhost:3306/quarkpy"
-)
-
-# 配置 JWT
-app.config["JWT_SECRET_KEY"] = "your-secret-key"  # 替换为你的密钥
+app.config["DB_URL"] = "sqlite://data.db"
 
 
 # 创建路由
-@app.route("/")
+@app.get("/")
 def index() -> str:
-    return "Hello World!"
+    return Response(content="Hello World!", media_type="text/html")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000)
+
+    # 启动应用
+    app.run("quark.__main__:app", host="0.0.0.0", port=3000, reload=True)

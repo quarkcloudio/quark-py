@@ -1,19 +1,10 @@
-from pydantic import BaseModel
+from pydantic import model_validator
 from typing import Any
 from ..component import Component
 
-# 模拟 component.Element
-class Element(BaseModel):
-    component: str = ""
-    key: str = ""
-
-    def set_key(self, key: str, crypt: bool) -> "Element":
-        self.key = key
-        return self
-
 
 class SubMenu(Component):
-    element: Element = Element()
+    component: str = "menuSubMenu"
     disabled: bool = False
     icon: str = ""
     popup_class_name: str = ""
@@ -21,10 +12,9 @@ class SubMenu(Component):
     title: str = ""
     items: Any = None
 
-    # 初始化
-    def init(self) -> "SubMenu":
-        self.element.component = "menuSubMenu"
-        self.element.set_key("DEFAULT_KEY", False)
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key("DEFAULT_KEY", False)
         return self
 
     # 是否禁用

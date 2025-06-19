@@ -1,16 +1,25 @@
-# Mac OS X files
-.DS_Store
-
-# Editor
-.idea
-
-# Binaries for programs and plugins
-*.exe
-*.exe~
-
-.venv/
+# Python 编译文件
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 
-# Dist directories
+# 虚拟环境
+.venv/
+env/
+venv/
+
+# 构建相关
+build/
 dist/
+*.egg-info/
+*.egg
+
+# IDE 文件
+.vscode/
+.idea/
+
+# 数据库文件
+*.db
+*.db-shm
+*.db-wal

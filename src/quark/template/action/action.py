@@ -1,82 +1,86 @@
-from dataclasses import dataclass, field
-from typing import Any, List, Optional, Union
-from enum import Enum
-
-# 定义 ActionType 枚举，表示行为的类型
-class ActionType(str, Enum):
-    AJAX = "ajax"
-    LINK = "link"
-    URL = "url"
-    DRAWER = "drawer"
-    DIALOG = "dialog"
-    CONFIRM = "confirm"
-    CANCEL = "cancel"
-    PREV = "prev"
-    NEXT = "next"
-    COPY = "copy"
-    CLOSE = "close"
+from typing import Any, List
+from fastapi import Request
+from tortoise.models import Model
 
 
-@dataclass
 class Action:
     """
     行为类，用于在管理系统中定义按钮、操作等。
-    
-    各字段含义与 Go 原始结构一致，支持在列表页、表单页、详情页等不同场景下控制展示逻辑。
     """
 
     # 设置按钮文字；支持js表达式例如：<%= (status==1 ? '禁用' : '启用') %>，行为在表格行时，可以使用当前行的任意字段值
     name: Any = None
+
     # 执行成功后刷新的组件
     reload: str = ""
+
     # 行为接口接收的参数，当行为在表格行展示的时候，可以配置当前行的任意字段
-    api_params: List[str] = field(default_factory=list)
+    api_params: List[str] = []
+
     # 行为接口
     api: str = ""
-    # 【必填】这是 action 最核心的配置，来指定该 action 的作用类型
-    action_type: ActionType = ActionType.AJAX
+
+    # 【必填】这是 action 最核心的配置，来指定该 action 的作用类型，支持：ajax、link、url、drawer、dialog、confirm、cancel、prev、next、copy、close。
+    action_type: str = "ajax"
+
     # 当 action 的作用类型为submit的时候，可以指定提交哪个表格，submitForm为提交表单的key值，为空时提交当前表单
     submit_form: str = ""
+
     # 设置按钮的图标组件
     icon: Any = None
+
     # 设置按钮类型，primary | ghost | dashed | link | text | default
-    type_: str = ""
+    type: str = ""
+
     # 设置按钮大小,large | middle | small | default
     size: str = ""
+
     # 是否具有loading，当action 的作用类型为ajax,submit时有效
     with_loading: bool = False
+
     # 行为表单字段
     fields: Any = None
+
     # 确认标题
     confirm_title: str = ""
+
     # 确认文字描述
     confirm_text: str = ""
+
     # 确认类型
     confirm_type: str = ""
 
-    # 展示条件控制字段
+    # 只在列表页展示
     only_on_index: bool = False
+
+    # 只在表单页展示
     only_on_form: bool = False
+
+    # 只在详情页展示
     only_on_detail: bool = False
 
-    show_on_index: bool = True
+    # 在列表页展示
+    show_on_index: bool = False
+
+    # 在列表页行展示
     show_on_index_table_row: bool = False
+
+    # 在列表页弹出层展示
     show_on_index_table_alert: bool = False
-    show_on_form: bool = True
+
+    # 在表单页展示
+    show_on_form: bool = False
+
+    # 在表单页扩展栏展示
     show_on_form_extra: bool = False
-    show_on_detail: bool = True
+
+    # 在详情页展示
+    show_on_detail: bool = False
+
+    # 在详情页扩展栏展示
     show_on_detail_extra: bool = False
 
-    def new(self, ctx: Any) -> "Action":
-        """加载初始化数据"""
-        self.action_type = ActionType.AJAX
-        return self
-
-    def init(self, ctx: Any) -> "Action":
-        """初始化"""
-        return self
-
-    def handle(self, ctx: Any, query: Any) -> str:
+    def handle(self, request: Request, query: Model) -> str:
         """执行行为句柄"""
         raise NotImplementedError("method not implemented")
 
@@ -103,7 +107,7 @@ class Action:
 
     def get_action_type(self) -> str:
         """【必填】这是 action 最核心的配置，来指定该 action 的作用类型"""
-        return self.action_type.value
+        return self.action_type
 
     def get_submit_form(self) -> str:
         """当 action 的作用类型为submit的时候，可以指定提交哪个表格"""
@@ -111,7 +115,7 @@ class Action:
 
     def get_type(self) -> str:
         """设置按钮类型，primary | ghost | dashed | link | text | default"""
-        return self.type_
+        return self.type
 
     def get_size(self) -> str:
         """设置按钮大小,large | middle | small | default"""
@@ -157,7 +161,7 @@ class Action:
         """执行行为的接口"""
         self.api = api
 
-    def set_action_type(self, action_type: ActionType):
+    def set_action_type(self, action_type: str):
         """【必填】这是 action 最核心的配置，来指定该 action 的作用类型"""
         self.action_type = action_type
 
@@ -167,7 +171,7 @@ class Action:
 
     def set_type(self, button_type: str):
         """设置按钮类型，primary | ghost | dashed | link | text | default"""
-        self.type_ = button_type
+        self.type = button_type
 
     def set_size(self, size: str):
         """设置按钮大小,large | middle | small | default"""

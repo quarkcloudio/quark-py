@@ -1,65 +1,48 @@
-from typing import Any, List
-from dataclasses import dataclass
+from typing import Any, List, Optional
+from pydantic import BaseModel, Field
+from fastapi import Request
 from ..component.card.card import Card
 from ..component.grid.row import Row
 from ..component.grid.col import Col
 from ..component.pagecontainer.pagecontainer import PageContainer
 from ..component.pagecontainer.pageheader import PageHeader
 
-@dataclass
-class Dashboard:
-    title: str = "仪表盘"
-    sub_title: str = None
-    back_icon: bool = False
 
-    def get_title(self) -> str:
-        """获取页面标题"""
-        return self.title
+class Dashboard(BaseModel):
+    """仪表盘"""
 
-    def get_sub_title(self) -> str:
-        """获取页面子标题"""
-        return self.sub_title
+    # 页面标题
+    title: str = Field(default="")
 
-    def get_back_icon(self) -> bool:
-        """获取页面是否携带返回Icon"""
-        return self.back_icon
+    # 页面子标题
+    sub_title: Optional[str] = Field(default="")
 
-    def cards(self) -> List[Any]:
+    # 页面是否携带返回Icon
+    back_icon: bool = Field(default=False)
+
+    async def cards(self, request: Request) -> List[Any]:
         """获取卡片组件列表"""
         return []
 
-    def page_component_render(self, body: Any) -> Any:
+    async def page_component_render(self, request: Request, body: Any) -> Any:
         """页面组件渲染"""
+        return await self.page_container_component_render(request, body)
 
-        # 页面容器组件渲染
-        return self.page_container_component_render(body)
-
-    def page_container_component_render(self, body: Any) -> Any:
+    async def page_container_component_render(self, request: Request, body: Any) -> Any:
         """页面容器组件渲染"""
 
-        # 获取页面标题
-        title = self.get_title()
-
-        # 获取页面子标题
-        sub_title = self.get_sub_title()
-
-        # 获取页面是否携带返回Icon
-        back_icon = self.get_back_icon()
-
         # 设置头部
-        header = PageHeader().set_title(title).set_sub_title(sub_title)
-
-        if not back_icon:
+        header = PageHeader().set_title(self.title).set_sub_title(self.sub_title)
+        if not self.back_icon:
             header.set_back_icon(False)
 
         # 返回页面容器组件
-        return PageContainer().set_header(header).set_body(body).to_json()
+        return PageContainer().set_header(header).set_body(body)
 
-    def render(self) -> None:
+    async def render(self, request: Request) -> Any:
         """组件渲染"""
-
         # 获取卡片组件列表
-        cards = self.cards()
+        cards = await self.cards(request)
         if not cards:
             return "请实现Cards内容"
 
@@ -68,19 +51,20 @@ class Dashboard:
         col_num = 0
 
         for key, v in enumerate(cards):
-            # 断言statistic组件类型
-            if hasattr(v, 'calculate'):
-                item = Card().set_body(v.calculate())
+            # 断言 statistic 组件类型
+            if hasattr(v, "calculate"):
+                value = await v.calculate()
+                item = Card().set_body(value)
             else:
                 item = Card()
 
             # 获取卡片的列数
-            col = getattr(v, 'col', 0)
-            col_info = Col().set_span(col).set_body(item)
+            col_span = getattr(v, "col", 0)
+            col_info = Col().set_span(col_span).set_body(item)
             cols.append(col_info)
-            col_num += col
+            col_num += col_span
 
-            # 如果列数达到24，创建一行
+            # 如果列数达到 24，创建一行
             if col_num % 24 == 0:
                 row = Row().set_gutter(8).set_body(cols)
                 if key != 0:
@@ -95,8 +79,4 @@ class Dashboard:
                 row.set_style({"marginTop": "20px"})
             body.append(row)
 
-        # 页面组件渲染
-        component = self.page_component_render(body)
-
-        # 返回JSON响应
-        return component
+        return await self.page_component_render(request, body)

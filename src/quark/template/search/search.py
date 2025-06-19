@@ -1,26 +1,26 @@
-from dataclasses import dataclass
-from typing import Any, Dict, Optional, Union
-from quark_go.v3 import Context  # 假设为 Quark-Go 上下文的 Python 实现
-from gorm import DB  # 假设为 GORM 的 Python 封装或替代 ORM
+from typing import Any, Dict, Optional
+from tortoise.models import Model
+from fastapi import Request
 
 
-@dataclass
 class Search:
     """基础搜索字段配置类"""
 
+    # 字段名
     column: str = ""
+
+    # 字段标题
     name: str = ""
+
+    # 组件名称
     component: str = "textField"
+
+    # 接口
     api: str = ""
 
-    def new(self, ctx: Context) -> "Search":
-        """加载初始化数据"""
-        self.component = "textField"
-        return self
-
-    def init(self, ctx: Context) -> "Search":
-        """初始化"""
-        return self
+    def __init__(self, column: str = "", name: str = ""):
+        self.name = name
+        self.column = column
 
     def get_column(self, search: Any) -> str:
         """
@@ -49,15 +49,15 @@ class Search:
         """获取默认值"""
         return True
 
-    def apply(self, ctx: Context, query: DB, value: Any) -> DB:
+    def apply(self, request: Request, query: Model, value: Any) -> Model:
         """执行查询逻辑，子类可重写此方法"""
         return query
 
-    def options(self, ctx: Context) -> Optional[Any]:
+    def options(self, request: Request) -> Optional[Any]:
         """扩展属性选项"""
         return None
 
-    def load(self, ctx: Context) -> Dict[str, str]:
+    def load(self, request: Request) -> Dict[str, str]:
         """
         单向联动配置，返回示例：
         {"field": "you_want_load_field", "api": "/api/admin/resource/action/select-options"}

@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 import json
 from ..component import Component
 
+
 def parse_initial_values(values: Dict[str, Any]) -> Dict[str, Any]:
     parsed = {}
     for k, v in values.items():
@@ -14,6 +15,7 @@ def parse_initial_values(values: Dict[str, Any]) -> Dict[str, Any]:
         else:
             parsed[k] = v
     return parsed
+
 
 class Form(Component):
     component: str = "form"
@@ -30,11 +32,11 @@ class Form(Component):
     size: str = "default"
     date_formatter: str = "string"
     layout: str = "horizontal"
-    grid: bool = False
+    grid: bool = None
     row_props: Dict[str, Any] = Field(default_factory=dict)
-    label_col: Dict[str, Any] = Field(default_factory=dict)
-    wrapper_col: Dict[str, Any] = Field(default_factory=dict)
-    button_wrapper_col: Dict[str, Any] = Field(default_factory=dict)
+    label_col: Dict[str, Any] = Field(default={"span": 4})
+    wrapper_col: Dict[str, Any] = Field(default={"span": 20})
+    button_wrapper_col: Dict[str, Any] = Field(default={"offset": 4, "span": 20})
     api: str = None
     api_type: str = "POST"
     target_blank: bool = False
@@ -42,42 +44,24 @@ class Form(Component):
     body: List[Any] = Field(default_factory=list)
     actions: List[Any] = Field(default_factory=list)
 
-    @field_validator('label_col', mode="before")
-    def set_default_label_col(cls, v, values):
-        if not v:
-            return {"span": 4}
-        return v
-
-    @field_validator('wrapper_col', mode="before")
-    def set_default_wrapper_col(cls, v, values):
-        if not v:
-            return {"span": 20}
-        return v
-
-    @field_validator('button_wrapper_col', mode="before")
-    def set_default_button_wrapper_col(cls, v, values):
-        if not v:
-            return {"offset": 4, "span": 20}
-        return v
-
-    @field_validator('layout')
+    @field_validator("layout")
     def validate_layout(cls, v, values):
         if v == "vertical":
-            values['label_col'] = {}
-            values['wrapper_col'] = {}
-            values['button_wrapper_col'] = {}
+            values["label_col"] = {}
+            values["wrapper_col"] = {}
+            values["button_wrapper_col"] = {}
         return v
 
-    @field_validator('wrapper_col')
+    @field_validator("wrapper_col")
     def validate_wrapper_col(cls, v, values):
-        layout = values.get('layout')
+        layout = values.get("layout")
         if layout == "vertical":
             raise ValueError("Can't set wrapper_col in vertical layout")
         return v
 
-    @field_validator('button_wrapper_col')
+    @field_validator("button_wrapper_col")
     def validate_button_wrapper_col(cls, v, values):
-        layout = values.get('layout')
+        layout = values.get("layout")
         if layout == "vertical":
             raise ValueError("Can't set button_wrapper_col in vertical layout")
         return v
@@ -85,6 +69,11 @@ class Form(Component):
     @model_validator(mode="after")
     def init(self):
         self.set_key()
+        return self
+
+    def set_style(self, style: Dict[str, Any]):
+        """设置组件的样式。"""
+        self.style = style
         return self
 
     def set_title(self, title: str):

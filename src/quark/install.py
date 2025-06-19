@@ -1,30 +1,18 @@
-from .db import db
-from .model.user import User
-from .model.role import Role
-from .model.menu import Menu
-from .model.position import Position
-from .model.department import Department
-from .model.permission import Permission
-from .model.user_has_role import UserHasRole
-from .model.role_has_permission import RoleHasPermission
-from .model.role_has_menu import RoleHasMenu
-from .model.role_has_department import RoleHasDepartment
-from .model.menu_has_permission import MenuHasPermission
-from .model.config import Config
-from .model.attachment import Attachment
-from .model.attachment_category import AttachmentCategory
-from .model.action_log import ActionLog
+from .models.user import User
+from .models.role import Role
+from .models.menu import Menu
+from .models.position import Position
+from .models.department import Department
+from .models.config import Config
+
 
 # 执行安装操作
-def setup_all():
-    
-    # 创建数据库表
-    db.create_all()
+async def setup_all():
 
     # 初始化数据
-    User.seeder()
-    Role.seeder()
-    Position.seeder()
-    Menu.seeder()
-    Department.seeder()
-    Config.seeder()
+    await User.seeder()
+    await Role.seeder()
+    await Position.seeder()
+    await Menu.seeder()
+    await Department.seeder()
+    await Config.seeder()

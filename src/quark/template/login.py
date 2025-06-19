@@ -1,103 +1,82 @@
-from dataclasses import dataclass
 from typing import Any, Optional
 import uuid
 import random
 import string
 from io import BytesIO
 from captcha.image import ImageCaptcha
-from flask import send_file, make_response
+from fastapi.responses import StreamingResponse
+from fastapi import Request
+from pydantic import BaseModel, Field
 from ..component.message.message import Message
 from ..component.divider.divider import Divider
 from ..component.tabs.tabs import Tabs
 from ..component.login.login import Login as LoginComponent
-from ..cache import cache
+from .. import cache
 
-@dataclass
-class Login:
+
+class Login(BaseModel):
+    """登录组件"""
 
     # 登录接口
-    api: str = "/api/admin/login/index/handle"
+    api: str = Field(default="/api/admin/login/index/handle")
 
     # 登录后跳转地址
-    redirect: str = "/layout/index?api=/api/admin/dashboard/index/index"
+    redirect: str = Field(default="/layout/index?api=/api/admin/dashboard/index/index")
 
-    # logo
-    logo: Optional[Any] = None
+    # Logo
+    logo: Optional[Any] = Field(default=None)
 
     # 标题
-    title: str = "QuarkPy"
+    title: str = Field(default="QuarkPy")
 
     # 子标题
-    sub_title: str = "信息丰富的世界里，唯一稀缺的就是人类的注意力"
+    sub_title: str = Field(default="信息丰富的世界里，唯一稀缺的就是人类的注意力")
 
-    # 组件
-    body: Optional[Any] = None
-
-    def get_api(self) -> str:
-        return self.api
-
-    def get_redirect(self) -> str:
-        return self.redirect
-
-    def get_logo(self) -> Optional[Any]:
-        return self.logo
-
-    def get_title(self) -> str:
-        return self.title
-
-    def get_sub_title(self) -> str:
-        return self.sub_title
-
-    def captcha_id(self):
+    async def captcha_id(self, request: Request):
         id = str(uuid.uuid4())
-        cache.set(id, "uninitialized", timeout=60)
-        return Message.success("获取成功", {
-            "captchaId": id
-        })
+        await cache.set(id, "uninitialized", 60)
+        return Message.success("获取成功", {"captchaId": id})
 
-    def captcha(self, id):
-        value = cache.get(id)
+    async def captcha(self, request: Request):
+        id = request.path_params["id"]
+        value = await cache.get(id)
         if value != "uninitialized":
             return Message.error("验证码已过期，请重新获取")
-        # 生成随机验证码文本
-        captcha_text = ''.join(random.choices(string.digits, k=4))
-        cache.set(id, captcha_text, timeout=60)
 
-        # 创建图形验证码对象
+        captcha_text = "".join(random.choices(string.digits, k=4))
+        await cache.set(id, captcha_text, 60)
+
         image = ImageCaptcha(width=170, height=50)
         captcha_image = image.generate_image(captcha_text)
 
-        # 保存为 BytesIO
         buffer = BytesIO()
-        captcha_image.save(buffer, format='PNG')
+        captcha_image.save(buffer, format="PNG")
         buffer.seek(0)
 
-        # 返回二进制图片流
-        response = make_response(send_file(buffer, mimetype='image/png'))
-        return response
+        return StreamingResponse(buffer, media_type="image/png")
 
-    def fields(self):
+    async def fields(self, request: Request):
         return []
 
-    def handle(self):
+    async def handle(self, request: Request):
         return Message.error("请实现登录方法")
 
-    def logout(self):
+    async def logout(self, request: Request):
         return Message.success("退出成功", None, "/")
 
-    def fields_within_components(self):
+    async def fields_within_components(self, request: Request):
 
         # 获取字段
-        fields = self.fields()
+        fields = await self.fields(request)
 
         # 解析创建页表单组件内的字段
-        items = self.form_fields_parser(fields)
+        items = await self.form_fields_parser(fields, request)
 
         return items
 
-    def form_fields_parser(self, fields):
+    async def form_fields_parser(self, fields: Any, request: Request):
         items = []
-
+        path = request.url.path
         # 解析字段
         if isinstance(fields, list):
             for v in fields:
@@ -106,7 +85,7 @@ class Login:
                     body = v.body
 
                     # 解析值
-                    get_fields = self.form_fields_parser(body)
+                    get_fields = await self.form_fields_parser(body, request)
 
                     # 更新值
                     v.body = get_fields
@@ -116,10 +95,13 @@ class Login:
                     component = getattr(v, "component", "")
                     if "Field" in component:
                         # 判断是否在创建页面
-                        if hasattr(v, "is_shown_on_creation") and v.is_shown_on_creation():
+                        if (
+                            hasattr(v, "is_shown_on_creation")
+                            and v.is_shown_on_creation()
+                        ):
                             # 生成前端验证规则
                             if hasattr(v, "build_frontend_rules"):
-                                v.build_frontend_rules()
+                                v.build_frontend_rules(path)
 
                             # 组合数据
                             items.append(v)
@@ -128,25 +110,25 @@ class Login:
 
         return items
 
-    def render(self):
+    async def render(self, request: Request):
 
         # 登录接口
-        login_api = self.get_api()
+        login_api = self.api
 
         # 登录后跳转地址
-        redirect = self.get_redirect()
+        redirect = self.redirect
 
         # Logo
-        logo = self.get_logo()
+        logo = self.logo
 
         # 标题
-        title = self.get_title()
+        title = self.title
 
         # 子标题
-        sub_title = self.get_sub_title()
+        sub_title = self.sub_title
 
         # 包裹在组件内的字段
-        fields = self.fields_within_components()
+        fields = await self.fields_within_components(request)
 
         # 解析tabPane组件
         if isinstance(fields, list) and len(fields) > 0:
@@ -157,42 +139,39 @@ class Login:
 
                 # 组件
                 component = (
-                    LoginComponent().
-                        set_api(login_api).
-                        set_redirect(redirect).
-                        set_logo(logo).
-                        set_title(title).
-                        set_sub_title(sub_title).
-                        set_body(tab_component).
-                        to_json(indent=2)
-                    )
+                    LoginComponent()
+                    .set_api(login_api)
+                    .set_redirect(redirect)
+                    .set_logo(logo)
+                    .set_title(title)
+                    .set_sub_title(sub_title)
+                    .set_body(tab_component)
+                )
             else:
                 fields = [Divider().set_style({"marginTop": "-15px"})] + fields
 
                 # 组件
                 component = (
-                    LoginComponent().
-                        set_api(login_api).
-                        set_redirect(redirect).
-                        set_logo(logo).
-                        set_title(title).
-                        set_sub_title(sub_title).
-                        set_body(fields).
-                        to_json(indent=2)
-                    )
+                    LoginComponent()
+                    .set_api(login_api)
+                    .set_redirect(redirect)
+                    .set_logo(logo)
+                    .set_title(title)
+                    .set_sub_title(sub_title)
+                    .set_body(fields)
+                )
         else:
             fields = [Divider().set_style({"marginTop": "-15px"})] + fields
 
             # 组件
             component = (
-                LoginComponent().
-                    set_api(login_api).
-                    set_redirect(redirect).
-                    set_logo(logo).
-                    set_title(title).
-                    set_sub_title(sub_title).
-                    set_body(fields).
-                    to_json()
-                )
+                LoginComponent()
+                .set_api(login_api)
+                .set_redirect(redirect)
+                .set_logo(logo)
+                .set_title(title)
+                .set_sub_title(sub_title)
+                .set_body(fields)
+            )
 
         return component

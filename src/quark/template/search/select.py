@@ -1,10 +1,10 @@
-class Select:
-    def __init__(self):
-        self.component = None
-        self.select_options = []
+from pydantic import model_validator
+from .search import Search
 
-    # 加载初始化数据
-    def new(self, ctx):
+
+class Select(Search):
+    @model_validator(mode="after")
+    def init(self):
         self.component = "selectField"
         return self
 
@@ -40,6 +40,4 @@ class Select:
     @staticmethod
     def list_to_options(data, label_key, value_key):
         """模拟从列表结构生成选项"""
-        return [
-            {"label": item[label_key], "value": item[value_key]} for item in data
-        ]
+        return [{"label": item[label_key], "value": item[value_key]} for item in data]

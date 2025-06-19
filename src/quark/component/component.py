@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Any, Dict, Optional
+from typing import Optional
 import hashlib
 import uuid
 
@@ -13,7 +13,9 @@ class Component(BaseModel):
 
     # 组件配置
     model_config = ConfigDict(
-        alias_generator=to_camel, populate_by_name=True, extra="allow"
+        alias_generator=to_camel,
+        populate_by_name=True,
+        extra="allow",
     )
 
     # 组件名称
@@ -39,9 +41,3 @@ class Component(BaseModel):
             key = md5_hash.hexdigest()
         self.componentkey = key
         return self
-
-    def to_json(self, **kwargs) -> str:
-        return self.model_dump_json(by_alias=True, exclude_none=True, **kwargs)
-
-    def to_dict(self, **kwargs) -> Dict[str, Any]:
-        return self.model_dump(by_alias=True, **kwargs)

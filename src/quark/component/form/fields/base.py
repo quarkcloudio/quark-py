@@ -1,4 +1,3 @@
-from flask import request
 from pydantic import Field, model_validator
 from typing import Any, List, Optional, Dict, Callable
 import json
@@ -6,6 +5,7 @@ from ...component import Component
 from ...table.column import Column
 from ..rule import Rule
 from .when import When, Item
+
 
 class Base(Component):
 
@@ -99,7 +99,6 @@ class Base(Component):
     需要为输入控件设置布局样式时，使用该属性，用法同 labelCol。你可以通过 Form 的 wrapperCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准
     """
 
-
     column: Column = Field(default_factory=Column)
     """
     列表页、详情页中列属性
@@ -154,7 +153,6 @@ class Base(Component):
     """
     设置列宽，只在列表页中有效
     """
-
 
     api: str = ""
     """
@@ -328,9 +326,9 @@ class Base(Component):
         self.required = True
         return self
 
-    def build_frontend_rules(self):
+    def build_frontend_rules(self, path: str):
         rules = self.rules
-        uri = request.path.split("/")
+        uri = path.split("/")
         is_creating = uri[-1] in ["create", "store"]
         is_editing = uri[-1] in ["edit", "update"]
 
@@ -674,7 +672,7 @@ class Base(Component):
     def get_callback(self) -> Optional[Callable[[Dict[str, Any]], Any]]:
         """获取回调函数。"""
         return self.callback
-    
+
     def set_api(self, api: str):
         """设置获取数据接口。"""
         self.api = api

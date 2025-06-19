@@ -1,8 +1,11 @@
-class Datetime:
-    def __init__(self):
-        self.component = None
+from pydantic import model_validator
+from .search import Search
 
-    # 加载初始化数据
-    def new(self, ctx):
+
+class Datetime(Search):
+    """日期组件"""
+
+    @model_validator(mode="after")
+    def init(self):
         self.component = "datetimeField"
         return self

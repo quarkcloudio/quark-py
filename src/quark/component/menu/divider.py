@@ -1,12 +1,14 @@
+from pydantic import model_validator
 from ..component import Component
 
+
 class Divider(Component):
+    component: str = "menuDivider"
     dashed: bool = False
 
-    # 初始化
+    @model_validator(mode="after")
     def init(self):
-        self.element.component = "menuDivider"
-        self.element.set_key(DEFAULT_KEY, DEFAULT_CRYPT)
+        self.set_key()
         return self
 
     # 子菜单项值

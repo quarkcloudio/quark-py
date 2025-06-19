@@ -1,11 +1,12 @@
-from dataclasses import dataclass
+from typing import Optional
+from pydantic import BaseModel
 from ...component.statistic.statistic import Statistic
 
-@dataclass
-class Value:
-    title: str = None
-    col: int = None
-    precision: int = None
+
+class Value(BaseModel):
+    title: Optional[str] = None
+    col: Optional[int] = None
+    precision: Optional[int] = None
 
     # 记录条数
     def count(self, value: int) -> Statistic:
