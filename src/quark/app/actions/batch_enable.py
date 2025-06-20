@@ -1,9 +1,10 @@
 from typing import List
-from app.core.context import Context
-from app.template.admin.resource.actions import Action
+from quark import Request
+from quark.template.action import Action
+from quark.component.message.message import Message
 
 
-class BatchEnableAction(Action):
+class BatchEnable(Action):
     def __init__(self, name: str = "批量启用"):
         super().__init__()
         self.name = name
@@ -16,14 +17,14 @@ class BatchEnableAction(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, ctx: Context, db_model):
-        id_param = ctx.query.get("id")
+    async def handle(self, request: Request, db_model):
+        id_param = request.query_params.get("id")
         if not id_param:
-            return ctx.cjson_error("参数错误")
+            return Message.error("参数错误")
 
         try:
             ids = [int(i) for i in id_param.split(",")]
             await db_model.filter(id__in=ids).update(status=1)
-            return ctx.cjson_ok("操作成功")
+            return Message.success("操作成功")
         except Exception as e:
-            return ctx.cjson_error(str(e))
+            return Message.error(str(e))

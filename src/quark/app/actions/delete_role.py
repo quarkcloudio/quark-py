@@ -1,10 +1,8 @@
 from typing import List
-from app.core.context import Context
-from app.template.admin.resource.actions import Action
-from app.service.casbin_service import CasbinService
+from quark.template.action import Action
 
 
-class DeleteRoleAction(Action):
+class DeleteRole(Action):
     def __init__(self):
         super().__init__()
         self.name = "删除"
