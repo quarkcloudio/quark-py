@@ -1,0 +1,48 @@
+from typing import List
+from app.core.context import Context
+from app.template.admin.resource.actions import Action
+from app.service.casbin_service import CasbinService
+
+
+class DeleteRoleAction(Action):
+    def __init__(self):
+        super().__init__()
+        self.name = "删除"
+        self.type = "link"
+        self.size = "small"
+        self.reload = "table"
+        self.set_only_on_index_table_row(True)
+        self.with_confirm(
+            "确定要删除吗？", "删除后数据将无法恢复，请谨慎操作！", "modal"
+        )
+
+    def get_api_params(self) -> List[str]:
+        return ["id"]
+
+    async def handle(self, ctx: Context, query) -> any:
+        """
+        query: ORM 查询对象，比如 Tortoise ORM 或 SQLAlchemy QuerySet
+        ctx: 请求上下文，负责读取参数和返回JSON结果
+        """
+        id_str = ctx.query.get("id")
+        if not id_str:
+            return ctx.cjson_error("参数错误")
+
+        ids = id_str.split(",")
+        try:
+            ids_int = [int(i) for i in ids]
+        except ValueError as e:
+            return ctx.cjson_error(f"参数转换错误: {str(e)}")
+
+        try:
+            # 先删除数据库中的记录
+            await query.filter(id__in=ids_int).delete()
+
+            # 清理 Casbin 中对应角色的权限
+            casbin_service = CasbinService()
+            for role_id in ids_int:
+                await casbin_service.remove_role_menu_and_permissions(role_id)
+
+            return ctx.cjson_ok("操作成功")
+        except Exception as e:
+            return ctx.cjson_error(str(e))
