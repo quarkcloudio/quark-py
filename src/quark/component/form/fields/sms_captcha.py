@@ -1,6 +1,7 @@
 from typing import Dict, Optional, Any
 from .base import Base
 
+
 class Captcha(Base):
     """
     表示短信验证码按钮属性的类。
@@ -10,6 +11,7 @@ class Captcha(Base):
         text (Optional[str]): 验证码按钮文案。
         url (Optional[str]): 获取验证码请求地址。
     """
+
     size: Optional[str] = None
     text: Optional[str] = None
     url: Optional[str] = None
@@ -180,16 +182,11 @@ class SmsCaptcha(Base):
         return self
 
     def set_default_value(self, default_value: Any):
-        """
-        设置输入框默认内容。
-
-        Args:
-            default_value (Any): 默认内容。
-
-        Returns:
-            Component: 返回当前实例，支持链式调用。
-        """
         self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     def set_id(self, id_str: str):

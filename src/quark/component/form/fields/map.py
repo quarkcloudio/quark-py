@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional
 from .base import Base
 
+
 class Map(Base):
 
     component: str = "mapField"
@@ -18,11 +19,7 @@ class Map(Base):
     整组失效，默认 False
     """
 
-    style: Dict[str, Any] = {
-        "height": 500,
-        "width": "100%",
-        "marginTop": "10px"
-    }
+    style: Dict[str, Any] = {"height": 500, "width": "100%", "marginTop": "10px"}
     """
     自定义样式，默认包含高度、宽度和上边距
     """
@@ -127,8 +124,13 @@ class Map(Base):
         Returns:
             Component: 返回当前实例，支持链式调用。
         """
-        self.value = {
-            "longitude": longitude,
-            "latitude": latitude
-        }
+        self.value = {"longitude": longitude, "latitude": latitude}
+        return self
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self

@@ -50,6 +50,10 @@ class Password(Base):
         self.default_value = default_value
         return self
 
+    def set_value(self, value: Any):
+        self.value = value
+        return self
+
     def set_id(self, id: str):
         self.id = id
         return self

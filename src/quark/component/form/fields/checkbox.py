@@ -3,10 +3,12 @@ from ...component import Component
 from .base import Base
 import re
 
+
 class Option(Component):
     label: str  # 选项显示文本
     value: Any  # 选项值
     disabled: bool = False  # 是否禁用
+
 
 class Checkbox(Base):
 
@@ -35,7 +37,9 @@ class Checkbox(Base):
     选项列表
     """
 
-    def build_options(self, items: List[Any], label_name: str, value_name: str) -> List[Option]:
+    def build_options(
+        self, items: List[Any], label_name: str, value_name: str
+    ) -> List[Option]:
         """通过反射构建选项列表"""
         options = []
         for item in items:
@@ -47,7 +51,9 @@ class Checkbox(Base):
             options.append(Option(label=label, value=value))
         return options
 
-    def list_to_options(self, items: List[Any], label_name: str, value_name: str) -> List[Option]:
+    def list_to_options(
+        self, items: List[Any], label_name: str, value_name: str
+    ) -> List[Option]:
         """从列表中构建选项"""
         return self.build_options(items, label_name, value_name)
 
@@ -57,6 +63,14 @@ class Checkbox(Base):
             self.options = args[0]
         elif len(args) == 3:
             self.options = self.list_to_options(*args)
+        return self
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     def get_option_label(self, value: Any) -> str:

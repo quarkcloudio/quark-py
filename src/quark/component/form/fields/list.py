@@ -1,6 +1,7 @@
 from typing import Any, Optional
 from .base import Base
 
+
 class List(Base):
 
     component: str = "listField"
@@ -96,4 +97,12 @@ class List(Base):
             Component: 返回当前实例，支持链式调用。
         """
         self.api = api
+        return self
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self

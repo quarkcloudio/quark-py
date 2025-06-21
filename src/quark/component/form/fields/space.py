@@ -1,6 +1,7 @@
 from typing import Optional, Any
 from .base import Base
 
+
 class Space(Base):
 
     component: str = "spaceField"
@@ -12,7 +13,7 @@ class Space(Base):
     """
     对齐方式，start | end | center | baseline，默认值为 ""
     """
-    
+
     direction: str = ""
     """
     间距方向，默认值为 ""

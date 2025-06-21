@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional, Any
 from .base import Base
 
+
 class DataSource(Base):
     """
     表示 Transfer 组件数据源的类。
@@ -11,6 +12,7 @@ class DataSource(Base):
         description (str): 数据源项的描述信息。
         disabled (bool): 数据源项是否禁用，默认为 False。
     """
+
     key: Any = None
     title: str = ""
     description: str = ""
@@ -130,7 +132,9 @@ class Transfer(Base):
     指定选中项
     """
 
-    def build_data_source(self, items: Any, key_name: str, title_name: str, description_name: str) -> List[DataSource]:
+    def build_data_source(
+        self, items: Any, key_name: str, title_name: str, description_name: str
+    ) -> List[DataSource]:
         """
         使用反射构建数据源。
 
@@ -164,7 +168,9 @@ class Transfer(Base):
 
         return options
 
-    def list_to_data_source(self, list_: Any, key_name: str, title_name: str, description_name: str) -> List[DataSource]:
+    def list_to_data_source(
+        self, list_: Any, key_name: str, title_name: str, description_name: str
+    ) -> List[DataSource]:
         """
         将列表转换为数据源。
 
@@ -190,10 +196,14 @@ class Transfer(Base):
             Component: 返回当前实例，支持链式调用。
         """
         if len(data_source) == 1:
-            if isinstance(data_source[0], list) and all(isinstance(item, DataSource) for item in data_source[0]):
+            if isinstance(data_source[0], list) and all(
+                isinstance(item, DataSource) for item in data_source[0]
+            ):
                 self.data_source = data_source[0]
         elif len(data_source) == 4:
-            self.data_source = self.list_to_data_source(data_source[0], data_source[1], data_source[2], data_source[3])
+            self.data_source = self.list_to_data_source(
+                data_source[0], data_source[1], data_source[2], data_source[3]
+            )
         return self
 
     def set_selections_icon(self, selections_icon: Any):
@@ -405,14 +415,9 @@ class Transfer(Base):
         return self
 
     def set_default_value(self, default_value: Any):
-        """
-        设置默认的选中项。
-
-        Args:
-            default_value (Any): 默认选中项。
-
-        Returns:
-            Component: 返回当前实例，支持链式调用。
-        """
         self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self

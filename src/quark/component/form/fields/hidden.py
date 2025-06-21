@@ -1,6 +1,7 @@
 from typing import Any, Optional
 from .base import Base
 
+
 class Hidden(Base):
 
     component: str = "hiddenField"
@@ -17,3 +18,11 @@ class Hidden(Base):
     """
     指定选中项
     """
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
+        return self

@@ -1,6 +1,7 @@
 from typing import Any, Dict
 from .base import Base
 
+
 class Date(Base):
 
     component: str = "dateField"
@@ -190,12 +191,11 @@ class Date(Base):
         return self
 
     def set_default_value(self, default_value: Any):
-        """
-        设置组件的默认选中项。
-        :param default_value: 默认选中项，可以是任意类型
-        :return: 当前 Component 实例
-        """
         self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     def set_format(self, format: str):
@@ -386,4 +386,3 @@ class Date(Base):
         """
         self.show_today = show_today
         return self
-

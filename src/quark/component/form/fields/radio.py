@@ -2,6 +2,7 @@ import json
 from typing import Dict, List, Optional, Any
 from .base import Base
 
+
 class Option(Base):
     """
     表示单选按钮选项的类。
@@ -11,9 +12,11 @@ class Option(Base):
         value (Any): 选项对应的值。
         disabled (bool): 选项是否禁用，默认为 False。
     """
+
     label: str
     value: Any
     disabled: bool = False
+
 
 class Radio(Base):
 
@@ -57,7 +60,9 @@ class Radio(Base):
     指定选中项
     """
 
-    def build_options(self, items: Any, label_name: str, value_name: str) -> List[Option]:
+    def build_options(
+        self, items: Any, label_name: str, value_name: str
+    ) -> List[Option]:
         """
         使用反射构建树结构。
 
@@ -83,7 +88,9 @@ class Radio(Base):
 
         return options
 
-    def list_to_options(self, list_data: Any, label_name: str, value_name: str) -> List[Option]:
+    def list_to_options(
+        self, list_data: Any, label_name: str, value_name: str
+    ) -> List[Option]:
         """
         将列表数据转换为选项列表。
 
@@ -109,7 +116,9 @@ class Radio(Base):
             Component: 返回当前实例，支持链式调用。
         """
         if len(options) == 1:
-            if isinstance(options[0], list) and all(isinstance(option, Option) for option in options[0]):
+            if isinstance(options[0], list) and all(
+                isinstance(option, Option) for option in options[0]
+            ):
                 self.options = options[0]
                 return self
         if len(options) == 3:
@@ -166,6 +175,14 @@ class Radio(Base):
             Component: 返回当前实例，支持链式调用。
         """
         self.size = size
+        return self
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     def get_value_enum(self) -> Dict[Any, Any]:

@@ -1,19 +1,22 @@
 from typing import Any, Dict, List, Optional
 from .base import Base
 
+
 class FieldNames(Base):
     label: str
     value: str
     children: str
 
+
 class TreeData(Base):
     title: str
     value: Any
-    children: List['TreeData'] = []
+    children: List["TreeData"] = []
     disabled: bool = False
     disable_checkbox: bool = False
     selectable: bool = False
     checkable: bool = False
+
 
 class TreeSelect(Base):
     component: str = "treeSelectField"
@@ -338,22 +341,44 @@ class TreeSelect(Base):
         self.tree_check_strictly = tree_check_strictly
         return self
 
-    def build_tree(self, items: Any, pid: int, parent_key_name: str, title_name: str, value_name: str) -> List[TreeData]:
+    def build_tree(
+        self,
+        items: Any,
+        pid: int,
+        parent_key_name: str,
+        title_name: str,
+        value_name: str,
+    ) -> List[TreeData]:
         # 这里需要实现反射构建树结构的逻辑
         return []
 
-    def list_to_tree_data(self, list_data: Any, root_id: int, parent_key_name: str, title_name: str, value_name: str) -> List[TreeData]:
-        return self.build_tree(list_data, root_id, parent_key_name, title_name, value_name)
+    def list_to_tree_data(
+        self,
+        list_data: Any,
+        root_id: int,
+        parent_key_name: str,
+        title_name: str,
+        value_name: str,
+    ) -> List[TreeData]:
+        return self.build_tree(
+            list_data, root_id, parent_key_name, title_name, value_name
+        )
 
     def set_tree_data(self, *tree_data: Any):
         if len(tree_data) == 1:
-            if isinstance(tree_data[0], list) and all(isinstance(item, TreeData) for item in tree_data[0]):
+            if isinstance(tree_data[0], list) and all(
+                isinstance(item, TreeData) for item in tree_data[0]
+            ):
                 self.tree_data = tree_data[0]
                 return self
         if len(tree_data) == 4:
-            self.tree_data = self.list_to_tree_data(tree_data[0], 0, tree_data[1], tree_data[2], tree_data[3])
+            self.tree_data = self.list_to_tree_data(
+                tree_data[0], 0, tree_data[1], tree_data[2], tree_data[3]
+            )
         if len(tree_data) == 5:
-            self.tree_data = self.list_to_tree_data(tree_data[0], tree_data[1], tree_data[2], tree_data[3], tree_data[4])
+            self.tree_data = self.list_to_tree_data(
+                tree_data[0], tree_data[1], tree_data[2], tree_data[3], tree_data[4]
+            )
         return self
 
     def get_tree_data(self) -> List[TreeData]:
@@ -404,4 +429,12 @@ class TreeSelect(Base):
 
     def set_style(self, style: Dict[str, Any]):
         self.style = style
+        return self
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self

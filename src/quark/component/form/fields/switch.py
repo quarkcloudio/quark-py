@@ -1,6 +1,7 @@
 from typing import Dict, Optional, Any
 from .base import Base
 
+
 class Option(Base):
     """
     表示 Switch 组件选项的类，包含选中和未选中时的内容。
@@ -9,6 +10,7 @@ class Option(Base):
         checked_children (Any): 选中时的内容。
         un_checked_children (Any): 未选中时的内容。
     """
+
     checked_children: Any = None
     un_checked_children: Any = None
 
@@ -49,7 +51,7 @@ class Switch(Base):
     """
     默认选中的选项
     """
-    
+
     disabled: bool = False
     """
     整组失效，默认值为 False
@@ -82,10 +84,7 @@ class Switch(Base):
         Returns:
             Dict[int, Any]: 可选项字典。
         """
-        data: Dict[int, Any] = {
-            0: self.un_checked_children,
-            1: self.checked_children
-        }
+        data: Dict[int, Any] = {0: self.un_checked_children, 1: self.checked_children}
         return data
 
     def set_options(self, options: Option):
@@ -232,6 +231,14 @@ class Switch(Base):
         self.un_checked_children = value
         return self
 
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
+        return self
+
     def get_value_enum(self) -> Dict[int, Any]:
         """
         获取当前列值的枚举 value_enum。
@@ -239,10 +246,7 @@ class Switch(Base):
         Returns:
             Dict[int, Any]: 列值枚举字典。
         """
-        data: Dict[int, Any] = {
-            0: self.un_checked_children,
-            1: self.checked_children
-        }
+        data: Dict[int, Any] = {0: self.un_checked_children, 1: self.checked_children}
         return data
 
     def get_option_label(self, value: Any) -> Any:
@@ -280,6 +284,8 @@ class Switch(Base):
             str: Option 的 Labels 字符串。
         """
         label_string = ""
-        if isinstance(self.checked_children, str) and isinstance(self.un_checked_children, str):
+        if isinstance(self.checked_children, str) and isinstance(
+            self.un_checked_children, str
+        ):
             label_string = f"{self.checked_children},{self.un_checked_children}"
         return label_string.strip(",")

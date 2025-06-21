@@ -2,6 +2,7 @@ from pydantic import Field
 from typing import Any, Optional, Union
 from .base import Base
 
+
 class ImageCaptcha(Base):
     component: str = "imageCaptchaField"
 
@@ -44,6 +45,10 @@ class ImageCaptcha(Base):
 
     def set_default_value(self, default_value: Any):
         self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     def set_id(self, id: str):

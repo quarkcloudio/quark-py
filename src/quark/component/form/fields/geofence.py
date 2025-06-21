@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional, List
 from .base import Base
 
+
 class Geofence(Base):
 
     component: str = "geofenceField"
@@ -9,11 +10,8 @@ class Geofence(Base):
     """
 
     default_value: Optional[Any] = {
-        "center": {
-            "longitude": "116.397724",
-            "latitude": "39.903755"
-        },
-        "points": []
+        "center": {"longitude": "116.397724", "latitude": "39.903755"},
+        "points": [],
     }
     """
     默认选中的选项
@@ -24,11 +22,7 @@ class Geofence(Base):
     整组是否失效，默认为 False
     """
 
-    style: Dict[str, Any] = {
-        "height": 500,
-        "width": "100%",
-        "marginTop": "10px"
-    }
+    style: Dict[str, Any] = {"height": 500, "width": "100%", "marginTop": "10px"}
     """
     自定义样式
     """
@@ -134,10 +128,7 @@ class Geofence(Base):
             Component: 返回当前实例，支持链式调用。
         """
         if isinstance(self.value, dict):
-            self.value["center"] = {
-                "longitude": longitude,
-                "latitude": latitude
-            }
+            self.value["center"] = {"longitude": longitude, "latitude": latitude}
         return self
 
     def set_points(self, points: List[Any]):
@@ -152,4 +143,12 @@ class Geofence(Base):
         """
         if isinstance(self.value, dict):
             self.value["points"] = points
+        return self
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self

@@ -1,6 +1,7 @@
 from typing import Any
 from .base import Base
 
+
 class Selects(Base):
 
     component: str = "selects"

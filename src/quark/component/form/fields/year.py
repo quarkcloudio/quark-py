@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 from .base import Base
 
+
 class Year(Base):
 
     component: str = "yearField"
@@ -176,6 +177,10 @@ class Year(Base):
     # 默认的选中项
     def set_default_value(self, default_value: Any):
         self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     # 设置日期格式，为数组时支持多格式匹配，展示以第一个为准。

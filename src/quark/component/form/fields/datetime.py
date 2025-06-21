@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional
 from .base import Base
 
+
 class Datetime(Base):
 
     component: str = "datetimeField"
@@ -27,7 +28,7 @@ class Datetime(Base):
     """
     自定义类名
     """
-    
+
     default_value: Optional[Any] = None
     """
     默认的选中项
@@ -206,16 +207,11 @@ class Datetime(Base):
         return self
 
     def set_default_value(self, default_value: Any):
-        """
-        设置默认的选中项
-
-        Args:
-            default_value (Any): 默认选中项
-
-        Returns:
-            Component: 返回当前 Component 实例，支持链式调用
-        """
         self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     def set_format_str(self, format_str: str):

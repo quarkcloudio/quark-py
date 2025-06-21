@@ -3,10 +3,12 @@ from typing import Any, List, Optional, Dict
 from ...component import Component
 from .base import Base
 
+
 class FieldNames(Component):
     label: str = None  # 显示的标签文本
     value: str = None  # 选项的实际值
     children: str = None  # 子选项列表的字段名
+
 
 class Option(Component):
     label: Optional[str] = None
@@ -14,6 +16,7 @@ class Option(Component):
     disabled: bool = False
     children: List["Option"] = None
     is_leaf: bool = False
+
 
 class Cascader(Base):
     component: str = "cascaderField"
@@ -199,7 +202,9 @@ class Cascader(Base):
             parent_key_name = args[2]
             label_name = args[3]
             value_name = args[4] if len(args) > 4 else "id"
-            self.options = self.list_to_options(args[0], root_id, parent_key_name, label_name, value_name)
+            self.options = self.list_to_options(
+                args[0], root_id, parent_key_name, label_name, value_name
+            )
             return self
         return self
 
@@ -209,7 +214,7 @@ class Cascader(Base):
         root_id: int,
         parent_key_name: str,
         label_name: str,
-        value_name: str
+        value_name: str,
     ) -> List[Option]:
         """
         将扁平列表转换为级联选项树。
@@ -218,12 +223,16 @@ class Cascader(Base):
         for item in data:
             pid = item.get(parent_key_name)
             if pid == root_id:
-                children = self.build_tree(data, item.get(value_name), parent_key_name, label_name, value_name)
-                tree.append(Option(
-                    label=item[label_name],
-                    value=item[value_name],
-                    children=children
-                ))
+                children = self.build_tree(
+                    data, item.get(value_name), parent_key_name, label_name, value_name
+                )
+                tree.append(
+                    Option(
+                        label=item[label_name],
+                        value=item[value_name],
+                        children=children,
+                    )
+                )
         return tree
 
     def build_tree(
@@ -232,7 +241,7 @@ class Cascader(Base):
         pid: int,
         parent_key_name: str,
         label_name: str,
-        value_name: str
+        value_name: str,
     ) -> List[Option]:
         """
         递归构建树结构。
@@ -243,7 +252,9 @@ class Cascader(Base):
                 child = Option(
                     label=item[label_name],
                     value=item[value_name],
-                    children=self.build_tree(data, item[value_name], parent_key_name, label_name, value_name)
+                    children=self.build_tree(
+                        data, item[value_name], parent_key_name, label_name, value_name
+                    ),
                 )
                 children.append(child)
         return children
@@ -334,6 +345,10 @@ class Cascader(Base):
 
     def set_suffix_icon(self, suffix_icon: Any):
         self.suffix_icon = suffix_icon
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     def set_multiple(self, multiple: bool):

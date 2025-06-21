@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional, List
 from .base import Base
 
+
 class File(Base):
 
     component: str = "fileField"
@@ -98,4 +99,12 @@ class File(Base):
             Component: 返回当前实例，支持链式调用。
         """
         self.button = text
+        return self
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self

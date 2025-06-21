@@ -1,6 +1,7 @@
 from typing import Any, Optional
 from .base import Base
 
+
 class Group(Base):
 
     component: str = "groupField"

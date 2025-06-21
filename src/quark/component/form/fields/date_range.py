@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 from .base import Base
 
+
 class DateRange(Base):
 
     component: str = "dateRangeField"
@@ -171,7 +172,11 @@ class DateRange(Base):
 
     def set_default_value(self, default_value: Any):
         self.default_value = default_value
-        return self  # 设置默认值并返回自身
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
+        return self
 
     def set_format(self, format: str):
         self.format = format
@@ -256,4 +261,3 @@ class DateRange(Base):
     def set_show_today(self, show_today: bool):
         self.show_today = show_today
         return self  # 设置是否展示“今天”按钮并返回自身
-

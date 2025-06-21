@@ -2,13 +2,14 @@ from pydantic import model_validator
 from typing import Any, Optional
 from .base import Base
 
+
 class Compact(Base):
 
     component: str = "compactField"
     """
     组件名称
     """
-    
+
     block: bool = False
     """
     将宽度调整为父元素宽度的选项,默认值false"
@@ -28,6 +29,7 @@ class Compact(Base):
     """
     组件内容
     """
+
     @model_validator(mode="after")
     def init(self):
         self.set_key()

@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional, Any
 from .base import Base
 
+
 class TimeRange(Base):
 
     component: str = "timeRangeField"
@@ -302,16 +303,11 @@ class TimeRange(Base):
         return self
 
     def set_default_value(self, default_value: Any):
-        """
-        设置输入框默认内容。
-
-        Args:
-            default_value (Any): 默认内容。
-
-        Returns:
-            Component: 返回当前实例，支持链式调用。
-        """
         self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self
 
     def set_format(self, format_str: str):

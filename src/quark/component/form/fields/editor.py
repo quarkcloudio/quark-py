@@ -2,6 +2,7 @@ from typing import Dict, Any, Optional
 from pydantic import model_validator
 from .base import Base
 
+
 class Editor(Base):
 
     component: str = "editorField"
@@ -31,10 +32,7 @@ class Editor(Base):
 
     @model_validator(mode="after")
     def init(self):
-        self.style = {
-            "height": 500,
-            "width": "100%"
-        }
+        self.style = {"height": 500, "width": "100%"}
         self.set_key()
         return self
 
@@ -66,4 +64,12 @@ class Editor(Base):
         style = self.style.copy() if self.style else {}
         style["height"] = height
         self.style = style
+        return self
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
         return self

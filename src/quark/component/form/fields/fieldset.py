@@ -1,6 +1,7 @@
 from pydantic import model_validator
 from .base import Base
 
+
 class Fieldset(Base):
 
     component: str = "fieldsetField"

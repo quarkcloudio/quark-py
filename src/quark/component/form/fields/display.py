@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional
 from .base import Base
 
+
 class Display(Base):
 
     component: str = "displayField"
@@ -22,3 +23,11 @@ class Display(Base):
     """
     指定选中项,string[] | number[]
     """
+
+    def set_default_value(self, default_value: Any):
+        self.default_value = default_value
+        return self
+
+    def set_value(self, value: Any):
+        self.value = value
+        return self
