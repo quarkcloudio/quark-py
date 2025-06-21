@@ -1,56 +1,46 @@
-from app.core.context import Context
-from app.template.admin.resource.actions import Modal
-from app.template.admin.component.form import Component as FormComponent
-from app.template.admin.component.action import Component as ActionComponent
+from typing import Any
+from quark import Request
+from quark.template.action import Modal
+from quark.component.form.form import Form
+from quark.component.action.action import Action
 
 
-class CreateModalAction(Modal):
-    def __init__(self):
-        super().__init__()
-        self.name = ""
+class CreateModal(Modal):
+    def __init__(self, title: str, api: str, fields: Any, initial_data: dict):
+        self.name = "创建" + title
+        self.api = api
+        self.fields = fields
+        self.initial_data = initial_data
         self.type = "primary"
         self.icon = "plus-circle"
         self.reload = "table"
         self.destroy_on_close = True
         self.set_only_on_index(True)
 
-    def init(self, ctx: Context):
-        template = ctx.template  # 实现 Resourcer 接口
-        self.name = "创建" + template.get_title()
-        return self
-
-    def get_body(self, ctx: Context):
-        template = ctx.template
-
-        api = template.creation_api(ctx)
-        fields = template.creation_fields_within_components(ctx)
-        initial_data = template.before_creating(ctx)
-
+    def get_body(self, request: Request):
         return (
-            FormComponent()
-            .init()
+            Form()
             .set_style(
                 {
                     "paddingTop": "24px",
                 }
             )
-            .set_key("createModalForm", destroy=False)
-            .set_api(api)
-            .set_body(fields)
-            .set_initial_values(initial_data)
+            .set_api(self.api)
+            .set_body(self.fields)
+            .set_initial_values(self.initial_data)
             .set_label_col({"span": 6})
             .set_wrapper_col({"span": 18})
+            .set_key("createModalForm", destroy=False)
         )
 
-    def get_actions(self, ctx: Context):
+    def get_actions(self, request: Request):
         return [
-            ActionComponent().init().set_label("取消").set_action_type("cancel"),
-            ActionComponent()
-            .init()
+            Action().set_label("取消").set_action_type("cancel"),
+            Action()
+            .set_submit_form("createModalForm")
             .set_label("提交")
             .set_with_loading(True)
             .set_reload("table")
             .set_action_type("submit")
-            .set_type("primary", ghost=False)
-            .set_submit_form("createModalForm"),
+            .set_type("primary", ghost=False),
         ]

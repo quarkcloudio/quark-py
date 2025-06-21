@@ -7,10 +7,10 @@ from quark.component.action.action import Action
 
 class CreateDrawer(Drawer):
     def __init__(self, title: str, api: str, fields: Any, initial_data: dict):
+        self.name = "创建" + title
         self.api = api
         self.fields = fields
         self.initial_data = initial_data
-        self.name = "创建" + title
         self.type = "primary"
         self.icon = "plus-circle"
         self.reload = "table"
