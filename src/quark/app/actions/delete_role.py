@@ -1,10 +1,11 @@
 from typing import List
+from quark import Request
 from quark.template.action import Action
+from quark.component.message.message import Message
 
 
 class DeleteRole(Action):
     def __init__(self):
-        super().__init__()
         self.name = "删除"
         self.type = "link"
         self.size = "small"
@@ -17,30 +18,30 @@ class DeleteRole(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, ctx: Context, query) -> any:
+    async def handle(self, request: Request, query) -> any:
         """
         query: ORM 查询对象，比如 Tortoise ORM 或 SQLAlchemy QuerySet
         ctx: 请求上下文，负责读取参数和返回JSON结果
         """
-        id_str = ctx.query.get("id")
+        id_str = request.query_params.get("id")
         if not id_str:
-            return ctx.cjson_error("参数错误")
+            return Message.error("参数错误")
 
         ids = id_str.split(",")
         try:
             ids_int = [int(i) for i in ids]
         except ValueError as e:
-            return ctx.cjson_error(f"参数转换错误: {str(e)}")
+            return Message.error(f"参数转换错误: {str(e)}")
 
         try:
             # 先删除数据库中的记录
             await query.filter(id__in=ids_int).delete()
 
             # 清理 Casbin 中对应角色的权限
-            casbin_service = CasbinService()
-            for role_id in ids_int:
-                await casbin_service.remove_role_menu_and_permissions(role_id)
+            # casbin_service = CasbinService()
+            # for role_id in ids_int:
+            #     await casbin_service.remove_role_menu_and_permissions(role_id)
 
-            return ctx.cjson_ok("操作成功")
+            return Message.success("操作成功")
         except Exception as e:
-            return ctx.cjson_error(str(e))
+            return Message.error(str(e))

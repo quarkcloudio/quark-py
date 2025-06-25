@@ -1,11 +1,11 @@
 from typing import List
-from app.core.context import Context
-from app.template.admin.resource.actions import Action
+from quark import Request
+from quark.template.action import Action
+from quark.component.message.message import Message
 
 
-class DeleteSpecialAction(Action):
+class DeleteSpecial(Action):
     def __init__(self, name=None):
-        super().__init__()
         # 名称支持动态表达式，Python中可用字符串或模板渲染实现
         self.name = name or "<%= (id==1 ? '' : '删除') %>"
         self.type = "link"
@@ -20,9 +20,9 @@ class DeleteSpecialAction(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, ctx: Context, query) -> any:
+    async def handle(self, request: Request, query) -> any:
         try:
             await query.delete()
-            return ctx.cjson_ok("操作成功")
+            return Message.success("操作成功")
         except Exception as e:
-            return ctx.cjson_error(str(e))
+            return Message.error(str(e))

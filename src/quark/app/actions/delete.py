@@ -1,11 +1,11 @@
 from typing import List
-from app.core.context import Context
-from app.template.admin.resource.actions import Action
+from quark import Request
+from quark.template.action import Action
+from quark.component.message.message import Message
 
 
-class DeleteAction(Action):
+class Delete(Action):
     def __init__(self, name: str = "删除"):
-        super().__init__()
         self.name = name
         self.type = "link"
         self.size = "small"
@@ -19,10 +19,10 @@ class DeleteAction(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, ctx: Context, query) -> any:
+    async def handle(self, request: Request, query) -> any:
         try:
             # ORM 需要根据你的实际框架调整，这里示例使用异步删除
             await query.delete()
-            return ctx.cjson_ok("操作成功")
+            return Message.success("操作成功")
         except Exception as e:
-            return ctx.cjson_error(str(e))
+            return Message.error(str(e))
