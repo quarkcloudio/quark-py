@@ -1,48 +1,38 @@
 from typing import Any, List
-from app.core.context import Context
-from app.template.admin.resource.actions import Drawer
-from app.template.admin.resource.types import Resourcer
-from app.template.admin.component import form, action
+from quark import Request
+from quark.template.action import Drawer
+from quark.component.form.form import Form
+from quark.component.action.action import Action
 
 
-class EditDrawerAction(Drawer):
-    def __init__(self, name: str = "编辑"):
-        super().__init__()
+class EditDrawer(Drawer):
+    def __init__(self, name: str, api: str, init_api: str, fields: Any):
         self.name = name
+        self.api = api
+        self.init_api = init_api
+        self.fields = fields
         self.type = "link"
         self.size = "small"
         self.destroy_on_close = True
         self.reload = "table"
         self.set_only_on_index_table_row(True)
 
-    def init(self, ctx: Context) -> Any:
-        # 这里通常可写额外初始化逻辑
-        return self
-
-    def get_body(self, ctx: Context) -> Any:
-        template: Resourcer = ctx.template
-
-        api = template.update_api(ctx)
-        init_api = template.edit_value_api(ctx)
-        fields = template.update_fields_within_components(ctx)
-
+    def get_body(self, request: Request) -> Any:
         return (
-            form.Component()
-            .init()
-            .set_key("editDrawerForm", False)
-            .set_api(api)
-            .set_init_api(init_api)
-            .set_body(fields)
+            Form()
+            .set_api(self.api)
+            .set_init_api(self.init_api)
+            .set_body(self.fields)
             .set_label_col({"span": 6})
             .set_wrapper_col({"span": 18})
+            .set_key("editDrawerForm", False)
         )
 
-    def get_actions(self, ctx: Context) -> List[Any]:
+    def get_actions(self, request: Request) -> List[Any]:
         return [
-            (action.Component().init().set_label("取消").set_action_type("cancel")),
+            (Action().set_label("取消").set_action_type("cancel")),
             (
-                action.Component()
-                .init()
+                Action()
                 .set_label("提交")
                 .set_with_loading(True)
                 .set_reload("table")
