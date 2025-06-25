@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 
-class ExportAction:
+class Export:
     def __init__(self, name: Optional[str] = None):
         self.name = name or "导出"
         self.type = "link"
