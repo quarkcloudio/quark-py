@@ -1,113 +1,68 @@
 from typing import List, Dict, Any
+from quark import Request
+from quark.template.action import Drawer
+from quark.component.form.form import Form
+from quark.component.action.action import Action
 
 
-class MenuCreateDrawerAction:
-    def __init__(self):
-        self.Name = ""
-        self.Type = ""
-        self.Icon = ""
-        self.Reload = ""
-        self.DestroyOnClose = True
-        self.Width = 750
-        self.ShowOnlyOnIndex = True
-
-    def init(self, ctx: Dict[str, Any]) -> Dict[str, Any]:
-        template = ctx.get("template")
+class MenuCreate(Drawer):
+    def __init__(
+        self,
+        title: str,
+        api: str,
+        fields: List[Dict[str, Any]],
+        initial_values: Dict[str, Any],
+    ):
 
         # 文字
-        self.Name = "创建" + template.get_title()
+        self.name = "创建" + title
+
+        # api
+        self.api = api
+
+        # 字段
+        self.fields = fields
+
+        # 初始值
+        self.initial_values = initial_values
 
         # 类型
-        self.Type = "primary"
+        self.type = "primary"
 
         # 图标
-        self.Icon = "plus-circle"
+        self.icon = "plus-circle"
 
         # 执行成功后刷新的组件
-        self.Reload = "table"
+        self.reload = "table"
 
         # 关闭时销毁 Drawer 里的子元素
-        self.DestroyOnClose = True
+        self.destroy_on_close = True
 
         # 抽屉弹出层宽度
-        self.Width = 750
+        self.width = 750
 
         # 设置展示位置（只在列表页显示）
-        self.ShowOnlyOnIndex = True
+        self.set_only_on_index(True)
 
-        return {
-            "Name": self.Name,
-            "Type": self.Type,
-            "Icon": self.Icon,
-            "Reload": self.Reload,
-            "DestroyOnClose": self.DestroyOnClose,
-            "Width": self.Width,
-            "ShowOnlyOnIndex": self.ShowOnlyOnIndex,
-        }
+    def get_body(self, request: Request) -> Dict[str, Any]:
+        return (
+            Form()
+            .set_api(self.api)
+            .set_body(self.fields)
+            .set_initial_values(self.initial_values)
+            .set_label_col({"span": 6})
+            .set_wrapper_col({"span": 18})
+            .set_key("createDrawerForm", destroy=False)
+        )
 
-    def get_body(self, ctx: Dict[str, Any]) -> Dict[str, Any]:
-        template = ctx.get("template")
-
-        api = template.creation_api(ctx)
-        fields = template.creation_fields_within_components(ctx)
-        initial_values = template.before_creating(ctx)
-
-        form_component = {
-            "type": "form",
-            "key": "createDrawerForm",
-            "layout": "vertical",
-            "api": api,
-            "body": fields,
-            "initialValues": initial_values,
-        }
-
-        return form_component
-
-    def get_actions(self, ctx: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def get_actions(self, request: Request) -> List[Dict[str, Any]]:
         return [
-            {
-                "type": "action",
-                "label": "取消",
-                "actionType": "cancel",
-            },
-            {
-                "type": "action",
-                "label": "提交",
-                "withLoading": True,
-                "reload": "table",
-                "actionType": "submit",
-                "btnType": "primary",
-                "submitForm": "createDrawerForm",
-            },
+            Action().set_label("取消").set_action_type("cancel"),
+            Action()
+            .set_submit_form("createDrawerForm")
+            .set_label("提交")
+            .set_with_loading(True)
+            .set_reload("table")
+            .set_action_type("submit")
+            .set_type("primary", ghost=False),
         ]
-
-
-# 示例使用：假设有一个模板类实现了必要的方法
-class TemplateExample:
-    def get_title(self):
-        return "菜单"
-
-    def creation_api(self, ctx):
-        return "/api/admin/menu/create"
-
-    def creation_fields_within_components(self, ctx):
-        # 返回字段列表，示例
-        return [
-            {"type": "input", "name": "name", "label": "菜单名称"},
-            {"type": "input", "name": "path", "label": "路径"},
-        ]
-
-    def before_creating(self, ctx):
-        # 创建前的默认数据
-        return {
-            "name": "",
-            "path": "/",
-        }
-
-
-ctx_example = {"template": TemplateExample()}
-
-action = MenuCreateDrawerAction()
-print("Init:", action.init(ctx_example))
-print("Body:", action.get_body(ctx_example))
-print("Actions:", action.get_actions(ctx_example))

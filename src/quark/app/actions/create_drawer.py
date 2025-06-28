@@ -6,11 +6,11 @@ from quark.component.action.action import Action
 
 
 class CreateDrawer(Drawer):
-    def __init__(self, title: str, api: str, fields: Any, initial_data: dict):
+    def __init__(self, title: str, api: str, fields: Any, initial_values: dict):
         self.name = "创建" + title
         self.api = api
         self.fields = fields
-        self.initial_data = initial_data
+        self.initial_values = initial_values
         self.type = "primary"
         self.icon = "plus-circle"
         self.reload = "table"
@@ -22,7 +22,7 @@ class CreateDrawer(Drawer):
             Form()
             .set_api(self.api)
             .set_body(self.fields)
-            .set_initial_values(self.initial_data)
+            .set_initial_values(self.initial_values)
             .set_label_col({"span": 6})
             .set_wrapper_col({"span": 18})
             .set_key("createDrawerForm", destroy=False)

@@ -1,23 +1,18 @@
 from typing import List, Dict, Any, Optional
+from quark import Request
+from quark.services.auth import AuthService
 
 
-class ImportAction:
+class Import:
     def __init__(self, name: Optional[str] = None):
         # 文字
-        self.Name = name or "导入数据"
-        self.DestroyOnClose = True  # 关闭时销毁 Modal 里的子元素
-        self.ShowOnlyOnIndex = True  # 设置展示位置（只在列表页显示）
+        self.name = name or "导入数据"
+        self.destroy_on_close = True
+        self.set_only_on_index(True)
 
-    def init(self, ctx: Dict[str, Any]) -> Dict[str, Any]:
-        # 模拟初始化，返回配置参数
-        return {
-            "DestroyOnClose": self.DestroyOnClose,
-            "ShowOnlyOnIndex": self.ShowOnlyOnIndex,
-        }
-
-    def get_body(self, ctx: Dict[str, Any]) -> Dict[str, Any]:
-        resource = ctx.get("resource", "")
-        token = ctx.get("token", "")
+    def get_body(self, request: Request) -> Dict[str, Any]:
+        resource = request.url.path.get("resource", "")
+        token = AuthService(request).get_token()
 
         api = f"/api/admin/{resource}/import"
         template_link = f"/api/admin/{resource}/import/template?token={token}"
@@ -60,7 +55,7 @@ class ImportAction:
 
         return form_component
 
-    def get_actions(self, ctx: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def get_actions(self, request: Request) -> List[Dict[str, Any]]:
         return [
             {
                 "type": "action",
@@ -77,15 +72,3 @@ class ImportAction:
                 "submitForm": "importModalForm",
             },
         ]
-
-
-# 模拟使用示例：
-ctx_example = {
-    "resource": "user",
-    "token": "fake-token-12345",
-}
-
-action = ImportAction()
-print("Init:", action.init(ctx_example))
-print("Body:", action.get_body(ctx_example))
-print("Actions:", action.get_actions(ctx_example))
