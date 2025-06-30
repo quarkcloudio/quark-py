@@ -1,10 +1,10 @@
 from fastapi import Request
-from fastapi.responses import JSONResponse
 from tortoise.transactions import in_transaction
 from tortoise.exceptions import IntegrityError
 import re
 from quark.template.action import Action
 from quark.models import Permission
+from quark.component.message.message import Message
 
 
 # 辅助函数：PascalCase转换
@@ -22,15 +22,6 @@ class SyncPermission(Action):
     action_type = "ajax"
 
     async def handle(self, request: Request):
-        """
-        同步权限逻辑：
-        - 获取所有系统路由（此处示例需要你提供）
-        - 过滤 /api/admin 开头的路由
-        - 转换成权限名称（PascalCase）
-        - 去重，和数据库已存在权限比较，新增不存在的权限
-        """
-
-        # 获取所有接口路由路径，示例用request.app.routes，具体看你的项目如何获取
         routes = request.app.routes  # 需要过滤对应路由
 
         # 从数据库查询所有权限名
@@ -63,13 +54,12 @@ class SyncPermission(Action):
                     )
 
         if not new_permissions:
-            return JSONResponse(status_code=400, content={"error": "无新增权限"})
+            return Message.error("无新增权限")
 
-        # 批量写入数据库
         try:
             async with in_transaction():
                 await Permission.bulk_create(new_permissions)
         except IntegrityError as e:
-            return JSONResponse(status_code=500, content={"error": str(e)})
+            return Message.error(str(e))
 
-        return JSONResponse(content={"message": "操作成功"})
+        return Message.success("操作成功")
