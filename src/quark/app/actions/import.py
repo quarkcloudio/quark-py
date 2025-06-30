@@ -1,12 +1,12 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from quark import Request
+from quark.template.action import Action
 from quark.services.auth import AuthService
 
 
-class Import:
-    def __init__(self, name: Optional[str] = None):
-        # 文字
-        self.name = name or "导入数据"
+class Import(Action):
+    def __init__(self, name: str = "导入数据"):
+        self.name = name
         self.destroy_on_close = True
         self.set_only_on_index(True)
 

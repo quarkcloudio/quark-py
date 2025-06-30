@@ -61,7 +61,7 @@ class Dropdown(Action):
 
         return Menu().set_items(items)
 
-    def set_actions(self, actions: List[Any]) -> "Dropdown":
+    def set_actions(self, actions: List[Any]) -> Any:
         """
         设置下拉菜单行为
         """

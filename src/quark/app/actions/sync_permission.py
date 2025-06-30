@@ -2,12 +2,9 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from tortoise.transactions import in_transaction
 from tortoise.exceptions import IntegrityError
-from typing import List
-from pydantic import BaseModel
 import re
-
-# 假设你的Permission模型类似这样
-from models import Permission
+from quark.template.action import Action
+from quark.models import Permission
 
 
 # 辅助函数：PascalCase转换
@@ -17,7 +14,7 @@ def pascal_case(s: str) -> str:
     return "".join(word.capitalize() for word in parts if word)
 
 
-class SyncPermissionAction:
+class SyncPermission(Action):
     name = "同步权限"
     reload = "table"
     with_loading = True

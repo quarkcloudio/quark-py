@@ -6,7 +6,6 @@ from quark.component.message.message import Message
 
 class ChangeStatus(Action):
     def __init__(self, name: str = "<%= (status==1 ? '禁用' : '启用') %>"):
-        super().__init__()
         self.name = name
         self.type = "link"
         self.size = "small"

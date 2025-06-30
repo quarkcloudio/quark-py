@@ -6,7 +6,6 @@ from quark.component.message.message import Message
 
 class BatchEnable(Action):
     def __init__(self, name: str = "批量启用"):
-        super().__init__()
         self.name = name
         self.type = "link"
         self.size = "small"
