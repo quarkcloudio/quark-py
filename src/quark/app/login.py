@@ -1,6 +1,6 @@
 from typing import Dict
 from pydantic import BaseModel, field_validator, model_validator
-from fastapi import Request
+from quark import Request
 from quark.template.login import Login
 from quark.component.form import field, Rule
 from quark.component.icon.icon import Icon
