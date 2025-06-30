@@ -1,37 +1,27 @@
 from typing import List, Dict, Any
-from pydantic import BaseModel, Field
+from quark import Request
+from quark.template.action import ModalForm
+from quark.component.form import field
+from quark.component.message.message import Message
 
 
-class ModalFormAction:
+class ModalForm(ModalForm):
     def __init__(self):
-        self.Name = "Test"
-        self.Type = "link"
-        self.DestroyOnClose = True
+        self.name = "Test"
+        self.type = "link"
+        self.destroy_on_close = True
         self.api_params = ["id"]
-        self.show_only_on_index_table_row = True
+        self.set_only_on_index_table_row(True)
 
-    def init(self, ctx: Dict[str, Any]) -> Dict[str, Any]:
-        # 返回初始化配置
-        return {
-            "Name": self.Name,
-            "Type": self.Type,
-            "DestroyOnClose": self.DestroyOnClose,
-            "ApiParams": self.api_params,
-            "ShowOnlyOnIndexTableRow": self.show_only_on_index_table_row,
-        }
-
-    def fields(self, ctx: Dict[str, Any]) -> List[Dict[str, Any]]:
-        field = Field()
+    def fields(self, request: Request) -> List[Dict[str, Any]]:
         return [
-            field.Text("id", "ID"),
-            {**field.Text("name", "名称"), "rules": ["required: 名称必须填写"]},
+            field.id("id", "ID"),
+            field.text("username", "用户名"),
         ]
 
-    def data(self, ctx: Dict[str, Any]) -> Dict[str, Any]:
-        # 这里假设ctx有查询参数
-        id_value = ctx.get("query_params", {}).get("id", "")
+    def data(self, request: Request) -> Dict[str, Any]:
+        id_value = request.query_params.get("id", "")
         return {"id": id_value}
 
-    def handle(self, ctx: Dict[str, Any], query) -> Dict[str, Any]:
-        # 这里返回未实现错误
-        return {"error": "method not implemented"}
+    def handle(self, request: Request, query) -> Dict[str, Any]:
+        return Message.error("method not implemented")
