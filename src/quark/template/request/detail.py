@@ -50,11 +50,8 @@ class DetailRequest:
         query = PerformsQueries(self.request).build_detail_query(self.model)
         result = query.first() or {}
 
-        # 获取详情字段
-        detail_fields = self.fields
-
         fields = {}
-        for field in detail_fields:
+        for field in self.fields:
             component = getattr(field, "component", None)
             name = getattr(field, "name", "")
 
@@ -67,10 +64,9 @@ class DetailRequest:
                     items = callback(result)
 
                 parsed_items = []
-
                 for action in items:
                     parsed_items.append(
-                        ResolvesActions().set_request(self.request).build_action(action)
+                        ResolvesActions(self.request).build_action(action)
                     )
 
                 fields[name] = parsed_items

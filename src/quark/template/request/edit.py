@@ -1,7 +1,10 @@
 import json
-from typing import Dict, Any, Optional, List, Union
+from fastapi import Request
+from typing import Dict, Any, Optional
+from tortoise.models import Model
 from datetime import datetime
-from quark_go_v3 import Context, Resourcer
+from ..performs_queries import PerformsQueries
+from ...component.message.message import Message
 
 
 class EditRequest:
@@ -9,38 +12,48 @@ class EditRequest:
     用于处理资源编辑页数据填充和初始化数据获取。
     """
 
-    def fill_data(self, ctx: Context) -> Dict[str, Any]:
+    # 请求对象
+    request: Request = None
+
+    # 资源对象
+    resource: Any = None
+
+    # 查询对象
+    model: Model = None
+
+    # 字段
+    fields: Optional[Any] = None
+
+    def __init__(
+        self,
+        request: Request,
+        resource: Any,
+        model: Model,
+        fields: Optional[Any],
+    ):
+        self.request = request
+        self.resource = resource
+        self.model = model
+        self.fields = fields
+
+    def fill_data(self) -> Dict[str, Any]:
         """
         获取并解析编辑表单数据。
-
-        Args:
-            ctx (Context): Quark 上下文对象。
-
-        Returns:
-            dict: 返回解析后的数据字典。
         """
         result = {}
-        id_value = ctx.query("id", "")
+        id_value = self.request.query_params.get("id", "")
         if not id_value:
             return result
 
-        # 模版实例
-        template: Resourcer = ctx.template
-
-        # 模型结构体 & 查询
-        model_instance = template.get_model()
-        query = template.build_edit_query(ctx, model_instance)
-        record = query.first() or {}
-
-        # 获取更新字段
-        update_fields = template.update_fields(ctx)
+        # 构建查询
+        query = PerformsQueries(self.request).build_edit_query(self.model)
+        result = query.first() or {}
 
         fields = {}
-
-        for field in update_fields:
+        for field in self.fields:
             name = getattr(field, "name", "")
 
-            value = record.get(name)
+            value = result.get(name)
             if value is None:
                 continue
 
@@ -66,23 +79,16 @@ class EditRequest:
 
         return fields
 
-    def values(self, ctx: Context) -> Any:
+    def values(self) -> Any:
         """
         获取表单初始化数据，并调用显示前回调。
-
-        Args:
-            ctx (Context): Quark 上下文对象.
-
-        Returns:
-            JSON 响应：返回处理后的数据。
         """
-        template: Resourcer = ctx.template
-        data = self.fill_data(ctx)
+        data = self.fill_data()
 
         # 编辑前回调
-        before_editing = getattr(template, "before_editing", None)
+        before_editing = getattr(self.resource, "before_editing", None)
         if before_editing:
-            data = before_editing(ctx, data)
+            data = before_editing(self.request, data)
 
         # 解析嵌套 JSON 字符串
         parsed_data = {}
@@ -96,4 +102,4 @@ class EditRequest:
                     pass
             parsed_data[key] = value
 
-        return ctx.cjson_ok("获取成功", parsed_data)
+        return Message.success("获取成功", parsed_data)
