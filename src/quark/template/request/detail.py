@@ -1,7 +1,11 @@
 import json
-from typing import Dict, Any, List, Optional, Union, Callable
+from fastapi import Request
+from typing import Dict, Any, Optional, Callable
+from tortoise.models import Model
 from datetime import datetime
-from quark_go_v3 import Context, Resourcer
+from ..performs_queries import PerformsQueries
+from ..resolves_actions import ResolvesActions
+from ...component.message.message import Message
 
 
 class DetailRequest:
@@ -9,34 +13,47 @@ class DetailRequest:
     用于处理资源详情页数据填充和初始化数据获取。
     """
 
-    def fill_data(self, ctx: Context) -> Dict[str, Any]:
+    # 请求对象
+    request: Request = None
+
+    # 资源对象
+    resource: Any = None
+
+    # 查询对象
+    model: Model = None
+
+    # 字段
+    fields: Optional[Any] = None
+
+    def __init__(
+        self,
+        request: Request,
+        resource: Any,
+        model: Model,
+        fields: Optional[Any],
+    ):
+        self.request = request
+        self.resource = resource
+        self.model = model
+        self.fields = fields
+
+    def fill_data(self) -> Dict[str, Any]:
         """
-        获取并解析详情页数据。
-
-        Args:
-            ctx (Context): Quark 上下文对象。
-
-        Returns:
-            dict: 返回解析后的数据字典。
+        获取并解析详情页数据
         """
         result = {}
-        id_value = ctx.query("id", "")
+        id_value = self.request.query_params.get("id", "")
         if not id_value:
             return result
 
-        # 获取模板实例
-        template: Resourcer = ctx.template
-
-        # 获取模型并查询数据
-        model_instance = template.get_model()
-        query = template.build_detail_query(ctx, model_instance)
+        # 构建查询
+        query = PerformsQueries(self.request).build_detail_query(self.model)
         result = query.first() or {}
 
         # 获取详情字段
-        detail_fields = template.detail_fields(ctx)
+        detail_fields = self.fields
 
         fields = {}
-
         for field in detail_fields:
             component = getattr(field, "component", None)
             name = getattr(field, "name", "")
@@ -52,9 +69,9 @@ class DetailRequest:
                 parsed_items = []
 
                 for action in items:
-                    action.new(ctx)
-                    action.init(ctx)
-                    parsed_items.append(template.build_action(ctx, action))
+                    parsed_items.append(
+                        ResolvesActions().set_request(self.request).build_action(action)
+                    )
 
                 fields[name] = parsed_items
 
@@ -94,22 +111,15 @@ class DetailRequest:
 
         return fields
 
-    def values(self, ctx: Context) -> Any:
+    def values(self) -> Any:
         """
         获取表单初始化数据，并调用显示前回调。
-
-        Args:
-            ctx (Context): Quark 上下文对象.
-
-        Returns:
-            JSON 响应：返回处理后的数据。
         """
-        template: Resourcer = ctx.template
-        data = self.fill_data(ctx)
+        data = self.fill_data()
 
         # 显示前回调
-        before_showing = getattr(template, "before_detail_showing", None)
+        before_showing = getattr(self.resource, "before_detail_showing", None)
         if before_showing:
-            data = before_showing(ctx, data)
+            data = before_showing(self.request, data)
 
-        return ctx.cjson_ok("获取成功", data)
+        return Message.success("获取成功", data)

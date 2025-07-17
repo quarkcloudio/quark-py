@@ -17,7 +17,7 @@ class ActionRequest:
     resource: Any = None
 
     # 查询对象
-    query: Model = None
+    model: Model = None
 
     # 行为
     actions: Optional[Any] = None
@@ -29,13 +29,13 @@ class ActionRequest:
         self,
         request: Request,
         resource: Any,
-        query: Model,
+        model: Model,
         actions: Optional[Any],
         fields: Optional[Any],
     ):
         self.request = request
         self.resource = resource
-        self.query = query
+        self.model = model
         self.actions = actions
         self.fields = fields
 
@@ -74,7 +74,7 @@ class ActionRequest:
         uri_key = self.request.path_params.get("uriKey")
 
         # 构建查询
-        query = PerformsQueries(self.request).build_action_query(query)
+        query = PerformsQueries(self.request).build_action_query(self.model)
 
         actions = self.get_actions()
         for action in actions:
