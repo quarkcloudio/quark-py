@@ -1,5 +1,5 @@
 from fastapi import Request
-from typing import Any, Dict, List
+from typing import Any, Dict
 from .resolves_fields import ResolvesFields
 from .resolves_actions import ResolvesActions
 from ..utils import replace_last
