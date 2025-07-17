@@ -33,7 +33,6 @@ class ResolvesActions:
         for action in self.actions:
             if action.shown_on_index_table_row():
                 items.append(self.build_action(action))
-
         return items
 
     def index_table_alert_actions(self) -> List[Any]:

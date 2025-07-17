@@ -94,10 +94,14 @@ class ResourceIndex:
         fields = await self.fields(request)
         actions = await self.actions(request)
         searches = await self.searches(request)
+        index_table_row_actions = ResolvesActions(
+            request=request, actions=actions
+        ).index_table_row_actions()
         table_columns = ResolvesFields(
             request=request,
             fields=fields,
             table_column=self.table_column,
+            table_row_actions=index_table_row_actions,
             table_action_column_title=self.table_action_column_title,
             table_action_column_width=self.table_action_column_width,
         ).index_table_columns()
