@@ -5,7 +5,7 @@ from quark.component.form.form import Form
 from quark.component.action.action import Action
 
 
-class MenuCreate(Drawer):
+class MenuCreateDrawer(Drawer):
     def __init__(
         self,
         title: str,
