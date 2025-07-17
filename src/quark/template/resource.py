@@ -15,9 +15,10 @@ from .request.index import IndexRequest
 from .resource_index import ResourceIndex
 from .resource_form import ResourceForm
 from .resource_create import ResourceCreate
+from .resource_edit import ResourceEdit
 
 
-class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate):
+class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceEdit):
     """资源：增删改查"""
 
     # 页面标题
@@ -205,4 +206,14 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate):
         # 页面组件渲染
         return await self.page_component_render(
             request, await self.creation_component_render(request, data)
+        )
+
+    async def edit_render(self, request: Request) -> Any:
+        """列表页渲染"""
+
+        data = await self.before_editing(request, {})
+
+        # 页面组件渲染
+        return await self.page_component_render(
+            request, await self.update_component_render(request, data)
         )
