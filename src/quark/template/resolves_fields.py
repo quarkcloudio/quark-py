@@ -138,7 +138,7 @@ class ResolvesFields:
         sorter = getattr(field, "sorter", None)
         span = getattr(field, "span", None)
         column_width = getattr(field, "column_width", None)
-
+        options = None
         col = (
             ColumnComponent()
             .set_title(label)
@@ -168,32 +168,29 @@ class ResolvesFields:
         elif component == "editorField":
             col.set_value_type("text")
         elif component == "treeSelectField":
-            col.set_value_type("treeSelect").set_field_props(
-                {"options": field.get_options()}
-            )
+            options = field.get_options()
+            col.set_value_type("treeSelect").set_field_props({"options": options})
         elif component == "cascaderField":
-            col.set_value_type("cascader").set_field_props(
-                {"options": field.get_options()}
-            )
+            options = field.get_options()
+            col.set_value_type("cascader").set_field_props({"options": options})
         elif component == "selectField":
-            opts = field.get_options()
-            col.set_value_type("select").set_field_props({"options": opts})
+            options = field.get_options()
+            col.set_value_type("select").set_field_props({"options": options})
             if isinstance(filters, bool) and filters:
                 col.set_value_enum(field.get_value_enum())
         elif component == "checkboxField":
-            col.set_value_type("checkbox").set_field_props(
-                {"options": field.get_options()}
-            )
+            options = field.get_options()
+            col.set_value_type("checkbox").set_field_props({"options": options})
             if isinstance(filters, bool) and filters:
                 col.set_value_enum(field.get_value_enum())
         elif component == "radioField":
-            col.set_value_type("radio").set_field_props(
-                {"options": field.get_options()}
-            )
+            options = field.get_options()
+            col.set_value_type("radio").set_field_props({"options": options})
             if isinstance(filters, bool) and filters:
                 col.set_value_enum(field.get_value_enum())
         elif component == "switchField":
-            col.set_value_type("switch").set_value_enum(field.get_options())
+            options = field.get_options()
+            col.set_value_type("switch").set_value_enum(options)
         elif component == "imageField":
             col.set_value_type("image")
         elif component == "imagePickerField":
@@ -205,7 +202,7 @@ class ResolvesFields:
 
         if editable:
             editable_api = self.request.url.path.replace("/index", "/editable")
-            col.set_editable(component, field.get_options(), editable_api)
+            col.set_editable(component, options, editable_api)
 
         return col
 
