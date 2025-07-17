@@ -1,4 +1,3 @@
-from fastapi import FastAPI
 from typing import Iterable, Any
 from tortoise import Tortoise
 
