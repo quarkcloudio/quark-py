@@ -3,7 +3,6 @@ from fastapi import Request
 from tortoise.models import Model
 from ..performs_queries import PerformsQueries
 from ..resolves_actions import ResolvesActions
-from ..performs_queries import PerformsQueries
 from ...services.attachment import AttachmentService
 
 
