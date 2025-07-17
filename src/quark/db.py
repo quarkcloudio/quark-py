@@ -4,7 +4,6 @@ from tortoise import Tortoise
 
 
 async def init(
-    app: FastAPI,
     config: dict | None = None,
     config_file: str | None = None,
     db_url: str | None = None,

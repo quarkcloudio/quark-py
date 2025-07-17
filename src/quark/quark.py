@@ -51,7 +51,6 @@ class Quark(FastAPI):
     async def init_db(self) -> None:
         """初始化数据库"""
         await db.init(
-            self,
             config=self.config["DB_CONFIG"],
             db_url=self.config["DB_URL"],
             modules=self.config["DB_MODULES"],
