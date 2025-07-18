@@ -1,161 +1,217 @@
 import re
+import json
+from dataclasses import dataclass
+from typing import List, Dict, Any, Optional, Union, Type, Callable, Awaitable, cast
+from abc import ABC, abstractmethod
+from urllib.parse import parse_qs, urlparse
+
+from tortoise.models import Model
+from tortoise import fields
+from tortoise.query_utils import Q
 
 
-# 模拟规则类
-class Rule:
-    def __init__(self, name, rule_type, message="", **kwargs):
-        self.name = name
-        self.rule_type = rule_type
-        self.message = message
-        self.kwargs = kwargs
-
-
-# 模拟 'when' 条件判断的类
-class WhenItem:
-    def __init__(self, condition_name, condition_operator, condition_option, body=None):
-        self.condition_name = condition_name
-        self.condition_operator = condition_operator
-        self.condition_option = condition_option
-        self.body = body
-
-
-# 示例数据库模型
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-
-
-# 模拟模板类
-class Template:
-
-    def validator_for_creation(self, data):
-        # 获取创建数据验证规则
-        rules = self.rules_for_creation(data)
-
-        # 验证数据是否合法
-        validation_errors = self.validator(rules, data)
-
-        # 创建请求验证完成后回调
-        self.after_creation_validation(validation_errors)
-
-        return validation_errors
-
-    def validator(self, rules, data):
-        validation_errors = []
-
-        for rule in rules:
-            field_value = data.get(rule.name)
-            if rule.rule_type == "required" and not field_value:
-                validation_errors.append(rule.message or f"{rule.name} is required.")
-            elif rule.rule_type == "min" and len(field_value) < rule.kwargs["min"]:
-                validation_errors.append(
-                    rule.message
-                    or f"{rule.name} should be at least {rule.kwargs['min']} characters."
-                )
-            elif rule.rule_type == "max" and len(field_value) > rule.kwargs["max"]:
-                validation_errors.append(
-                    rule.message
-                    or f"{rule.name} should be at most {rule.kwargs['max']} characters."
-                )
-            elif rule.rule_type == "regexp" and not re.match(
-                rule.kwargs["pattern"], field_value
-            ):
-                validation_errors.append(
-                    rule.message or f"{rule.name} does not match the required pattern."
-                )
-            elif rule.rule_type == "unique":
-                count = self.check_unique(
-                    rule.kwargs["model"],
-                    rule.kwargs["field"],
-                    field_value,
-                    rule.kwargs.get("ignore_value"),
-                )
-                if count > 0:
-                    validation_errors.append(
-                        rule.message or f"{rule.name} must be unique."
-                    )
-
-        return validation_errors
-
-    def rules_for_creation(self, data):
-        # 假设获取字段和验证规则
-        fields = self.creation_fields_without_when(data)
-        rules = []
-
-        for field in fields:
-            rules.extend(self.get_rules_for_creation(field))
-
-            # 检查 'when' 组件中的条件规则
-            if hasattr(field, "get_when"):
-                when_component = field.get_when()
-                if when_component:
-                    for when_item in when_component:
-                        if self.need_validate_when_rules(data, when_item):
-                            rules.extend(self.get_rules_for_creation(when_item.body))
-
-        return rules
-
-    def need_validate_when_rules(self, data, when_item):
-        # 根据条件判断是否需要验证规则
-        value = data.get(when_item.condition_name)
-        if value is None:
-            return False
-
-        if isinstance(value, str):
-            if not value:
-                return False
-
-        result = False
-        if when_item.condition_operator == "=":
-            result = value == when_item.condition_option
-        elif when_item.condition_operator == ">":
-            result = value > when_item.condition_option
-        elif when_item.condition_operator == "<":
-            result = value < when_item.condition_option
-        elif when_item.condition_operator == "<=":
-            result = value <= when_item.condition_option
-        elif when_item.condition_operator == ">=":
-            result = value >= when_item.condition_option
-        elif when_item.condition_operator == "has":
-            if isinstance(value, list):
-                result = any(option in value for option in when_item.condition_option)
-            else:
-                result = when_item.condition_option in value
-        elif when_item.condition_operator == "in":
-            result = value in when_item.condition_option
-        return result
-
-    def get_rules_for_creation(self, field):
-        rules = []
-
-        if hasattr(field, "get_rules"):
-            rules.extend(field.get_rules())
-
-        if hasattr(field, "get_creation_rules"):
-            rules.extend(field.get_creation_rules())
-
-        return rules
-
-    def check_unique(self, model, field, value, ignore_value):
-        # 使用 SQLAlchemy 检查唯一性
-        count = 0
-        try:
-            if ignore_value:
-                count = model.query.filter(
-                    model.id != ignore_value, getattr(model, field) == value
-                ).count()
-            else:
-                count = model.query.filter(getattr(model, field) == value).count()
-        except NoResultFound:
-            pass
-        return count
-
-    def after_creation_validation(self, validation_errors):
-        # 这里可以添加验证后的回调逻辑
+class PerformsValidation:
+    @abstractmethod
+    def creation_fields_without_when(self, ctx: Context) -> List[Any]:
         pass
 
-    # 模拟获取创建字段的方法
-    def creation_fields_without_when(self, data):
-        # 假设返回字段列表
-        return []
+    @abstractmethod
+    def update_fields_without_when(self, ctx: Context) -> List[Any]:
+        pass
+
+    @abstractmethod
+    def import_fields_without_when(self, ctx: Context) -> List[Any]:
+        pass
+
+    async def validator_for_creation(
+        self, ctx: Context, data: Dict[str, Any]
+    ) -> Optional[str]:
+        rules = await self.rules_for_creation(ctx)
+        validator = await self.validator(rules, data)
+        await self.after_validation(ctx, validator)
+        await self.after_creation_validation(ctx, validator)
+        return validator
+
+    async def validator_for_update(
+        self, ctx: Context, data: Dict[str, Any]
+    ) -> Optional[str]:
+        rules = await self.rules_for_update(ctx)
+        validator = await self.validator(rules, data)
+        await self.after_validation(ctx, validator)
+        await self.after_update_validation(ctx, validator)
+        return validator
+
+    async def validator_for_import(
+        self, ctx: Context, data: Dict[str, Any]
+    ) -> Optional[str]:
+        rules = await self.rules_for_import(ctx)
+        validator = await self.validator(rules, data)
+        await self.after_validation(ctx, validator)
+        await self.after_import_validation(ctx, validator)
+        return validator
+
+    async def validator(self, rules: List[Rule], data: Dict[str, Any]) -> Optional[str]:
+        for rule in rules:
+            field_value = data.get(rule.name)
+            if rule.rule_type == "required":
+                if field_value is None or field_value == "":
+                    return rule.message
+            elif rule.rule_type == "min":
+                if isinstance(field_value, str):
+                    if len(field_value) < rule.min:
+                        return rule.message
+            elif rule.rule_type == "max":
+                if isinstance(field_value, str):
+                    if len(field_value) > rule.max:
+                        return rule.message
+            elif rule.rule_type == "regexp":
+                if isinstance(field_value, str):
+                    if not re.fullmatch(rule.pattern, field_value):
+                        return rule.message
+            elif rule.rule_type == "unique":
+                table: Type[Model] = globals()[rule.unique_table]
+                field = rule.unique_table_field
+                ignore_value = rule.unique_ignore_value
+                if ignore_value:
+                    ignore_key = ignore_value.strip("{}")
+                    ignore_val = data.get(ignore_key)
+                    count = (
+                        await table.filter(**{f"{field}": field_value})
+                        .filter(~Q(**{f"{ignore_key}": ignore_val}))
+                        .count()
+                    )
+                else:
+                    count = await table.filter(**{f"{field}": field_value}).count()
+                if count > 0:
+                    return rule.message
+        return None
+
+    async def rules_for_creation(self, ctx: Context) -> List[Rule]:
+        fields = self.creation_fields_without_when(ctx)
+        rules = []
+        for v in fields:
+            rules.extend(await self.get_rules_for_creation(v))
+            if isinstance(v, WhenComponent):
+                when_component = v
+                if when_component.items:
+                    for vi in when_component.items:
+                        if await self.need_validate_when_rules(ctx, vi):
+                            body = vi.body
+                            if body:
+                                if isinstance(body, list):
+                                    for bv in body:
+                                        rules.extend(
+                                            await self.get_rules_for_creation(bv)
+                                        )
+                                else:
+                                    rules.extend(
+                                        await self.get_rules_for_creation(body)
+                                    )
+        return rules
+
+    async def rules_for_update(self, ctx: Context) -> List[Rule]:
+        fields = self.update_fields_without_when(ctx)
+        rules = []
+        for v in fields:
+            rules.extend(await self.get_rules_for_update(v))
+            if isinstance(v, WhenComponent):
+                when_component = v
+                if when_component.items:
+                    for vi in when_component.items:
+                        if await self.need_validate_when_rules(ctx, vi):
+                            body = vi.body
+                            if body:
+                                if isinstance(body, list):
+                                    for bv in body:
+                                        rules.extend(
+                                            await self.get_rules_for_update(bv)
+                                        )
+                                else:
+                                    rules.extend(await self.get_rules_for_update(body))
+        return rules
+
+    async def rules_for_import(self, ctx: Context) -> List[Rule]:
+        fields = self.import_fields_without_when(ctx)
+        rules = []
+        for v in fields:
+            rules.extend(await self.get_rules_for_creation(v))
+            if isinstance(v, WhenComponent):
+                when_component = v
+                if when_component.items:
+                    for vi in when_component.items:
+                        if await self.need_validate_when_rules(ctx, vi):
+                            body = vi.body
+                            if body:
+                                if isinstance(body, list):
+                                    for bv in body:
+                                        rules.extend(
+                                            await self.get_rules_for_creation(bv)
+                                        )
+                                else:
+                                    rules.extend(
+                                        await self.get_rules_for_creation(body)
+                                    )
+        return rules
+
+    async def need_validate_when_rules(self, ctx: Context, when_item: WhenItem) -> bool:
+        cond_name = when_item.condition_name
+        cond_opt = when_item.option
+        cond_op = when_item.condition_operator
+
+        parsed = urlparse(ctx.original_url())
+        query_params = parse_qs(parsed.query)
+        value = query_params.get(cond_name, [""])[0]
+
+        if not value:
+            return False
+
+        if cond_op == "=":
+            return value == cond_opt
+        elif cond_op == ">":
+            return value > cond_opt
+        elif cond_op == "<":
+            return value < cond_opt
+        elif cond_op == "<=":
+            return value <= cond_opt
+        elif cond_op == ">=":
+            return value >= cond_opt
+        elif cond_op == "has":
+            if isinstance(cond_opt, list):
+                return value in cond_opt
+            else:
+                return cond_opt in value
+        elif cond_op == "in":
+            if isinstance(cond_opt, list):
+                return value in cond_opt
+            else:
+                return value == cond_opt
+        else:
+            return value == cond_opt
+
+    async def get_rules_for_creation(self, field: Any) -> List[Rule]:
+        rules = []
+        if hasattr(field, "get_rules"):
+            rules.extend(field.get_rules())
+        if hasattr(field, "get_creation_rules"):
+            rules.extend(field.get_creation_rules())
+        return rules
+
+    async def get_rules_for_update(self, field: Any) -> List[Rule]:
+        rules = []
+        if hasattr(field, "get_rules"):
+            rules.extend(field.get_rules())
+        if hasattr(field, "get_update_rules"):
+            rules.extend(field.get_update_rules())
+        return rules
+
+    async def after_validation(self, ctx: Context, validator: Optional[str]):
+        pass
+
+    async def after_creation_validation(self, ctx: Context, validator: Optional[str]):
+        pass
+
+    async def after_update_validation(self, ctx: Context, validator: Optional[str]):
+        pass
+
+    async def after_import_validation(self, ctx: Context, validator: Optional[str]):
+        pass
