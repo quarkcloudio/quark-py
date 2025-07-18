@@ -5,32 +5,52 @@ import string
 from openpyxl import Workbook
 from openpyxl.styles import Font
 import pandas as pd
+from fastapi import Request
+from tortoise.models import Model
+from ...component.message.message import Message
 
 
 class ImportRequest:
+
+    # 请求对象
+    request: Request = None
+
+    # 查询对象
+    model: Model = None
+
+    # 列表页字段
+    fields: list = None
+
+    def __init__(
+        self,
+        request: Request,
+        model: Model,
+        fields: list,
+    ):
+        self.request = request
+        self.model = model
+        self.fields = fields
+
     def handle(self, index_route):
         """
         处理导入请求
         """
-        data = request.get_json()
+        body_bytes = self.request.body()
+        data = json.loads(body_bytes)
         file_ids = data.get("fileId", [])
 
         if not file_ids or not isinstance(file_ids, list) or len(file_ids) == 0:
-            return jsonify({"error": "参数错误"}), 400
+            return Message.error("参数错误")
 
         file_id_info = file_ids[0]
         file_id = file_id_info.get("id")
         if not file_id:
-            return jsonify({"error": "参数错误"}), 400
-
-        template = self.get_template()  # 需要替换为实际模板实现
-        model_instance = YourModel
-        model = db.session.query(model_instance)
+            return Message.error("参数错误")
 
         # 获取Excel数据
         import_data = self.get_excel_data(file_id)
         if not import_data:
-            return jsonify({"error": "文件数据为空"}), 400
+            return Message.error("文件数据为空")
 
         # 表头与数据分离
         import_head = import_data[0]
@@ -45,7 +65,7 @@ class ImportRequest:
         failed_num = 0
         failed_data = []
 
-        fields = template.import_fields(request)
+        fields = self.fields
 
         for item in lists:
             form_values = self.transform_form_values(fields, item)
