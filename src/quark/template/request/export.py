@@ -1,21 +1,57 @@
 import json
 from datetime import datetime
-from flask import request, send_file, Response
-from your_app.models import YourModel  # 替换为实际模型
-from your_app import db
+from io import BytesIO
+from fastapi import Request, Response
+from tortoise.models import Model
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
+from ..performs_queries import PerformsQueries
+from ..resolves_actions import ResolvesActions
+from ...services.attachment import AttachmentService
 
 
 class ExportRequest:
+
+    # 请求对象
+    request: Request = None
+
+    # 查询对象
+    model: Model = None
+
+    # 列表页字段
+    fields: list = None
+
+    # 搜索项
+    searches: list = None
+
+    # 全局数据排序规则
+    query_order: str = None
+
+    # 列表页面的排序规则
+    export_query_order: str = None
+
+    def __init__(
+        self,
+        request: Request,
+        model: Model,
+        query_order: str,
+        export_query_order: str,
+        fields: list,
+        searches: list,
+    ):
+        self.request = request
+        self.model = model
+        self.query_order = query_order
+        self.export_query_order = export_query_order
+        self.fields = fields
+        self.searches = searches
+
     def handle(self):
         """
         处理导出逻辑
         """
-        template = self.get_template()
-
         data = self.query_data()
-        fields = template.export_fields(request)
+        fields = self.fields
 
         wb = Workbook()
         ws = wb.active
@@ -61,7 +97,6 @@ class ExportRequest:
                 ws[f"{get_column_letter(col_idx)}{row_idx}"] = value
 
         # 返回 Excel 文件流
-        from io import BytesIO
         output = BytesIO()
         wb.save(output)
         output.seek(0)
@@ -78,97 +113,108 @@ class ExportRequest:
             headers=headers,
         )
 
-    def get_template(self):
-        """
-        获取模板实例（需根据你的业务框架替换）
-        """
-        # 示例返回一个 mock 对象
-        class MockTemplate:
-            def export_fields(self, req):
-                return []
-
-            def build_export_query(self, query, searches, filters, column_filters, orderings):
-                return query
-
-            def before_exporting(self, data):
-                return data
-
-        return MockTemplate()
-
     def query_data(self):
         """
         查询数据
         """
-        template = self.get_template()
-        model_instance = self.get_model()  # 可以是 YourModel.query 或其他模型类
-        query = db.session.query(model_instance)
 
-        searches = template.searches(request) if hasattr(template, "searches") else {}
-        filters = template.filters(request) if hasattr(template, "filters") else {}
-
+        # 获取列过滤条件
         column_filters = self.column_filters()
+
+        # 获取排序规则
         orderings = self.orderings()
 
-        query = template.build_export_query(query, searches, filters, column_filters, orderings)
+        query = PerformsQueries(
+            request=self.request,
+            query=self.model,
+        ).build_export_query(self.searches, column_filters)
+
+        query = PerformsQueries(
+            request=self.request,
+            query_order=self.query_order,
+            export_query_order=self.export_query_order,
+        ).apply_index_orderings(query, orderings)
+
         result = query.all()
 
         return self.performs_list(result)
 
-    def performs_list(self, data):
+    def performs_list(self, items):
         """
-        处理列表数据格式化
+        处理列表字段
         """
         result = []
-        template = self.get_template()
-        export_fields = template.export_fields(request)
-
-        for item in data:
-            item_dict = item.to_dict() if hasattr(item, "to_dict") else item.__dict__
+        index_fields = self.fields
+        for item in items:
             fields = {}
 
-            for field in export_fields:
-                name = field.get("name")
-                callback = field.get("callback")
+            for field in index_fields:
+                component = field.component
+                name = field.name
 
-                if callback:
-                    fields[name] = callback(item_dict)
-                else:
-                    value = item_dict.get(name)
-                    component = field.get("component")
-
-                    if component in ["datetimeField", "dateField"]:
-                        fmt = field.get("format", "").replace("YYYY", "%Y").replace("MM", "%m").replace("DD", "%d")
-                        if isinstance(value, datetime):
-                            fields[name] = value.strftime(fmt)
-                        else:
-                            fields[name] = value
+                if component == "actionField":
+                    items_callback = field.callback
+                    if items_callback:
+                        action_items = items_callback(item)
                     else:
+                        action_items = field.items
+
+                    rendered_actions = []
+                    for action in action_items:
+                        rendered_actions.append(
+                            ResolvesActions()
+                            .set_request(self.request)
+                            .build_action(action)
+                        )
+
+                    fields[name] = rendered_actions
+                else:
+                    callback = field.callback
+                    if callback:
+                        fields[name] = callback(item)
+                    else:
+                        value = getattr(item, name, None)
+                        if value is None:
+                            continue
+
+                        # JSON 字符串解析
+                        if isinstance(value, str):
+                            if value.startswith("[") or value.startswith("{"):
+                                try:
+                                    value = json.loads(value)
+                                except:
+                                    pass
+
+                        # 图片字段处理
+                        if component in ["imageField", "imagePickerField"]:
+                            value = AttachmentService().get_image_url(value)
+
                         fields[name] = value
 
             result.append(fields)
 
-        return template.before_exporting(result)
+        return result
 
     def column_filters(self):
-        filter_json = request.args.get("filter")
-        if not filter_json:
-            return {}
+        """
+        获取列过滤条件
+        """
+        filter_str = self.request.query_params.get("filter")
+        column_filters = {}
         try:
-            return json.loads(filter_json)
-        except Exception:
-            return {}
+            column_filters = json.loads(filter_str)
+        except:
+            pass
+        return column_filters
 
     def orderings(self):
-        sorter_json = request.args.get("sorter")
-        if not sorter_json:
-            return {}
+        """
+        获取排序规则
+        """
+        sorter_str = self.request.query_params.get("sorter")
+        orderings = {}
         try:
-            return json.loads(sorter_json)
-        except Exception:
-            return {}
-
-    def get_model(self):
-        """
-        获取模型类
-        """
-        return YourModel
+            orderings = json.loads(sorter_str)
+        except:
+            pass
+        return orderings

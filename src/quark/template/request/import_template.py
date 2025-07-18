@@ -1,19 +1,33 @@
-import json
 from datetime import datetime
-from flask import request, Response
+from io import BytesIO
+from fastapi import Request, Response
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 
 
 class ImportTemplateRequest:
+
+    # 请求对象
+    request: Request = None
+
+    # 列表页字段
+    fields: list = None
+
+    def __init__(
+        self,
+        request: Request,
+        fields: list,
+    ):
+        self.request = request
+        self.fields = fields
+
     def handle(self):
         """
         处理导出导入模板逻辑
         """
-        template = self.get_template()  # 需要替换为你的模板实例获取方式
-        fields = template.import_fields(request)
-
-        export_titles = [self.get_field_label_with_remark(field) for field in fields]
+        export_titles = [
+            self.get_field_label_with_remark(field) for field in self.fields
+        ]
 
         wb = Workbook()
         ws = wb.active
@@ -24,7 +38,6 @@ class ImportTemplateRequest:
             ws[f"{get_column_letter(col_idx)}1"] = title
 
         # 返回 Excel 文件流
-        from io import BytesIO
         output = BytesIO()
         wb.save(output)
         output.seek(0)
@@ -40,16 +53,6 @@ class ImportTemplateRequest:
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers=headers,
         )
-
-    def get_template(self):
-        """
-        获取模板实例（需根据你的业务框架替换）
-        """
-        class MockTemplate:
-            def import_fields(self, req):
-                return []
-
-        return MockTemplate()
 
     def get_field_label_with_remark(self, field):
         """

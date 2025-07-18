@@ -2,14 +2,9 @@ import os
 import json
 import random
 import string
-from datetime import datetime
-from flask import request, jsonify, redirect
-from your_app import db, app  # 替换为你的 Flask 应用和数据库实例
-from your_app.models import YourModel  # 替换为实际模型
-from your_app.utils.excel import generate_column_label  # 自定义列标签生成函数
-from your_app.utils.file import is_file_exists, create_directory
 from openpyxl import Workbook
 from openpyxl.styles import Font
+import pandas as pd
 
 
 class ImportRequest:
@@ -154,6 +149,7 @@ class ImportRequest:
         获取附件服务中的 Excel 数据（需根据你的业务系统实现）
         """
         from your_app.models import Attachment
+
         attachment = Attachment.query.get(file_id)
         if not attachment:
             return []
@@ -161,7 +157,7 @@ class ImportRequest:
         if not os.path.exists(file_path):
             return []
         # 使用 openpyxl 或 pandas 读取 Excel 数据
-        import pandas as pd
+
         df = pd.read_excel(file_path, header=None)
         return df.values.tolist()
 
@@ -202,25 +198,6 @@ class ImportRequest:
 
         return result
 
-    def get_template(self):
-        class MockTemplate:
-            def before_importing(self, data):
-                return data
-
-            def import_fields(self, req):
-                return []
-
-            def validator_for_import(self, data):
-                return None
-
-            def before_saving(self, data):
-                return data, None
-
-            def after_imported(self, record_id, data):
-                return None
-
-        return MockTemplate()
-
     def generate_random_filename(self, length=40):
         chars = string.ascii_letters + string.digits
-        return ''.join(random.choice(chars) for _ in range(length))
+        return "".join(random.choice(chars) for _ in range(length))

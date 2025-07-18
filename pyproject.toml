@@ -11,6 +11,7 @@ dependencies = [
     "fastapi>=0.115.12",
     "fastapi-cache2>=0.2.2",
     "openpyxl>=3.1.5",
+    "pandas>=2.3.1",
     "psutil>=7.0.0",
     "python-i18n>=0.3.9",
     "python-jose[cryptography]>=3.5.0",
