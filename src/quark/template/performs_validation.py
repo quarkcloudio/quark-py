@@ -16,6 +16,14 @@ class PerformsValidation:
     # 字段
     fields: Optional[Any] = None
 
+    def __init__(
+        self,
+        request: Optional[Request] = None,
+        fields: Optional[Any] = None,
+    ):
+        self.request = request
+        self.fields = fields
+
     async def validator_for_creation(
         self, request: Request, data: Dict[str, Any]
     ) -> Optional[str]:
