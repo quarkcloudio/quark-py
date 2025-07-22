@@ -1,97 +1,91 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
 import json
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-db = SQLAlchemy(app)
-
-# 模拟 Resourcer 接口
-class ResourceTemplate:
-    def get_model(self):
-        raise NotImplementedError()
-
-    def validator_for_update(self, ctx, data):
-        return None
-
-    def before_saving(self, ctx, data):
-        return data, None
-
-    def after_saved(self, ctx, id_value, data, model):
-        pass
-
-    def after_saved_redirect_to(self, ctx, id_value, data, err):
-        if err:
-            return jsonify({"error": str(err)}), 400
-        return jsonify({"id": id_value, "data": data}), 200
-
-    def build_update_query(self, ctx, query):
-        return query
+from typing import Any, Dict
+from fastapi import Request
+from tortoise.models import Model
+from ..performs_queries import PerformsQueries
+from ...component.message.message import Message
 
 
-# 示例模型
-class ExampleModel(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
-    metadata_json = db.Column(db.Text)
-
-
-# 将字段名转为 PascalCase
-def to_pascal_case(name: str) -> str:
-    return ''.join(word.capitalize() for word in name.split('_'))
-
-
-# UpdateRequest 类
 class UpdateRequest:
-    def handle(self, template: ResourceTemplate):
-        # 解析数据
+
+    # 请求对象
+    request: Request = None
+
+    # 资源对象
+    resource: Any = None
+
+    # 模型对象
+    model: Model = None
+
+    # 查询对象
+    query: Model = None
+
+    def __init__(
+        self,
+        request: Request,
+        resource: Any,
+        model: Model,
+        query: Model,
+    ):
+        self.request = request
+        self.resource = resource
+        self.model = model
+        self.query = query
+
+    async def handle(self, request: Request) -> Any:
         try:
-            data = request.get_json()
-        except Exception as err:
-            return jsonify({"error": str(err)}), 400
+            data: Dict[str, Any] = json.loads(await request.json())
+        except Exception as e:
+            return Message.error(str(e))
 
         # 验证参数合法性
         if not data.get("id"):
-            return jsonify({"error": "参数错误"}), 400
+            return Message.error("参数错误")
+
+        # 模型结构体类
+        model_cls = self.model
 
         # 验证数据合法性
-        validator = template.validator_for_update(request, data)
-        if validator is not None:
-            return jsonify({"error": validator.error()}), 400
+        try:
+            await self.resource.validator_for_update(request, data)
+        except Exception as e:
+            return Message.error(str(e))
 
         # 保存前回调
-        modified_data, err = template.before_saving(request, data)
-        if err:
-            return jsonify({"error": err}), 400
+        try:
+            data = await self.resource.before_saving(request, data)
+        except Exception as e:
+            return Message.error(str(e))
 
         # 重组数据
         new_data = {}
-        model_instance = template.get_model()
-        for k, v in modified_data.items():
+        model_fields = model_cls.__annotations__.keys()
+
+        for k, v in data.items():
             nv = v
             if isinstance(v, (list, dict)):
-                nv = json.dumps(v)
+                nv = json.dumps(v, ensure_ascii=False)
 
-            camel_case_name = to_pascal_case(k)
-            field_exists = hasattr(model_instance, camel_case_name)
-            if field_exists:
+            camel_case_name = self.to_pascal_case(k)
+
+            if camel_case_name in model_fields:
                 new_data[k] = nv
 
-        # 获取对象并更新
-        model_class = type(template.get_model())
-        id_value = int(data["id"])
-        model = model_class.query.get(id_value)
-        if not model:
-            return jsonify({"error": "记录不存在"}), 404
+        # 创建更新查询（Tortoise ORM不支持链式 Updates，所以你可能得手动实现 BuildUpdateQuery）
+        query = PerformsQueries(self.request).build_update_query(self.query)
 
-        # 构建查询
-        query = template.build_update_query(request, model_class.query)
-
-        # 更新数据
-        for key, value in new_data.items():
-            setattr(model, key, value)
-        db.session.commit()
+        # 执行更新
+        await query.filter(id=data["id"]).update(**new_data)
 
         # 保存后回调
-        err = template.after_saved(request, id_value, data, model)
-        return template.after_saved_redirect_to(request, id_value, data, err)
+        try:
+            await self.resource.after_saved(request, int(data["id"]), data, query)
+        except Exception as e:
+            return Message.error(str(e))
+
+        return await self.resource.after_saved_redirect_to(
+            request, int(data["id"]), data, None
+        )
+
+    def to_pascal_case(self, s: str) -> str:
+        return "".join(word.capitalize() for word in s.split("_"))
