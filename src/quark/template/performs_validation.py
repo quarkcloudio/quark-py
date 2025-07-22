@@ -1,53 +1,38 @@
 import re
-import json
-from dataclasses import dataclass
-from typing import List, Dict, Any, Optional, Union, Type, Callable, Awaitable, cast
-from abc import ABC, abstractmethod
+from typing import List, Dict, Any, Optional, Type
 from urllib.parse import parse_qs, urlparse
-
+from fastapi import Request
 from tortoise.models import Model
-from tortoise import fields
 from tortoise.query_utils import Q
 
 
 class PerformsValidation:
-    @abstractmethod
-    def creation_fields_without_when(self, ctx: Context) -> List[Any]:
-        pass
 
-    @abstractmethod
-    def update_fields_without_when(self, ctx: Context) -> List[Any]:
-        pass
+    # 请求对象
+    request: Request = None
 
-    @abstractmethod
-    def import_fields_without_when(self, ctx: Context) -> List[Any]:
-        pass
+    # 字段
+    fields: Optional[Any] = None
 
     async def validator_for_creation(
-        self, ctx: Context, data: Dict[str, Any]
+        self, request: Request, data: Dict[str, Any]
     ) -> Optional[str]:
-        rules = await self.rules_for_creation(ctx)
+        rules = await self.rules_for_creation(request)
         validator = await self.validator(rules, data)
-        await self.after_validation(ctx, validator)
-        await self.after_creation_validation(ctx, validator)
         return validator
 
     async def validator_for_update(
-        self, ctx: Context, data: Dict[str, Any]
+        self, request: Request, data: Dict[str, Any]
     ) -> Optional[str]:
-        rules = await self.rules_for_update(ctx)
+        rules = await self.rules_for_update(request)
         validator = await self.validator(rules, data)
-        await self.after_validation(ctx, validator)
-        await self.after_update_validation(ctx, validator)
         return validator
 
     async def validator_for_import(
-        self, ctx: Context, data: Dict[str, Any]
+        self, request: Request, data: Dict[str, Any]
     ) -> Optional[str]:
-        rules = await self.rules_for_import(ctx)
+        rules = await self.rules_for_import(request)
         validator = await self.validator(rules, data)
-        await self.after_validation(ctx, validator)
-        await self.after_import_validation(ctx, validator)
         return validator
 
     async def validator(self, rules: List[Rule], data: Dict[str, Any]) -> Optional[str]:
@@ -86,16 +71,15 @@ class PerformsValidation:
                     return rule.message
         return None
 
-    async def rules_for_creation(self, ctx: Context) -> List[Rule]:
-        fields = self.creation_fields_without_when(ctx)
+    async def rules_for_creation(self, request: Request) -> List[Rule]:
         rules = []
-        for v in fields:
+        for v in self.fields:
             rules.extend(await self.get_rules_for_creation(v))
             if isinstance(v, WhenComponent):
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
-                        if await self.need_validate_when_rules(ctx, vi):
+                        if await self.need_validate_when_rules(request, vi):
                             body = vi.body
                             if body:
                                 if isinstance(body, list):
@@ -109,16 +93,15 @@ class PerformsValidation:
                                     )
         return rules
 
-    async def rules_for_update(self, ctx: Context) -> List[Rule]:
-        fields = self.update_fields_without_when(ctx)
+    async def rules_for_update(self, request: Request) -> List[Rule]:
         rules = []
-        for v in fields:
+        for v in self.fields:
             rules.extend(await self.get_rules_for_update(v))
             if isinstance(v, WhenComponent):
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
-                        if await self.need_validate_when_rules(ctx, vi):
+                        if await self.need_validate_when_rules(request, vi):
                             body = vi.body
                             if body:
                                 if isinstance(body, list):
@@ -130,16 +113,15 @@ class PerformsValidation:
                                     rules.extend(await self.get_rules_for_update(body))
         return rules
 
-    async def rules_for_import(self, ctx: Context) -> List[Rule]:
-        fields = self.import_fields_without_when(ctx)
+    async def rules_for_import(self, request: Request) -> List[Rule]:
         rules = []
-        for v in fields:
+        for v in self.fields:
             rules.extend(await self.get_rules_for_creation(v))
             if isinstance(v, WhenComponent):
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
-                        if await self.need_validate_when_rules(ctx, vi):
+                        if await self.need_validate_when_rules(request, vi):
                             body = vi.body
                             if body:
                                 if isinstance(body, list):
@@ -153,12 +135,14 @@ class PerformsValidation:
                                     )
         return rules
 
-    async def need_validate_when_rules(self, ctx: Context, when_item: WhenItem) -> bool:
+    async def need_validate_when_rules(
+        self, request: Request, when_item: WhenItem
+    ) -> bool:
         cond_name = when_item.condition_name
         cond_opt = when_item.option
         cond_op = when_item.condition_operator
 
-        parsed = urlparse(ctx.original_url())
+        parsed = urlparse(self.request.url.path)
         query_params = parse_qs(parsed.query)
         value = query_params.get(cond_name, [""])[0]
 
@@ -203,15 +187,3 @@ class PerformsValidation:
         if hasattr(field, "get_update_rules"):
             rules.extend(field.get_update_rules())
         return rules
-
-    async def after_validation(self, ctx: Context, validator: Optional[str]):
-        pass
-
-    async def after_creation_validation(self, ctx: Context, validator: Optional[str]):
-        pass
-
-    async def after_update_validation(self, ctx: Context, validator: Optional[str]):
-        pass
-
-    async def after_import_validation(self, ctx: Context, validator: Optional[str]):
-        pass
