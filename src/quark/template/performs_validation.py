@@ -4,6 +4,8 @@ from urllib.parse import parse_qs, urlparse
 from fastapi import Request
 from tortoise.models import Model
 from tortoise.query_utils import Q
+from ..component.form import Rule
+from ..component.form.fields.when import When, Item
 
 
 class PerformsValidation:
@@ -75,7 +77,7 @@ class PerformsValidation:
         rules = []
         for v in self.fields:
             rules.extend(await self.get_rules_for_creation(v))
-            if isinstance(v, WhenComponent):
+            if isinstance(v, When):
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
@@ -97,7 +99,7 @@ class PerformsValidation:
         rules = []
         for v in self.fields:
             rules.extend(await self.get_rules_for_update(v))
-            if isinstance(v, WhenComponent):
+            if isinstance(v, When):
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
@@ -117,7 +119,7 @@ class PerformsValidation:
         rules = []
         for v in self.fields:
             rules.extend(await self.get_rules_for_creation(v))
-            if isinstance(v, WhenComponent):
+            if isinstance(v, When):
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
@@ -135,9 +137,7 @@ class PerformsValidation:
                                     )
         return rules
 
-    async def need_validate_when_rules(
-        self, request: Request, when_item: WhenItem
-    ) -> bool:
+    async def need_validate_when_rules(self, request: Request, when_item: Item) -> bool:
         cond_name = when_item.condition_name
         cond_opt = when_item.option
         cond_op = when_item.condition_operator
