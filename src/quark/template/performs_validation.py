@@ -141,7 +141,6 @@ class PerformsValidation:
         cond_name = when_item.condition_name
         cond_opt = when_item.option
         cond_op = when_item.condition_operator
-
         parsed = urlparse(self.request.url.path)
         query_params = parse_qs(parsed.query)
         value = query_params.get(cond_name, [""])[0]
