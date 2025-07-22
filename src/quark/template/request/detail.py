@@ -20,7 +20,7 @@ class DetailRequest:
     resource: Any = None
 
     # 查询对象
-    model: Model = None
+    query: Model = None
 
     # 字段
     fields: Optional[Any] = None
@@ -29,12 +29,12 @@ class DetailRequest:
         self,
         request: Request,
         resource: Any,
-        model: Model,
+        query: Model,
         fields: Optional[Any],
     ):
         self.request = request
         self.resource = resource
-        self.model = model
+        self.query = query
         self.fields = fields
 
     def fill_data(self) -> Dict[str, Any]:
@@ -47,7 +47,7 @@ class DetailRequest:
             return result
 
         # 构建查询
-        query = PerformsQueries(self.request).build_detail_query(self.model)
+        query = PerformsQueries(self.request).build_detail_query(self.query)
         result = query.first() or {}
 
         fields = {}

@@ -12,7 +12,7 @@ class IndexRequest:
     request: Request = None
 
     # 查询对象
-    model: Model = None
+    query: Model = None
 
     # 列表页字段
     fields: list = None
@@ -35,7 +35,7 @@ class IndexRequest:
     def __init__(
         self,
         request: Request,
-        model: Model,
+        query: Model,
         query_order: str,
         index_query_order: str,
         fields: list,
@@ -44,7 +44,7 @@ class IndexRequest:
         page_size_options: list,
     ):
         self.request = request
-        self.model = model
+        self.query = query
         self.query_order = query_order
         self.index_query_order = index_query_order
         self.fields = fields
@@ -66,7 +66,7 @@ class IndexRequest:
         # 构建查询
         query = PerformsQueries(
             request=self.request,
-            query=self.model,
+            query=self.query,
         ).build_index_query(self.searches, column_filters)
 
         # 获取分页配置

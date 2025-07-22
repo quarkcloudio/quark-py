@@ -16,7 +16,7 @@ class ImportRequest:
     request: Request = None
 
     # 查询对象
-    model: Model = None
+    query: Model = None
 
     # 列表页字段
     fields: list = None
@@ -24,11 +24,11 @@ class ImportRequest:
     def __init__(
         self,
         request: Request,
-        model: Model,
+        query: Model,
         fields: list,
     ):
         self.request = request
-        self.model = model
+        self.query = query
         self.fields = fields
 
     def handle(self, index_route):

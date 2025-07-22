@@ -13,17 +13,17 @@ class EditableRequest:
     resource: Any = None
 
     # 查询对象
-    model: Model = None
+    query: Model = None
 
     def __init__(
         self,
         request: Request,
         resource: Any,
-        model: Model,
+        query: Model,
     ):
         self.request = request
         self.resource = resource
-        self.model = model
+        self.query = query
 
     def handle(self):
         data = self.request.query_params
@@ -32,7 +32,7 @@ class EditableRequest:
         if not id_val:
             return Message.error("id不能为空")
 
-        model_instance = self.model.get(id_val)
+        model_instance = self.query.get(id_val)
         if not model_instance:
             return Message.error("记录不存在")
 
@@ -57,7 +57,7 @@ class EditableRequest:
             return before_result
 
         # 构建查询并更新数据
-        self.model.filter(id=id_val).update({field: value})
+        self.query.filter(id=id_val).update({field: value})
 
         # 行内编辑执行后回调
         after_result = self.resource.after_editable(id_val, field, value)
