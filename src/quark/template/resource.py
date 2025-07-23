@@ -12,6 +12,7 @@ from ..component.pagecontainer.pagecontainer import PageContainer
 from ..component.pagecontainer.pageheader import PageHeader
 from .resolves_fields import ResolvesFields
 from .request.index import IndexRequest
+from .request.edit import EditRequest
 from .resource_index import ResourceIndex
 from .resource_form import ResourceForm
 from .resource_create import ResourceCreate
@@ -211,13 +212,21 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
         """创建方法"""
         model = await self.get_model()
         data = await request.json()
-
         return await self.form_handle(request, model, data)
 
     async def edit_render(self, request: Request) -> Any:
         """编辑页渲染"""
 
-        data = await self.before_editing(request, {})
+        # 获取列表查询
+        query = await self.query(request)
+
+        fields = ResolvesFields(request, await self.fields(request)).update_fields()
+
+        data = await EditRequest(
+            request=request, resource=self, query=query, fields=fields
+        ).fill_data()
+
+        data = await self.before_editing(request, data)
 
         # 页面组件渲染
         return await self.page_component_render(

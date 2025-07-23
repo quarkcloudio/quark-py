@@ -1,7 +1,7 @@
 import json
 from fastapi import Request
 from typing import Dict, Any, Optional
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 from datetime import datetime
 from ..performs_queries import PerformsQueries
 from ...component.message.message import Message
@@ -11,18 +11,6 @@ class EditRequest:
     """
     用于处理资源编辑页数据填充和初始化数据获取。
     """
-
-    # 请求对象
-    request: Request = None
-
-    # 资源对象
-    resource: Any = None
-
-    # 查询对象
-    query: QuerySet = None
-
-    # 字段
-    fields: Optional[Any] = None
 
     def __init__(
         self,
@@ -36,32 +24,41 @@ class EditRequest:
         self.query = query
         self.fields = fields
 
-    def fill_data(self) -> Dict[str, Any]:
+    async def fill_data(self) -> Dict[str, Any]:
         """
         获取并解析编辑表单数据。
         """
-        result = {}
         id_value = self.request.query_params.get("id", "")
         if not id_value:
-            return result
+            return {}
 
         # 构建查询
         query = PerformsQueries(self.request).build_edit_query(self.query)
-        result = query.first() or {}
+        result = await query.first()
+        if not result:
+            return {}
 
-        fields = {}
+        # 将查询结果转为 dict
+        if hasattr(result, "to_dict"):
+            result_dict = result.to_dict()
+        elif hasattr(result, "__dict__"):
+            result_dict = dict(result.__dict__)
+        else:
+            result_dict = dict(result)
+
+        # 填充字段数据
+        fields_data = {}
         for field in self.fields:
-            name = getattr(field, "name", "")
-
-            value = result.get(name)
-            if value is None:
+            name = getattr(field, "name", None)
+            if not name or name not in result_dict:
                 continue
 
+            value = result_dict[name]
             component = getattr(field, "component", "")
             field_value: Any = value
 
-            # 时间字段处理
-            if component == "datetimeField" or component == "dateField":
+            # 时间字段格式化
+            if component in ["datetimeField", "dateField"]:
                 format_str = getattr(field, "format", "%Y-%m-%d %H:%M:%S")
                 format_str = (
                     format_str.replace("YYYY", "%Y")
@@ -71,26 +68,23 @@ class EditRequest:
                     .replace("mm", "%M")
                     .replace("ss", "%S")
                 )
-
                 if isinstance(value, datetime):
                     field_value = value.strftime(format_str)
 
-            fields[name] = field_value
+            fields_data[name] = field_value
 
-        return fields
+        return fields_data
 
-    def values(self) -> Any:
+    async def values(self) -> Any:
         """
         获取表单初始化数据，并调用显示前回调。
         """
-        data = self.fill_data()
+        data = await self.fill_data()
 
         # 编辑前回调
-        before_editing = getattr(self.resource, "before_editing", None)
-        if before_editing:
-            data = before_editing(self.request, data)
+        data = await self.resource.before_editing(self.request, data)
 
-        # 解析嵌套 JSON 字符串
+        # 解析嵌套 JSON 字符串为对象
         parsed_data = {}
         for key, value in data.items():
             if isinstance(value, str):

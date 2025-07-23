@@ -1,7 +1,8 @@
 import json
 from fastapi import Request
-from typing import Any, Optional
+from typing import Optional
 from tortoise.models import QuerySet
+from tortoise.expressions import Q
 
 
 class PerformsQueries:
@@ -127,29 +128,28 @@ class PerformsQueries:
         id_param = self.request.query_params.get("id")
         if id_param:
             ids = id_param.split(",") if "," in id_param else [id_param]
-            query = query.filter(query.id.in_(ids))
+            query = query.filter(Q(id__in=ids))
         return query
 
     # 详情查询
     def detail_query(self, query: QuerySet) -> QuerySet:
         id_param = self.request.query_params.get("id")
         if id_param:
-            query = query.filter(query.id == id_param)
+            query = query.filter(Q(id=id_param))
         return query
 
     # 编辑查询
     def edit_query(self, query: QuerySet) -> QuerySet:
         id_param = self.request.query_params.get("id")
         if id_param:
-            query = query.filter(query.id == id_param)
+            query = query.filter(Q(id=id_param))
         return query
 
     # 表格行内编辑查询
     def editable_query(self, query: QuerySet) -> QuerySet:
-        data = self.request.query_params
-        if data:
-            if "id" in data:
-                query = query.filter(query.id == data["id"])
+        id_param = self.request.query_params.get("id")
+        if id_param:
+            query = query.filter(Q(id=id_param))
         return query
 
     # 导出查询
@@ -157,7 +157,7 @@ class PerformsQueries:
         id_param = self.request.query_params.get("id")
         if id_param:
             ids = id_param.split(",") if "," in id_param else [id_param]
-            query = query.filter(query.id.in_(ids))
+            query = query.filter(Q(id__in=ids))
         return query
 
     # 列表查询
@@ -168,5 +168,5 @@ class PerformsQueries:
     def update_query(self, query: QuerySet) -> QuerySet:
         data = self.request.json() or {}
         if "id" in data:
-            query = query.filter(query.id == data["id"])
+            query = query.filter(id=data["id"])
         return query
