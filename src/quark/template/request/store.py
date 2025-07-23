@@ -62,4 +62,4 @@ class StoreRequest:
         except Exception as e:
             return Message.error(str(e))
 
-        return await self.resource.after_saved_redirect_to(self.request, id, data, None)
+        return await self.resource.after_saved_redirect_to(self.request, id, data)

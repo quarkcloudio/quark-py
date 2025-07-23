@@ -85,7 +85,7 @@ class UpdateRequest:
             return Message.error(str(e))
 
         return await self.resource.after_saved_redirect_to(
-            request, int(data["id"]), data, None
+            request, int(data["id"]), data
         )
 
     def to_pascal_case(self, s: str) -> str:

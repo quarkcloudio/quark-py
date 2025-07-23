@@ -32,6 +32,7 @@ class User(Resource):
             field.text("username", "用户名"),
             field.password("password", "密码").only_on_forms(),
             field.text("email", "邮箱").set_editable(True),
+            field.text("phone", "手机号"),
         ]
 
     async def searches(self, request: Request) -> List[Dict]:
