@@ -108,10 +108,9 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
 
     async def get_model(self) -> Any:
         """获取模型实例"""
-
         if self.model is None:
             raise ValueError("Model not set")
-        return self.model.all()
+        return self.model()
 
     async def before_exporting(self, request: Request, data: List[Dict]) -> List[Any]:
         """导出前处理"""
@@ -156,7 +155,7 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
         """
         全局查询
         """
-        return await self.get_model()
+        return self.model.all()
 
     async def index_query(self, request: Request) -> Model:
         """
@@ -212,6 +211,7 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
         """创建方法"""
         model = await self.get_model()
         data = await request.json()
+
         return await self.form_handle(request, model, data)
 
     async def edit_render(self, request: Request) -> Any:

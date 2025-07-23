@@ -5,6 +5,7 @@ from ..component.form.form import Form
 from ..component.tabs.tabs import Tabs
 from ..component.card.card import Card
 from ..component.message.message import Message
+from .resolves_fields import ResolvesFields
 from ..utils import is_creating, is_editing
 
 
@@ -115,14 +116,19 @@ class ResourceForm:
         return {}
 
     async def form_handle(
-        self, request: Request, query: Any, data: Dict[str, Any]
+        self, request: Request, model: Any, data: Dict[str, Any]
     ) -> Optional[Dict[str, Any]]:
         """
         表单提交处理
         """
-        return await StoreRequest(request=request, resource=self, query=query).handle(
-            data
-        )
+
+        fields = ResolvesFields(
+            request, await self.fields(request)
+        ).creation_fields_without_when()
+
+        return await StoreRequest(
+            request=request, resource=self, model=model, fields=fields
+        ).handle(data)
 
     async def before_saving(
         self, request: Request, submit_data: Dict[str, Any]

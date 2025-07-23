@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Optional, Type
 from urllib.parse import parse_qs, urlparse
 from fastapi import Request
 from tortoise.models import Model
-from tortoise.query_utils import Q
+from tortoise.expressions import Q
 from ..component.form import Rule
 from ..component.form.fields.when import When, Item
 
@@ -29,17 +29,13 @@ class PerformsValidation:
         validator = await self.validator(rules, data)
         return validator
 
-    async def validator_for_update(
-        self, request: Request, data: Dict[str, Any]
-    ) -> Optional[str]:
-        rules = await self.rules_for_update(request)
+    async def validator_for_update(self, data: Dict[str, Any]) -> Optional[str]:
+        rules = await self.rules_for_update()
         validator = await self.validator(rules, data)
         return validator
 
-    async def validator_for_import(
-        self, request: Request, data: Dict[str, Any]
-    ) -> Optional[str]:
-        rules = await self.rules_for_import(request)
+    async def validator_for_import(self, data: Dict[str, Any]) -> Optional[str]:
+        rules = await self.rules_for_import()
         validator = await self.validator(rules, data)
         return validator
 

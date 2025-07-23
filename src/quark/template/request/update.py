@@ -3,6 +3,7 @@ from typing import Any, Dict
 from fastapi import Request
 from tortoise.models import Model
 from ..performs_queries import PerformsQueries
+from ..performs_validation import PerformsValidation
 from ...component.message.message import Message
 
 
@@ -46,10 +47,11 @@ class UpdateRequest:
         model_cls = self.model
 
         # 验证数据合法性
-        try:
-            await self.resource.validator_for_update(request, data)
-        except Exception as e:
-            return Message.error(str(e))
+        errMsg = await PerformsValidation(
+            request=self.request, fields=self.fields
+        ).validator_for_update(request, data)
+        if errMsg:
+            return Message.error(errMsg)
 
         # 保存前回调
         try:

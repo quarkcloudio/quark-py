@@ -15,39 +15,34 @@ class StoreRequest:
     resource: Any = None
 
     # 查询对象
-    query: Model = None
+    model: Model = None
 
-    # 列表页字段
+    # 字段列表
     fields: list = None
 
-    def __init__(self, request: Request, resource: Any, query: Model, fields: list):
+    def __init__(self, request: Request, resource: Any, model: Model, fields: list):
         self.request = request
         self.resource = resource
-        self.query = query
+        self.model = model
         self.fields = fields
 
     async def handle(self, data: Dict[str, Any]) -> Any:
-
-        print("1111111111111111")
         # 验证数据合法性
-        try:
-            await PerformsValidation(
-                request=self.request, fields=self.fields
-            ).validator_for_creation(self.request, data)
-        except Exception as e:
-            return Message.error(str(e))
+        errMsg = await PerformsValidation(
+            request=self.request, fields=self.fields
+        ).validator_for_creation(data)
+        if errMsg:
+            return Message.error(errMsg)
 
-        print("222222222222")
         # 保存前回调
         try:
             data = await self.resource.before_saving(self.request, data)
         except Exception as e:
             return Message.error(str(e))
 
-        print("3333333333333")
         # 重组数据
         new_data = {}
-        model_fields = self.query.__class__.__annotations__.keys()
+        model_fields = self.model.__class__.__annotations__.keys()
         for k, v in data.items():
             nv = v
             if isinstance(v, (list, dict)):
@@ -59,21 +54,18 @@ class StoreRequest:
 
         # 数据赋值
         for field, value in new_data.items():
-            setattr(self.query, field, value)
+            setattr(self.model, field, value)
 
         # 保存数据
-        await self.query.save()
+        await self.model.save()
 
-        # 因为 tortoise 不会更新零值，我们再使用 update 对部分字段重新更新
-        if not hasattr(self.query, "id"):
+        if not hasattr(self.model, "id"):
             return Message.error("参数错误")
 
-        id = self.query.id
-        await self.query.__class__.filter(id=id).update(**new_data)
-
+        id = self.model.id
         # 保存后回调
         try:
-            await self.resource.after_saved(self.request, id, data, self.query)
+            await self.resource.after_saved(self.request, id, data, self.model)
         except Exception as e:
             return Message.error(str(e))
 
