@@ -1,7 +1,7 @@
 import json
 from fastapi import Request
 from typing import Any, Optional
-from tortoise.models import Model
+from tortoise.models import QuerySet
 
 
 class PerformsQueries:
@@ -10,7 +10,7 @@ class PerformsQueries:
     request: Request = None
 
     # 查询对象
-    query: Model = None
+    query: QuerySet = None
 
     # 全局查询排序
     query_order: str = None
@@ -24,7 +24,7 @@ class PerformsQueries:
     def __init__(
         self,
         request: Optional[Request] = None,
-        query: Optional[Any] = None,
+        query: Optional[QuerySet] = None,
         query_order: Optional[str] = None,
         index_query_order: Optional[str] = None,
         export_query_order: Optional[str] = None,
@@ -36,41 +36,41 @@ class PerformsQueries:
         self.export_query_order = export_query_order
 
     # 创建行为查询
-    def build_action_query(self, query: Model) -> Model:
+    def build_action_query(self, query: QuerySet) -> QuerySet:
         return self.action_query(query)
 
     # 创建详情页查询
-    def build_detail_query(self, query: Model) -> Model:
+    def build_detail_query(self, query: QuerySet) -> QuerySet:
         return self.detail_query(query)
 
     # 创建编辑页查询
-    def build_edit_query(self, query: Model) -> Model:
+    def build_edit_query(self, query: QuerySet) -> QuerySet:
         return self.edit_query(query)
 
     # 创建表格行内编辑查询
-    def build_editable_query(self, query: Model) -> Model:
+    def build_editable_query(self, query: QuerySet) -> QuerySet:
         return self.editable_query(query)
 
     # 创建导出查询
-    def build_export_query(self, search, column_filters) -> Model:
+    def build_export_query(self, search, column_filters) -> QuerySet:
         query = self.export_query(self.query)
         query = self.apply_search(query, search)
         query = self.apply_column_filters(query, column_filters)
         return query
 
     # 创建列表查询
-    def build_index_query(self, search, column_filters) -> Model:
+    def build_index_query(self, search, column_filters) -> QuerySet:
         query = self.index_query(self.query)
         query = self.apply_search(query, search)
         query = self.apply_column_filters(query, column_filters)
         return query
 
     # 创建更新查询
-    def build_update_query(self, query: Model) -> Model:
+    def build_update_query(self, query: QuerySet) -> QuerySet:
         return self.update_query(query)
 
     # 执行搜索表单查询
-    def apply_search(self, query: Model, search) -> Model:
+    def apply_search(self, query: QuerySet, search) -> QuerySet:
         json_string = self.request.query_params.get("search", {})
         if not json_string:
             return query
@@ -85,7 +85,7 @@ class PerformsQueries:
         return query
 
     # 执行表格列上过滤器查询
-    def apply_column_filters(self, query: Model, filters) -> Model:
+    def apply_column_filters(self, query: QuerySet, filters) -> QuerySet:
         if not filters:
             return query
         for k, v in filters.items():
@@ -93,7 +93,7 @@ class PerformsQueries:
                 query = query.filter(getattr(query, k).in_(v))
         return query
 
-    def apply_index_orderings(self, query: Model, orderings) -> Model:
+    def apply_index_orderings(self, query: QuerySet, orderings) -> QuerySet:
         default_order = self.query_order
         if not default_order:
             default_order = self.index_query_order
@@ -101,7 +101,7 @@ class PerformsQueries:
             default_order = "-id"
         return self.apply_orderings(query, orderings, default_order)
 
-    def apply_export_orderings(self, query: Model, orderings) -> Model:
+    def apply_export_orderings(self, query: QuerySet, orderings) -> QuerySet:
         default_order = self.query_order
         if not default_order:
             default_order = self.export_query_order
@@ -110,7 +110,9 @@ class PerformsQueries:
         return self.apply_orderings(query, orderings, default_order)
 
     # 执行排序查询
-    def apply_orderings(self, query: Model, orderings, default_order: str) -> Model:
+    def apply_orderings(
+        self, query: QuerySet, orderings, default_order: str
+    ) -> QuerySet:
         if not orderings:
             return query.order_by(default_order)
         for key, v in orderings.items():
@@ -121,7 +123,7 @@ class PerformsQueries:
         return query
 
     # 行为查询
-    def action_query(self, query: Model) -> Model:
+    def action_query(self, query: QuerySet) -> QuerySet:
         id_param = self.request.query_params.get("id")
         if id_param:
             ids = id_param.split(",") if "," in id_param else [id_param]
@@ -129,21 +131,21 @@ class PerformsQueries:
         return query
 
     # 详情查询
-    def detail_query(self, query: Model) -> Model:
+    def detail_query(self, query: QuerySet) -> QuerySet:
         id_param = self.request.query_params.get("id")
         if id_param:
             query = query.filter(query.id == id_param)
         return query
 
     # 编辑查询
-    def edit_query(self, query: Model) -> Model:
+    def edit_query(self, query: QuerySet) -> QuerySet:
         id_param = self.request.query_params.get("id")
         if id_param:
             query = query.filter(query.id == id_param)
         return query
 
     # 表格行内编辑查询
-    def editable_query(self, query: Model) -> Model:
+    def editable_query(self, query: QuerySet) -> QuerySet:
         data = self.request.query_params
         if data:
             if "id" in data:
@@ -151,7 +153,7 @@ class PerformsQueries:
         return query
 
     # 导出查询
-    def export_query(self, query: Model) -> Model:
+    def export_query(self, query: QuerySet) -> QuerySet:
         id_param = self.request.query_params.get("id")
         if id_param:
             ids = id_param.split(",") if "," in id_param else [id_param]
@@ -159,11 +161,11 @@ class PerformsQueries:
         return query
 
     # 列表查询
-    def index_query(self, query: Model) -> Model:
+    def index_query(self, query: QuerySet) -> QuerySet:
         return query
 
     # 更新查询
-    def update_query(self, query: Model) -> Model:
+    def update_query(self, query: QuerySet) -> QuerySet:
         data = self.request.json() or {}
         if "id" in data:
             query = query.filter(query.id == data["id"])

@@ -1,7 +1,7 @@
 import json
 from fastapi import Request
 from typing import Dict, Any, Optional, Callable
-from tortoise.models import Model
+from tortoise.models import QuerySet
 from datetime import datetime
 from ..performs_queries import PerformsQueries
 from ..resolves_actions import ResolvesActions
@@ -20,7 +20,7 @@ class DetailRequest:
     resource: Any = None
 
     # 查询对象
-    query: Model = None
+    query: QuerySet = None
 
     # 字段
     fields: Optional[Any] = None
@@ -29,7 +29,7 @@ class DetailRequest:
         self,
         request: Request,
         resource: Any,
-        query: Model,
+        query: QuerySet,
         fields: Optional[Any],
     ):
         self.request = request

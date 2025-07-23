@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from io import BytesIO
 from fastapi import Request, Response
-from tortoise.models import Model
+from tortoise.models import QuerySet
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from ..performs_queries import PerformsQueries
@@ -16,7 +16,7 @@ class ExportRequest:
     request: Request = None
 
     # 查询对象
-    query: Model = None
+    query: QuerySet = None
 
     # 列表页字段
     fields: list = None
@@ -33,7 +33,7 @@ class ExportRequest:
     def __init__(
         self,
         request: Request,
-        query: Model,
+        query: QuerySet,
         query_order: str,
         export_query_order: str,
         fields: list,

@@ -1,6 +1,6 @@
 from fastapi import Request
 from typing import Any
-from tortoise.models import Model
+from tortoise.models import QuerySet
 from ...component.message.message import Message
 
 
@@ -13,13 +13,13 @@ class EditableRequest:
     resource: Any = None
 
     # 查询对象
-    query: Model = None
+    query: QuerySet = None
 
     def __init__(
         self,
         request: Request,
         resource: Any,
-        query: Model,
+        query: QuerySet,
     ):
         self.request = request
         self.resource = resource

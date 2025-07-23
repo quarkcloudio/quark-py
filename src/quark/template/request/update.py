@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict
 from fastapi import Request
-from tortoise.models import Model
+from tortoise.models import Model, QuerySet
 from ..performs_queries import PerformsQueries
 from ..performs_validation import PerformsValidation
 from ...component.message.message import Message
@@ -19,14 +19,14 @@ class UpdateRequest:
     model: Model = None
 
     # 查询对象
-    query: Model = None
+    query: QuerySet = None
 
     def __init__(
         self,
         request: Request,
         resource: Any,
         model: Model,
-        query: Model,
+        query: QuerySet,
     ):
         self.request = request
         self.resource = resource
@@ -73,7 +73,6 @@ class UpdateRequest:
             if camel_case_name in model_fields:
                 new_data[k] = nv
 
-        # 创建更新查询（Tortoise ORM不支持链式 Updates，所以你可能得手动实现 BuildUpdateQuery）
         query = PerformsQueries(self.request).build_update_query(self.query)
 
         # 执行更新

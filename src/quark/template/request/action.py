@@ -1,6 +1,6 @@
 from fastapi import Request
 from typing import List, Any, Optional
-from tortoise.models import Model
+from tortoise.models import QuerySet
 from ..performs_queries import PerformsQueries
 from ...component.message.message import Message
 
@@ -17,7 +17,7 @@ class ActionRequest:
     resource: Any = None
 
     # 查询对象
-    query: Model = None
+    query: QuerySet = None
 
     # 行为
     actions: Optional[Any] = None
@@ -29,7 +29,7 @@ class ActionRequest:
         self,
         request: Request,
         resource: Any,
-        query: Model,
+        query: QuerySet,
         actions: Optional[Any],
         fields: Optional[Any],
     ):

@@ -1,6 +1,6 @@
 import json
 from fastapi import Request
-from tortoise.models import Model
+from tortoise.models import QuerySet
 from ..performs_queries import PerformsQueries
 from ..resolves_actions import ResolvesActions
 from ...services.attachment import AttachmentService
@@ -12,7 +12,7 @@ class IndexRequest:
     request: Request = None
 
     # 查询对象
-    query: Model = None
+    query: QuerySet = None
 
     # 列表页字段
     fields: list = None
@@ -35,7 +35,7 @@ class IndexRequest:
     def __init__(
         self,
         request: Request,
-        query: Model,
+        query: QuerySet,
         query_order: str,
         index_query_order: str,
         fields: list,

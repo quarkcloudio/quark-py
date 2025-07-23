@@ -1,7 +1,7 @@
 from typing import Any, List, Dict, Optional
 from fastapi import Request
 from pydantic import BaseModel, Field
-from tortoise.models import Model
+from tortoise.models import Model, QuerySet
 from ..component.form.form import Form
 from ..component.table.table import Table
 from ..component.table.search import Search
@@ -106,7 +106,7 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
         """菜单项定义"""
         return []
 
-    async def get_model(self) -> Any:
+    async def get_model(self) -> Model:
         """获取模型实例"""
         if self.model is None:
             raise ValueError("Model not set")
@@ -151,13 +151,13 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
             header.set_back_icon(False)
         return PageContainer().set_header(header).set_body(body)
 
-    async def query(self, request: Request) -> Model:
+    async def query(self, request: Request) -> QuerySet:
         """
         全局查询
         """
         return self.model.all()
 
-    async def index_query(self, request: Request) -> Model:
+    async def index_query(self, request: Request) -> QuerySet:
         """
         列表查询
         """
