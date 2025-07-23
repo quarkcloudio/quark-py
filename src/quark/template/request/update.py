@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict
+from typing import Any
 from fastapi import Request
 from tortoise.models import Model, QuerySet
 from ..performs_queries import PerformsQueries
