@@ -208,6 +208,12 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
             request, await self.creation_component_render(request, data)
         )
 
+    async def store_render(self, request: Request) -> Any:
+        """创建方法"""
+        model = await self.get_model()
+        data = await request.json()
+        return await self.form_handle(request, model, data)
+
     async def edit_render(self, request: Request) -> Any:
         """编辑页渲染"""
 

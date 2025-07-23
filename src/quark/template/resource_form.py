@@ -120,7 +120,9 @@ class ResourceForm:
         """
         表单提交处理
         """
-        return StoreRequest().handle(request, data)
+        return await StoreRequest(request=request, resource=self, query=query).handle(
+            data
+        )
 
     async def before_saving(
         self, request: Request, submit_data: Dict[str, Any]

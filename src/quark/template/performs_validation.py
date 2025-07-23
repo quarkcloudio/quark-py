@@ -24,10 +24,8 @@ class PerformsValidation:
         self.request = request
         self.fields = fields
 
-    async def validator_for_creation(
-        self, request: Request, data: Dict[str, Any]
-    ) -> Optional[str]:
-        rules = await self.rules_for_creation(request)
+    async def validator_for_creation(self, data: Dict[str, Any]) -> Optional[str]:
+        rules = await self.rules_for_creation()
         validator = await self.validator(rules, data)
         return validator
 
@@ -81,7 +79,7 @@ class PerformsValidation:
                     return rule.message
         return None
 
-    async def rules_for_creation(self, request: Request) -> List[Rule]:
+    async def rules_for_creation(self) -> List[Rule]:
         rules = []
         for v in self.fields:
             rules.extend(await self.get_rules_for_creation(v))
@@ -89,7 +87,7 @@ class PerformsValidation:
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
-                        if await self.need_validate_when_rules(request, vi):
+                        if await self.need_validate_when_rules(vi):
                             body = vi.body
                             if body:
                                 if isinstance(body, list):
@@ -103,7 +101,7 @@ class PerformsValidation:
                                     )
         return rules
 
-    async def rules_for_update(self, request: Request) -> List[Rule]:
+    async def rules_for_update(self) -> List[Rule]:
         rules = []
         for v in self.fields:
             rules.extend(await self.get_rules_for_update(v))
@@ -111,7 +109,7 @@ class PerformsValidation:
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
-                        if await self.need_validate_when_rules(request, vi):
+                        if await self.need_validate_when_rules(vi):
                             body = vi.body
                             if body:
                                 if isinstance(body, list):
@@ -123,7 +121,7 @@ class PerformsValidation:
                                     rules.extend(await self.get_rules_for_update(body))
         return rules
 
-    async def rules_for_import(self, request: Request) -> List[Rule]:
+    async def rules_for_import(self) -> List[Rule]:
         rules = []
         for v in self.fields:
             rules.extend(await self.get_rules_for_creation(v))
@@ -131,7 +129,7 @@ class PerformsValidation:
                 when_component = v
                 if when_component.items:
                     for vi in when_component.items:
-                        if await self.need_validate_when_rules(request, vi):
+                        if await self.need_validate_when_rules(vi):
                             body = vi.body
                             if body:
                                 if isinstance(body, list):
@@ -145,7 +143,7 @@ class PerformsValidation:
                                     )
         return rules
 
-    async def need_validate_when_rules(self, request: Request, when_item: Item) -> bool:
+    async def need_validate_when_rules(self, when_item: Item) -> bool:
         cond_name = when_item.condition_name
         cond_opt = when_item.option
         cond_op = when_item.condition_operator
