@@ -28,11 +28,12 @@ class StoreRequest:
 
     async def handle(self, data: Dict[str, Any]) -> Any:
         # 验证数据合法性
-        errMsg = await PerformsValidation(
-            request=self.request, fields=self.fields
-        ).validator_for_creation(data)
-        if errMsg:
-            return Message.error(errMsg)
+        try:
+            await PerformsValidation(
+                request=self.request, fields=self.fields
+            ).validator_for_creation(data)
+        except Exception as e:
+            return Message.error(str(e))
 
         # 保存前回调
         try:
@@ -42,22 +43,14 @@ class StoreRequest:
 
         # 重组数据
         new_data = {}
-        model_fields = self.model.__class__.__annotations__.keys()
         for k, v in data.items():
             nv = v
             if isinstance(v, (list, dict)):
                 nv = json.dumps(v, ensure_ascii=False)
-
-            camel_case_name = self.to_pascal_case(k)
-            if camel_case_name in model_fields:
-                new_data[k] = nv
-
-        # 数据赋值
-        for field, value in new_data.items():
-            setattr(self.model, field, value)
+            new_data[k] = nv
 
         # 保存数据
-        await self.model.save()
+        await self.model.create(**new_data)
 
         if not hasattr(self.model, "id"):
             return Message.error("参数错误")
@@ -70,6 +63,3 @@ class StoreRequest:
             return Message.error(str(e))
 
         return await self.resource.after_saved_redirect_to(self.request, id, data, None)
-
-    def to_pascal_case(self, s: str) -> str:
-        return "".join(word.capitalize() for word in s.split("_"))

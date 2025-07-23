@@ -28,6 +28,7 @@ class User(Resource):
         """字段定义"""
         return [
             field.id("id", "ID"),
+            field.text("nickname", "昵称"),
             field.text("username", "用户名"),
             field.password("password", "密码").only_on_forms(),
             field.text("email", "邮箱").set_editable(True),

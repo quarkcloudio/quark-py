@@ -24,20 +24,23 @@ class PerformsValidation:
         self.request = request
         self.fields = fields
 
-    async def validator_for_creation(self, data: Dict[str, Any]) -> Optional[str]:
+    async def validator_for_creation(self, data: Dict[str, Any]):
         rules = await self.rules_for_creation()
         validator = await self.validator(rules, data)
-        return validator
+        if validator:
+            raise ValueError(validator)
 
-    async def validator_for_update(self, data: Dict[str, Any]) -> Optional[str]:
+    async def validator_for_update(self, data: Dict[str, Any]):
         rules = await self.rules_for_update()
         validator = await self.validator(rules, data)
-        return validator
+        if validator:
+            raise ValueError(validator)
 
-    async def validator_for_import(self, data: Dict[str, Any]) -> Optional[str]:
+    async def validator_for_import(self, data: Dict[str, Any]):
         rules = await self.rules_for_import()
         validator = await self.validator(rules, data)
-        return validator
+        if validator:
+            raise ValueError(validator)
 
     async def validator(self, rules: List[Rule], data: Dict[str, Any]) -> Optional[str]:
         for rule in rules:
