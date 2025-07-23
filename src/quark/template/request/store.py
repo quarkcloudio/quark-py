@@ -50,7 +50,10 @@ class StoreRequest:
             new_data[k] = nv
 
         # 保存数据
-        await self.model.create(**new_data)
+        try:
+            await self.model.create(**new_data)
+        except Exception as e:
+            return Message.error(str(e))
 
         if not hasattr(self.model, "id"):
             return Message.error("参数错误")
