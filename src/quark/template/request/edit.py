@@ -45,8 +45,9 @@ class EditRequest:
             return {}
 
         # 构建查询
-        query = PerformsQueries(self.request).build_edit_query(self.query)
-        result = await query.first()
+        result = (
+            await PerformsQueries(self.request).build_edit_query(self.query).first()
+        )
         if not result:
             return {}
 
