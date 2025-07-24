@@ -46,6 +46,7 @@ class User(Resource):
         return [
             actions.CreateLink(self.title),
             actions.BatchDelete(),
+            actions.DeleteSpecial(),
             actions.EditLink(),
             actions.FormSubmit(),
             actions.FormReset(),

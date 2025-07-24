@@ -49,13 +49,11 @@ class ActionRequest:
         actions = []
 
         # 资源上的行为
-        resource_actions = self.actions()
-        if resource_actions:
-            actions.extend(resource_actions)
+        if self.actions:
+            actions.extend(self.actions)
 
         # 字段上的行为
-        fields = self.fields()
-        for field in fields:
+        for field in self.fields:
             component = getattr(field, "component", None)
             if component == "actionField" and hasattr(field, "items"):
                 action_items = getattr(field, "items", [])
@@ -64,7 +62,7 @@ class ActionRequest:
 
         return actions
 
-    def handle(self):
+    async def handle(self):
         """
         执行指定的行为。
 
@@ -88,32 +86,38 @@ class ActionRequest:
                     current_uri_key = dropdown_actioner.get_uri_key(dropdown_action)
                     if uri_key == current_uri_key:
                         # 执行前回调
-                        before_err = self.resource.before_action(
-                            self.request, uri_key, query
-                        )
+                        try:
+                            await self.resource.before_action(
+                                self.request, uri_key, query
+                            )
+                        except Exception as e:
+                            return Message.error(str(e))
 
-                        if before_err:
-                            return Message.error(before_err)
-
-                        result = dropdown_action.handle(self.request, query)
+                        result = await dropdown_action.handle(self.request, query)
 
                         # 执行后回调
-                        self.resource.after_action(self.request, uri_key, query)
+                        try:
+                            await self.resource.after_action(
+                                self.request, uri_key, query
+                            )
+                        except Exception as e:
+                            return Message.error(str(e))
 
                         return result
             else:
                 if uri_key == current_uri_key:
-                    # 执行前回调
-                    before_err = self.resource.before_action(
-                        self.request, uri_key, query
-                    )
-                    if before_err:
-                        return Message.error(before_err)
+                    try:
+                        await self.resource.before_action(self.request, uri_key, query)
+                    except Exception as e:
+                        return Message.error(str(e))
 
-                    result = action.handle(self.request, query)
+                    result = await action.handle(self.request, query)
 
-                    # 执行后回调
-                    self.resource.after_action(self.request, uri_key, query)
+                    try:
+                        # 执行后回调
+                        await self.resource.after_action(self.request, uri_key, query)
+                    except Exception as e:
+                        return Message.error(str(e))
 
                     return result
 

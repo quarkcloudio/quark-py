@@ -10,15 +10,16 @@ from ..component.table.tool_bar import ToolBar
 from ..component.table.tree_bar import TreeBar
 from ..component.pagecontainer.pagecontainer import PageContainer
 from ..component.pagecontainer.pageheader import PageHeader
+from .resource_index import ResourceIndex
+from .resource_form import ResourceForm
+from .resource_create import ResourceCreate
+from .resource_edit import ResourceEdit
 from .resolves_fields import ResolvesFields
 from .request.index import IndexRequest
 from .request.edit import EditRequest
 from .request.update import UpdateRequest
 from .request.editable import EditableRequest
-from .resource_index import ResourceIndex
-from .resource_form import ResourceForm
-from .resource_create import ResourceCreate
-from .resource_edit import ResourceEdit
+from .request.action import ActionRequest
 
 
 class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceEdit):
@@ -131,14 +132,30 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
 
     async def before_editable(
         self, request: Request, id: Any, field: str, value: Any
-    ) -> Optional[str]:
+    ) -> Optional[Exception]:
         """行内编辑前处理"""
         return None
 
     async def after_editable(
         self, request: Request, id: Any, field: str, value: Any
-    ) -> Optional[str]:
+    ) -> Optional[Exception]:
         """行内编辑后处理"""
+        return None
+
+    async def before_action(
+        self, request: Request, uri_key: str, query: QuerySet
+    ) -> Optional[Exception]:
+        """
+        回调：在行为执行之前调用。
+        """
+        return None
+
+    async def after_action(
+        self, request: Request, uri_key: str, query: QuerySet
+    ) -> Optional[Exception]:
+        """
+        回调：在行为执行之后调用。
+        """
         return None
 
     async def page_component_render(self, request: Request, body: Any) -> Any:
@@ -213,7 +230,9 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
     async def store_render(self, request: Request) -> Any:
         """创建方法"""
         model = await self.get_model()
+
         data = await request.json()
+
         return await self.form_handle(request, model, data)
 
     async def edit_render(self, request: Request) -> Any:
@@ -249,10 +268,16 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
 
     async def editable_render(self, request: Request) -> Any:
         """表格行内编辑"""
-
-        query = await self.query(request)
-
-        # 页面组件渲染
         return await EditableRequest(
-            request=request, resource=self, query=query
+            request=request, resource=self, query=await self.query(request)
+        ).handle()
+
+    async def action_render(self, request: Request) -> Any:
+        """表格行内编辑"""
+        return await ActionRequest(
+            request=request,
+            resource=self,
+            query=await self.query(request),
+            actions=await self.actions(request),
+            fields=await self.fields(request),
         ).handle()

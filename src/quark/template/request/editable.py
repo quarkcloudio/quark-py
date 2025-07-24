@@ -52,12 +52,10 @@ class EditableRequest:
         if not field or value is None:
             return Message.error("参数错误")
 
-        # 表格行内编辑执行前回调
-        before_result = await self.resource.before_editable(
-            self.request, id, field, value
-        )
-        if before_result is not None:
-            return before_result
+        try:
+            await self.resource.before_editable(self.request, id, field, value)
+        except Exception as e:
+            return Message.error(str(e))
 
         # 构建查询并更新数据
         try:
@@ -68,10 +66,9 @@ class EditableRequest:
             return Message.error(str(e))
 
         # 行内编辑执行后回调
-        after_result = await self.resource.after_editable(
-            self.request, id, field, value
-        )
-        if after_result is not None:
-            return after_result
+        try:
+            await self.resource.after_editable(self.request, id, field, value)
+        except Exception as e:
+            return Message.error(str(e))
 
         return Message.success("操作成功")

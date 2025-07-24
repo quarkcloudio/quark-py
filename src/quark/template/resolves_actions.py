@@ -90,7 +90,9 @@ class ResolvesActions:
         if not api:
             api = self.build_action_api(params, uri_key)
 
-        action_component = Action().set_label(name).set_with_loading(with_loading)
+        action_component = (
+            Action().set_label(name).set_with_loading(with_loading).set_api(api)
+        )
 
         if reload:
             action_component.set_reload(reload)
