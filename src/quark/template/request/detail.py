@@ -37,7 +37,7 @@ class DetailRequest:
         self.query = query
         self.fields = fields
 
-    def fill_data(self) -> Dict[str, Any]:
+    async def fill_data(self) -> Dict[str, Any]:
         """
         获取并解析详情页数据
         """
@@ -47,9 +47,9 @@ class DetailRequest:
             return result
 
         # 构建查询
-        query = PerformsQueries(self.request).build_detail_query(self.query)
-        result = query.first() or {}
-
+        result = (
+            await PerformsQueries(self.request).build_detail_query(self.query).first()
+        )
         fields = {}
         for field in self.fields:
             component = getattr(field, "component", None)
@@ -107,15 +107,13 @@ class DetailRequest:
 
         return fields
 
-    def values(self) -> Any:
+    async def values(self) -> Any:
         """
         获取表单初始化数据，并调用显示前回调。
         """
-        data = self.fill_data()
+        data = await self.fill_data()
 
         # 显示前回调
-        before_showing = getattr(self.resource, "before_detail_showing", None)
-        if before_showing:
-            data = before_showing(self.request, data)
+        data = await self.resource.before_detail_showing(self.request, data)
 
         return Message.success("获取成功", data)
