@@ -1,7 +1,7 @@
 import json
 from typing import Any
 from fastapi import Request
-from tortoise.models import Model, QuerySet
+from tortoise.models import QuerySet
 from ..performs_queries import PerformsQueries
 from ..performs_validation import PerformsValidation
 from ...component.message.message import Message
@@ -15,9 +15,6 @@ class UpdateRequest:
     # 资源对象
     resource: Any = None
 
-    # 模型对象
-    model: Model = None
-
     # 查询对象
     query: QuerySet = None
 
@@ -28,18 +25,16 @@ class UpdateRequest:
         self,
         request: Request,
         resource: Any,
-        model: Model,
         query: QuerySet,
         fields: list,
     ):
         self.request = request
         self.resource = resource
-        self.model = model
         self.query = query
         self.fields = fields
 
-    async def handle(self, request: Request) -> Any:
-        data = await request.json()
+    async def handle(self) -> Any:
+        data = await self.request.json()
 
         # 验证参数合法性
         if not data.get("id"):
@@ -55,7 +50,7 @@ class UpdateRequest:
 
         # 保存前回调
         try:
-            data = await self.resource.before_saving(request, data)
+            data = await self.resource.before_saving(self.request, data)
         except Exception as e:
             return Message.error(str(e))
 
@@ -68,7 +63,10 @@ class UpdateRequest:
 
             new_data[k] = nv
 
-        query = PerformsQueries(self.request).build_update_query(self.query)
+        query = await PerformsQueries(self.request).build_update_query(self.query)
+
+        # 删除id，否则无法更新
+        del new_data["id"]
 
         # 执行更新
         try:
@@ -78,8 +76,10 @@ class UpdateRequest:
 
         # 保存后回调
         try:
-            await self.resource.after_saved(request, data["id"], data, query)
+            await self.resource.after_saved(self.request, data["id"], data, query)
         except Exception as e:
             return Message.error(str(e))
 
-        return await self.resource.after_saved_redirect_to(request, data["id"], data)
+        return await self.resource.after_saved_redirect_to(
+            self.request, data["id"], data
+        )

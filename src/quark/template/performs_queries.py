@@ -67,8 +67,8 @@ class PerformsQueries:
         return query
 
     # 创建更新查询
-    def build_update_query(self, query: QuerySet) -> QuerySet:
-        return self.update_query(query)
+    async def build_update_query(self, query: QuerySet) -> QuerySet:
+        return await self.update_query(query)
 
     # 执行搜索表单查询
     def apply_search(self, query: QuerySet, search) -> QuerySet:
@@ -165,8 +165,8 @@ class PerformsQueries:
         return query
 
     # 更新查询
-    def update_query(self, query: QuerySet) -> QuerySet:
-        data = self.request.json() or {}
+    async def update_query(self, query: QuerySet) -> QuerySet:
+        data = await self.request.json() or {}
         if "id" in data:
             query = query.filter(id=data["id"])
         return query

@@ -13,6 +13,7 @@ from ..component.pagecontainer.pageheader import PageHeader
 from .resolves_fields import ResolvesFields
 from .request.index import IndexRequest
 from .request.edit import EditRequest
+from .request.update import UpdateRequest
 from .resource_index import ResourceIndex
 from .resource_form import ResourceForm
 from .resource_create import ResourceCreate
@@ -232,6 +233,18 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
         return await self.page_component_render(
             request, await self.update_component_render(request, data)
         )
+
+    async def save_render(self, request: Request) -> Any:
+        """更新方法"""
+        fields = ResolvesFields(
+            request, await self.fields(request)
+        ).update_fields_without_when()
+
+        query = await self.query(request)
+
+        return await UpdateRequest(
+            request=request, resource=self, query=query, fields=fields
+        ).handle()
 
     async def editable_render(self, request: Request) -> Any:
         """表格行内编辑"""
