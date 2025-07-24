@@ -5,19 +5,19 @@ from quark.app import searches, actions
 from quark.component.form import field
 
 
-class User(Resource):
+class Permission(Resource):
     """
-    用户管理
+    权限管理
     """
 
     @model_validator(mode="after")
     def init(self):
 
         # 页面标题
-        self.title = "用户"
+        self.title = "权限"
 
         # 模型
-        self.model = models.User
+        self.model = models.Permission
 
         return self
 
@@ -25,17 +25,17 @@ class User(Resource):
         """字段定义"""
         return [
             field.id("id", "ID"),
-            field.text("nickname", "昵称"),
-            field.text("username", "用户名"),
-            field.password("password", "密码").only_on_forms(),
-            field.text("email", "邮箱").set_editable(True),
-            field.text("phone", "手机号"),
+            field.text("name", "名称"),
+            field.text("path", "路径"),
+            field.select("method", "方法"),
+            field.textarea("remark", "备注"),
         ]
 
     async def searches(self, request: Request) -> List[Dict]:
         """搜索项定义"""
         return [
-            searches.Input("username", "用户名"),
+            searches.Input("name", "名称"),
+            searches.Input("path", "路径"),
         ]
 
     async def actions(self, request: Request) -> List[Dict]:
@@ -44,7 +44,7 @@ class User(Resource):
             actions.CreateLink(self.title),
             actions.BatchDelete(),
             actions.EditLink(),
-            actions.DeleteSpecial(),
+            actions.Delete(),
             actions.FormSubmit(),
             actions.FormReset(),
             actions.FormBack(),
