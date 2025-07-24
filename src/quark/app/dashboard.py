@@ -1,7 +1,6 @@
 from typing import List, Any
 from pydantic import model_validator
-from quark import Request
-from quark.template.dashboard import Dashboard
+from quark import Request, Dashboard
 from quark.app.metrics.total_admin import TotalAdmin
 from quark.app.metrics.total_file import TotalFile
 from quark.app.metrics.total_image import TotalImage

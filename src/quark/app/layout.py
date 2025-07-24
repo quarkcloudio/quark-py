@@ -1,5 +1,5 @@
 from pydantic import model_validator
-from quark.template.layout import Layout
+from quark import Layout
 
 
 class Index(Layout):

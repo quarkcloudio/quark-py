@@ -1,12 +1,10 @@
 from typing import Dict
 from pydantic import BaseModel, field_validator, model_validator
-from quark import Request
-from quark.template.login import Login
+from quark import cache, Request, Login
 from quark.component.form import field, Rule
 from quark.component.icon.icon import Icon
 from quark.component.message.message import Message
 from quark.services.auth import AuthService
-from quark import cache
 
 
 class LoginData(BaseModel):

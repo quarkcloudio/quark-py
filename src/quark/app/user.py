@@ -1,9 +1,7 @@
 from pydantic import model_validator
 from typing import List, Dict
-from quark import Request
-from quark.template.resource import Resource
+from quark import models, Request, Resource
 from quark.component.form import field
-from quark import models
 from quark.app import searches
 from quark.app import actions
 
