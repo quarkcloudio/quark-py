@@ -14,6 +14,7 @@ from .resolves_fields import ResolvesFields
 from .request.index import IndexRequest
 from .request.edit import EditRequest
 from .request.update import UpdateRequest
+from .request.editable import EditableRequest
 from .resource_index import ResourceIndex
 from .resource_form import ResourceForm
 from .resource_create import ResourceCreate
@@ -249,9 +250,9 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
     async def editable_render(self, request: Request) -> Any:
         """表格行内编辑"""
 
-        data = await self.before_editing(request, {})
+        query = await self.query(request)
 
         # 页面组件渲染
-        return await self.page_component_render(
-            request, await self.update_component_render(request, data)
-        )
+        return await EditableRequest(
+            request=request, resource=self, query=query
+        ).handle()

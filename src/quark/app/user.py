@@ -45,6 +45,7 @@ class User(Resource):
         """行为定义"""
         return [
             actions.CreateLink(self.title),
+            actions.BatchDelete(),
             actions.EditLink(),
             actions.FormSubmit(),
             actions.FormReset(),

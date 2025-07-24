@@ -1,6 +1,7 @@
 from fastapi import Request
 from typing import Any
 from tortoise.models import QuerySet
+from ..performs_queries import PerformsQueries
 from ...component.message.message import Message
 
 
@@ -25,14 +26,14 @@ class EditableRequest:
         self.resource = resource
         self.query = query
 
-    def handle(self):
+    async def handle(self):
         data = self.request.query_params
 
-        id_val = data.get("id")
-        if not id_val:
+        id = data.get("id")
+        if not id:
             return Message.error("id不能为空")
 
-        model_instance = self.query.get(id_val)
+        model_instance = await self.query.get(id=id)
         if not model_instance:
             return Message.error("记录不存在")
 
@@ -51,16 +52,25 @@ class EditableRequest:
         if not field or value is None:
             return Message.error("参数错误")
 
-        # 表格行内编辑执行前回调（模板方法）
-        before_result = self.resource.before_editable(id_val, field, value)
+        # 表格行内编辑执行前回调
+        before_result = await self.resource.before_editable(
+            self.request, id, field, value
+        )
         if before_result is not None:
             return before_result
 
         # 构建查询并更新数据
-        self.query.filter(id=id_val).update({field: value})
+        try:
+            await PerformsQueries(self.request).build_editable_query(self.query).update(
+                **{field: value}
+            )
+        except Exception as e:
+            return Message.error(str(e))
 
         # 行内编辑执行后回调
-        after_result = self.resource.after_editable(id_val, field, value)
+        after_result = await self.resource.after_editable(
+            self.request, id, field, value
+        )
         if after_result is not None:
             return after_result
 
