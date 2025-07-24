@@ -12,6 +12,18 @@ class EditRequest:
     用于处理资源编辑页数据填充和初始化数据获取。
     """
 
+    # 请求对象
+    request: Request = None
+
+    # 资源对象
+    resource: Any = None
+
+    # 查询对象
+    query: QuerySet = None
+
+    # 字段
+    fields: Optional[Any] = None
+
     def __init__(
         self,
         request: Request,
