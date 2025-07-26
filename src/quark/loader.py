@@ -1,6 +1,7 @@
 import os
 import inflection
 import importlib
+from . import Request
 from . import config
 
 
@@ -100,10 +101,11 @@ def get_classes_in_package(package_path):
     return classes
 
 
-def load_resource_object(resource: str, resource_class_type: str):
+async def load_resource_object(
+    request: Request, resource: str, resource_class_type: str
+):
     """从应用程序目录或quark包加载资源类对象"""
     app_class = load_resource(resource, resource_class_type)
     if app_class is None:
         return None
-    obj = app_class()
-    return obj
+    return await app_class().init(request)

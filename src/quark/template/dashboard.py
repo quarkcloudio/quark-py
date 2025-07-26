@@ -20,6 +20,10 @@ class Dashboard(BaseModel):
     # 页面是否携带返回Icon
     back_icon: bool = Field(default=False)
 
+    async def init(self, request: Request):
+        """初始化"""
+        return self
+
     async def cards(self, request: Request) -> List[Any]:
         """获取卡片组件列表"""
         return []

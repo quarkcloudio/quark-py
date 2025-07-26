@@ -1,6 +1,6 @@
 from pydantic import model_validator
 from typing import List, Dict
-from quark import models, Request, Resource
+from quark import services, models, Request, Resource
 from quark.app import searches, actions
 from quark.component.form import field
 
@@ -10,8 +10,14 @@ class User(Resource):
     用户管理
     """
 
-    @model_validator(mode="after")
-    def init(self):
+    async def init(self, request: Request):
+
+        # departments = await services.DepartmentService().get_list()
+
+        # # 部门树
+        # self.table_tree_bar.set_name("departmentIds").set_tree_data(
+        #     departments, "pid", "id", "name"
+        # )
 
         # 页面标题
         self.title = "用户"

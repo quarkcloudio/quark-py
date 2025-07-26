@@ -10,8 +10,7 @@ class Role(Resource):
     角色管理
     """
 
-    @model_validator(mode="after")
-    def init(self):
+    def init(self, request: Request):
 
         # 页面标题
         self.title = "角色"

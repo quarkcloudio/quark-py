@@ -94,6 +94,10 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
     # 是否将表格数据转换为树形结构
     table_list_to_tree: bool = Field(default=False)
 
+    async def init(self, request: Request):
+        """初始化"""
+        return self
+
     async def fields(self, request: Request) -> List[Dict]:
         """字段定义"""
         return []

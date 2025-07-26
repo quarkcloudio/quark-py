@@ -1,4 +1,3 @@
-from pydantic import model_validator
 from typing import List, Dict
 from quark import models, Request, Resource
 from quark.app import searches, actions
@@ -10,8 +9,7 @@ class ActionLog(Resource):
     操作日志管理
     """
 
-    @model_validator(mode="after")
-    def init(self):
+    async def init(self, request: Request):
 
         # 页面标题
         self.title = "日志"

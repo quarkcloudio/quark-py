@@ -94,6 +94,10 @@ class Layout(BaseModel):
         ]
     )
 
+    async def init(self, request: Request):
+        """初始化"""
+        return self
+
     async def get_menus(self, request: Request) -> Any:
         auth_service = AuthService(request)
         user_info = await auth_service.get_current_user()

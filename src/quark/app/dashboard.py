@@ -1,5 +1,4 @@
 from typing import List, Any
-from pydantic import model_validator
 from quark import Request, Dashboard
 from quark.app.metrics.total_admin import TotalAdmin
 from quark.app.metrics.total_file import TotalFile
@@ -12,8 +11,7 @@ from quark.app.metrics.system_info import SystemInfo
 class Index(Dashboard):
     """仪表盘"""
 
-    @model_validator(mode="after")
-    def init(self):
+    async def init(self, request: Request):
         self.title = "仪表盘"
         return self
 

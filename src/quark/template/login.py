@@ -32,6 +32,10 @@ class Login(BaseModel):
     # 子标题
     sub_title: str = Field(default="信息丰富的世界里，唯一稀缺的就是人类的注意力")
 
+    async def init(self, request: Request):
+        """初始化"""
+        return self
+
     async def captcha_id(self, request: Request):
         id = str(uuid.uuid4())
         await cache.set(id, "uninitialized", 60)

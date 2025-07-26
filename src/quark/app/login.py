@@ -1,5 +1,5 @@
 from typing import Dict
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, field_validator
 from quark import cache, Request, Login
 from quark.component.form import field, Rule
 from quark.component.icon.icon import Icon
@@ -22,8 +22,8 @@ class LoginData(BaseModel):
 
 
 class Index(Login):
-    @model_validator(mode="after")
-    def init(self):
+
+    async def init(self, request: Request):
         self.api = "/api/admin/login/index/handle"
         self.title = "QuarkPy"
         self.redirect = "/layout/index?api=/api/admin/dashboard/index/index"
