@@ -1,4 +1,5 @@
 import os
+import inflection
 import importlib
 from . import config
 
@@ -43,7 +44,7 @@ def load_resource(resource: str, class_type: str):
     # 查找指定类名的类
     for getclass in app_classes:
         if (
-            getclass.__name__ == resource.title()
+            getclass.__name__ == inflection.camelize(resource)
             and getclass.__bases__[0].__name__ == class_type
         ):
             app_class = getclass
@@ -54,7 +55,7 @@ def load_resource(resource: str, class_type: str):
     # 查找指定类名的类
     for getclass in quark_package_classes:
         if (
-            getclass.__name__ == resource.title()
+            getclass.__name__ == inflection.camelize(resource)
             and getclass.__bases__[0].__name__ == class_type
         ):
             app_class = getclass
