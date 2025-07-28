@@ -6,9 +6,10 @@ router = APIRouter(prefix="/api/admin", tags=["管理员登录"])
 
 @router.get("/login/{resource}/index")
 async def index(request: Request, resource: str):
-    data = await loader.load_resource_object(request, resource, "Login").render(request)
-    encoded = jsonable_encoder(data, exclude_none=True)
-    return JSONResponse(content=encoded)
+    res = await loader.load_resource_object(request, resource, "Login")
+    return JSONResponse(
+        content=jsonable_encoder(await res.render(request), exclude_none=True)
+    )
 
 
 @router.get("/login/{resource}/captchaId")
@@ -22,9 +23,7 @@ async def captcha_id(request: Request, resource: str):
 @router.get("/login/{resource}/captcha/{id}")
 async def captcha(request: Request, resource: str):
     res = await loader.load_resource_object(request, resource, "Login")
-    return JSONResponse(
-        content=jsonable_encoder(await res.captcha(request), exclude_none=True)
-    )
+    return await res.captcha(request)
 
 
 @router.post("/login/{resource}/handle")
