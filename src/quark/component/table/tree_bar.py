@@ -509,7 +509,7 @@ class TreeBar(Component):
 
     def list_to_tree_data(
         self,
-        list_data: List[dict],
+        list_data: Any,
         root_id: int,
         parent_key_name: str,
         key_name: str,
@@ -519,7 +519,7 @@ class TreeBar(Component):
         将列表数据转换为树结构数据。
 
         Args:
-            list_data (List[dict]): 列表数据。
+            list_data (Any): 列表数据。
             root_id (int): 根节点 ID。
             parent_key_name (str): 父节点键名称。
             key_name (str): 节点键名称。

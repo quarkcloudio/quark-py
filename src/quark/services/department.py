@@ -38,13 +38,13 @@ class DepartmentService:
     ) -> Tuple[Optional[Department], Optional[Exception]]:
         department = await Department.filter(status=1, id=department_id).first()
         if department:
-            return department, None
-        return None, ValueError("Department not found")
+            return department
+        return None
 
-    async def get_list(self) -> Tuple[List[Department], None]:
+    async def get_list(self) -> List[Department]:
         departments = await Department.filter(status=1).all()
-        return departments, None
+        return departments
 
-    async def get_list_by_ids(self, ids: List[int]) -> Tuple[List[Department], None]:
+    async def get_list_by_ids(self, ids: List[int]) -> List[Department]:
         departments = await Department.filter(Q(id__in=ids), status=1).all()
-        return departments, None
+        return departments
