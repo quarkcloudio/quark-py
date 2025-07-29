@@ -56,7 +56,7 @@ class User(Resource):
         # 去重
         all_ids = list(set(all_ids))
 
-        # 构建 Tortoise ORM 的筛选条件
+        # 构建筛选条件
         return query.filter(Q(department_id__in=all_ids))
 
     async def fields(self, request: Request) -> List[Dict]:
