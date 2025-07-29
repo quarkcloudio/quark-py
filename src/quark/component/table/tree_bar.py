@@ -463,7 +463,7 @@ class TreeBar(Component):
 
     def build_tree(
         self,
-        items: List[dict],
+        items: Any,
         pid: int,
         parent_key_name: str,
         key_name: str,
@@ -473,7 +473,7 @@ class TreeBar(Component):
         使用递归构建树结构。
 
         Args:
-            items (List[dict]): 树节点数据列表。
+            items (Any): 树节点数据列表。
             pid (int): 父节点 ID。
             parent_key_name (str): 父节点键名称。
             key_name (str): 节点键名称。
@@ -485,9 +485,18 @@ class TreeBar(Component):
         tree = []
 
         for item in items:
-            key = item.get(key_name)
-            parent_key = item.get(parent_key_name)
-            title = item.get(title_name)
+            # 支持对象和字典两种格式
+            if hasattr(item, key_name):
+                key = getattr(item, key_name)
+                parent_key = getattr(item, parent_key_name)
+                title = getattr(item, title_name)
+            elif isinstance(item, dict):
+                key = item.get(key_name)
+                parent_key = item.get(parent_key_name)
+                title = item.get(title_name)
+            else:
+                # 如果既不是对象也不是字典，跳过该项
+                continue
 
             if parent_key == pid:
                 children = self.build_tree(

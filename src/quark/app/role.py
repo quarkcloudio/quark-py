@@ -1,4 +1,3 @@
-from pydantic import model_validator
 from typing import List, Dict
 from quark import models, Request, Resource
 from quark.app import searches, actions
