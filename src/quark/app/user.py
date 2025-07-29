@@ -1,7 +1,9 @@
 from typing import List, Dict
+import json
 from quark import services, models, Request, Resource
 from quark.app import searches, actions
 from quark.component.form import field
+from tortoise.models import QuerySet, Q
 
 
 class User(Resource):
@@ -12,8 +14,6 @@ class User(Resource):
     async def init(self, request: Request):
 
         departments = await services.DepartmentService().get_list()
-
-        print(departments)
 
         # 部门树
         self.table_tree_bar.set_name("departmentIds").set_tree_data(
@@ -27,6 +27,37 @@ class User(Resource):
         self.model = models.User
 
         return self
+
+    async def index_query(self, request: Request) -> QuerySet:
+        """
+        列表查询
+        """
+        query = await self.query(request)
+
+        # 从请求中获取 departmentIds 参数
+        department_ids_param = request.query_params.get("departmentIds")
+        if not department_ids_param:
+            return query
+
+        try:
+            ids: List[int] = json.loads(department_ids_param)
+        except json.JSONDecodeError:
+            return query
+
+        if not ids:
+            return query
+
+        # 拓展 ids 为包含所有子部门 ID
+        all_ids = ids.copy()
+        for dep_id in ids:
+            children_ids = await services.DepartmentService().get_children_ids(dep_id)
+            all_ids.extend(children_ids)
+
+        # 去重
+        all_ids = list(set(all_ids))
+
+        # 构建 Tortoise ORM 的筛选条件
+        return query.filter(Q(department_id__in=all_ids))
 
     async def fields(self, request: Request) -> List[Dict]:
         """字段定义"""
