@@ -35,21 +35,21 @@ class AttachmentService:
 
     async def insert_get_id(self, attachment):
         await attachment.save()
-        return attachment.id, None
+        return attachment.id
 
     async def delete_by_id(self, attachment_id):
         return await Attachment.filter(id=attachment_id).delete()
 
     async def get_info_by_id(self, attachment_id):
         attachment = await Attachment.filter(status=1, id=attachment_id).first()
-        return attachment, None
+        return attachment
 
     async def update_by_id(self, attachment_id, data: dict):
         return await Attachment.filter(status=1, id=attachment_id).update(**data)
 
     async def get_info_by_hash(self, hash_value):
         attachment = await Attachment.filter(status=1, hash=hash_value).first()
-        return attachment, None
+        return attachment
 
     async def get_url(self, *params):
         id = None
@@ -187,17 +187,14 @@ class AttachmentService:
     async def get_excel_data(self, file_id):
         file = await Attachment.filter(id=file_id, status=1).first()
         if not file:
-            return [], ValueError("param error")
+            return []
 
-        try:
-            workbook = openpyxl.load_workbook(file.path)
-            sheet = workbook.active
-            data = []
-            for row in sheet.iter_rows(values_only=True):
-                data.append(row)
-            return data, None
-        except Exception as e:
-            return [], e
+        workbook = openpyxl.load_workbook(file.path)
+        sheet = workbook.active
+        data = []
+        for row in sheet.iter_rows(values_only=True):
+            data.append(row)
+        return data
 
     async def count_by_type(self, file_type):
         return await Attachment.filter(type=file_type).count()

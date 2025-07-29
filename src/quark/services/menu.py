@@ -16,14 +16,14 @@ class MenuService:
             .order_by("sort", "id")
             .all()
         )
-        return menus, None
+        return menus
 
     async def get_list_with_root(self):
         menus, err = await self.get_list()
         if err:
             return menus, err
         menus.append(Menu(id=0, pid=-1, name="根节点"))
-        return menus, None
+        return menus
 
     async def find_parent_tree_node(self, child_pid: int):
         menus = await Menu.filter(
@@ -56,7 +56,7 @@ class MenuService:
         # TODO: 这里需要替换为实际的获取用户菜单的方法
         role_has_menus = []
         if not role_has_menus:
-            return [], None
+            return []
 
         menu_ids = [menu.id for menu in role_has_menus]
 
@@ -106,11 +106,11 @@ class MenuService:
 
     async def get_info_by_id(self, menu_id: int):
         menu = await Menu.filter(status=1, id=menu_id).first()
-        return menu, None if menu else ValueError("Menu not found")
+        return menu
 
     async def get_info_by_name(self, name: str):
         menu = await Menu.filter(status=1, name=name).first()
-        return menu, None if menu else ValueError("Menu not found")
+        return menu
 
     async def is_exist(self, menu_id: int):
         menu = await Menu.filter(id=menu_id).first()
@@ -118,7 +118,7 @@ class MenuService:
 
     async def get_list_by_ids(self, menu_ids):
         menus = await Menu.filter(id__in=menu_ids).all()
-        return menus, None
+        return menus
 
     def list_to_tree(self, items, id_key, parent_key, children_key, root_id):
         tree = []

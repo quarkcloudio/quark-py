@@ -11,7 +11,7 @@ class PermissionService:
             {"label": permission.name, "value": permission.id}
             for permission in permissions
         ]
-        return list_options, None
+        return list_options
 
     async def data_source(self):
         permissions = await Permission.all()
@@ -23,12 +23,12 @@ class PermissionService:
             }
             for permission in permissions
         ]
-        return data_source, None
+        return data_source
 
     async def get_list_by_ids(self, permission_ids):
         permissions = await Permission.filter(id__in=permission_ids).all()
-        return permissions, None
+        return permissions
 
     async def get_list_by_names(self, permission_names):
         permissions = await Permission.filter(name__in=permission_names).all()
-        return permissions, None
+        return permissions

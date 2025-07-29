@@ -9,11 +9,8 @@ class RoleService:
         pass
 
     async def get_info_by_id(self, role_id: int) -> Optional[Role]:
-        try:
-            role = await Role.get(id=role_id)
-            return role
-        except DoesNotExist:
-            return None
+        role = await Role.get(id=role_id)
+        return role
 
     async def update_role_data_scope(
         self, role_id: int, data_scope: int, department_ids: List[int]
