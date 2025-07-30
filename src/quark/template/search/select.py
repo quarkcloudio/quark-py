@@ -3,9 +3,13 @@ from .search import Search
 
 
 class Select(Search):
+    """
+    下拉框
+    """
+
+    component = "selectField"
 
     def __init__(self, column: str = "", name: str = ""):
-        self.component = "selectField"
         self.name = name
         self.column = column
         return self

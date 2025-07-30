@@ -76,6 +76,7 @@ class User(Resource):
             searches.Input("username", "用户名"),
             searches.Input("nickname", "昵称"),
             searches.Status(),
+            searches.DatetimeRange("created_at", "创建时间"),
         ]
 
     async def actions(self, request: Request) -> List[Dict]:
