@@ -1,7 +1,7 @@
 from typing import List, Optional
 from ..models.role import Role
-from tortoise.exceptions import DoesNotExist
 from tortoise.transactions import in_transaction
+from quark.component.form.fields.checkbox import Option
 
 
 class RoleService:
@@ -16,23 +16,19 @@ class RoleService:
         self, role_id: int, data_scope: int, department_ids: List[int]
     ) -> None:
         async with in_transaction() as connection:
-            try:
-                role = await Role.get(id=role_id)
-                role.data_scope = data_scope
-                await role.save(using_db=connection)
+            role = await Role.get(id=role_id)
+            role.data_scope = data_scope
+            await role.save(using_db=connection)
 
-                if data_scope == 2:
-                    await self.add_department_to_role(
-                        role_id, department_ids, connection
-                    )
-                else:
-                    await self.remove_role_departments(role_id, connection)
-            except DoesNotExist:
-                pass
+            if data_scope == 2:
+                await self.add_department_to_role(role_id, department_ids, connection)
+            else:
+                await self.remove_role_departments(role_id, connection)
 
-    async def list_roles(self) -> List[Role]:
+    async def get_list(self) -> List[Option]:
         roles = await Role.filter(status=1).all()
-        return roles
+        options = [Option(label=role.name, value=role.id) for role in roles]
+        return options
 
     async def get_list_by_ids(self, ids: List[int]) -> List[Role]:
         roles = await Role.filter(id__in=ids).all()

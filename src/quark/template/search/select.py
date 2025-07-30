@@ -1,5 +1,6 @@
 from quark import Request
 from .search import Search
+from quark.component.form.fields.select import Option
 
 
 class Select(Search):
@@ -16,7 +17,7 @@ class Select(Search):
 
     # 设置 Option
     def option(self, label: str, value):
-        return {"value": value, "label": label}
+        return Option(label=label, value=value)
 
     # 默认选项列表（子类可重写）
     def options(self, request: Request):

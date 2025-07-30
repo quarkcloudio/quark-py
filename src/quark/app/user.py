@@ -62,6 +62,10 @@ class User(Resource):
 
     async def fields(self, request: Request) -> List[Dict]:
         """字段定义"""
+
+        # 获取所有角色
+        roles = await services.RoleService().get_list()
+
         return [
             field.id("id", "ID"),
             field.image("avatar", "头像"),
@@ -98,6 +102,7 @@ class User(Resource):
                     Rule.required("昵称必须填写"),
                 ]
             ),
+            field.checkbox("role_ids", "角色").set_options(roles),
             field.text("phone", "手机号"),
             field.password("password", "密码").only_on_forms(),
             field.text("email", "邮箱").set_editable(True),
