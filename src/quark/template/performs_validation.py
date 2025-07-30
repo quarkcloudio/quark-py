@@ -50,11 +50,11 @@ class PerformsValidation:
                     return rule.message
             elif rule.rule_type == "min":
                 if isinstance(field_value, str):
-                    if len(field_value) < rule.min:
+                    if len(field_value) < rule.min_value:
                         return rule.message
             elif rule.rule_type == "max":
                 if isinstance(field_value, str):
-                    if len(field_value) > rule.max:
+                    if len(field_value) > rule.max_value:
                         return rule.message
             elif rule.rule_type == "regexp":
                 if isinstance(field_value, str):
