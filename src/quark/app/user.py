@@ -74,6 +74,7 @@ class User(Resource):
         """搜索项定义"""
         return [
             searches.Input("username", "用户名"),
+            searches.Input("nickname", "昵称"),
         ]
 
     async def actions(self, request: Request) -> List[Dict]:
