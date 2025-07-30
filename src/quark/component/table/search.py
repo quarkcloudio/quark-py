@@ -2,16 +2,17 @@ from pydantic import Field, model_validator
 from typing import Any, List, Dict
 from ..component import Component
 
+
 class Search(Component):
     component: str = "search"
     filter_type: str = None
     search_text: str = None
     reset_text: str = None
     submit_text: str = None
-    label_width: int = 0
-    span: int = 0
+    label_width: int = None
+    span: int = None
     class_name: str = None
-    default_collapsed: bool = False
+    default_collapsed: bool = True
     show_hidden_num: bool = False
     export_text: str = None
     export_api: str = None
