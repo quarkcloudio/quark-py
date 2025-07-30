@@ -54,7 +54,7 @@ class Image(Base):
     上传文件数量限制
     """
 
-    limit_wh: Dict[str, int] = {"width": 0, "height": 0}
+    limit_w_h: Dict[str, int] = {"width": 0, "height": 0}
     """
     上传图片宽高限制
     """
@@ -132,7 +132,7 @@ class Image(Base):
         Returns:
             Component: 返回当前实例，支持链式调用。
         """
-        self.limit_wh = {"width": width, "height": height}
+        self.limit_w_h = {"width": width, "height": height}
         return self
 
     def set_api(self, api: str):

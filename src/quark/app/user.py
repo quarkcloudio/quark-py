@@ -13,6 +13,7 @@ class User(Resource):
 
     async def init(self, request: Request):
 
+        # 部门列表
         departments = await services.DepartmentService().get_list()
 
         # 部门树
@@ -63,8 +64,17 @@ class User(Resource):
         """字段定义"""
         return [
             field.id("id", "ID"),
+            field.image("avatar", "头像"),
+            field.text(
+                "username",
+                "用户名",
+                lambda row: "<a href='#/layout/index?api=/api/admin/user/edit&id="
+                + str(row.id)
+                + "'>"
+                + row.username
+                + "</a>",
+            ),
             field.text("nickname", "昵称"),
-            field.text("username", "用户名"),
             field.password("password", "密码").only_on_forms(),
             field.text("email", "邮箱").set_editable(True),
             field.text("phone", "手机号"),
