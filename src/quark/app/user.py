@@ -66,6 +66,9 @@ class User(Resource):
         # 获取所有角色
         roles = await services.RoleService().get_list()
 
+        # 获取所有部门
+        departments = await services.DepartmentService().get_list()
+
         return [
             field.id("id", "ID"),
             field.image("avatar", "头像"),
@@ -103,6 +106,9 @@ class User(Resource):
                 ]
             ),
             field.checkbox("role_ids", "角色").set_options(roles),
+            field.tree_select("department_id", "部门")
+            .set_tree_data(departments, "pid", "name", "id")
+            .only_on_forms(),
             field.text("phone", "手机号"),
             field.password("password", "密码").only_on_forms(),
             field.text("email", "邮箱").set_editable(True),

@@ -13,9 +13,9 @@ class FieldNames(Component):
 class Option(Component):
     label: Optional[str] = None
     value: Any = None
-    disabled: bool = False
+    disabled: bool = None
     children: List["Option"] = None
-    is_leaf: bool = False
+    is_leaf: bool = None
 
 
 class Cascader(Base):

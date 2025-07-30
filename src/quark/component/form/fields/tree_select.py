@@ -12,10 +12,10 @@ class TreeData(Base):
     title: str
     value: Any
     children: List["TreeData"] = []
-    disabled: bool = False
-    disable_checkbox: bool = False
-    selectable: bool = False
-    checkable: bool = False
+    disabled: bool = None
+    disable_checkbox: bool = None
+    selectable: bool = None
+    checkable: bool = None
 
 
 class TreeSelect(Base):
@@ -29,12 +29,12 @@ class TreeSelect(Base):
     可以点击清除图标删除内容
     """
 
-    auto_clear_search_value: bool = False
+    auto_clear_search_value: bool = None
     """
     是否在选中项后清空搜索框，只在 mode 为 multiple 或 tags 时有效
     """
 
-    bordered: bool = True
+    bordered: bool = None
     """
     是否有边框
     """
@@ -44,7 +44,7 @@ class TreeSelect(Base):
     默认选中的选项
     """
 
-    disabled: bool = False
+    disabled: bool = None
     """
     整组失效
     """
@@ -69,7 +69,7 @@ class TreeSelect(Base):
     自定义 options 中 label value children 的字段
     """
 
-    label_in_value: bool = False
+    label_in_value: bool = None
     """
     是否把每个选项的 label 包装到 value 中，会把 Select 的 value 类型从 string 变为 { value: string, label: ReactNode } 的格式
     """
@@ -94,7 +94,7 @@ class TreeSelect(Base):
     最大显示的 tag 文本长度
     """
 
-    multiple: bool = False
+    multiple: bool = None
     """
     支持多选（当设置 treeCheckable 时自动变为 true）
     """
@@ -119,12 +119,12 @@ class TreeSelect(Base):
     控制搜索文本
     """
 
-    show_arrow: bool = True
+    show_arrow: bool = None
     """
     是否显示下拉小箭头
     """
 
-    show_search: bool = False
+    show_search: bool = None
     """
     配置是否可搜索
     """
@@ -149,12 +149,12 @@ class TreeSelect(Base):
     自定义树节点的展开/折叠图标
     """
 
-    tree_checkable: bool = False
+    tree_checkable: bool = None
     """
     显示 Checkbox
     """
 
-    tree_check_strictly: bool = False
+    tree_check_strictly: bool = None
     """
     checkable 状态下节点选择完全受控（父子节点选中状态不再关联），会使得 labelInValue 强制为 true
     """
@@ -174,7 +174,7 @@ class TreeSelect(Base):
     默认展开所有树节点
     """
 
-    tree_default_expanded_keys: List[Any] = []
+    tree_default_expanded_keys: List[Any] = None
     """
     默认展开的树节点
     """
@@ -184,12 +184,12 @@ class TreeSelect(Base):
     点击节点 title 时的展开逻辑，可选：false | click | doubleClick
     """
 
-    tree_expanded_keys: List[Any] = []
+    tree_expanded_keys: List[Any] = None
     """
     设置展开的树节点
     """
 
-    tree_icon: bool = False
+    tree_icon: bool = None
     """
     是否展示 TreeNode title 前的图标，没有默认样式，如设置为 true，需要自行定义图标相关样式
     """
@@ -214,7 +214,7 @@ class TreeSelect(Base):
     指定当前选中的条目，多选时为一个数组。（value 数组引用未变化时，Select 不会更新）
     """
 
-    virtual: bool = True
+    virtual: bool = None
     """
     设置 false 时关闭虚拟滚动
     """
@@ -349,8 +349,30 @@ class TreeSelect(Base):
         title_name: str,
         value_name: str,
     ) -> List[TreeData]:
-        # 这里需要实现反射构建树结构的逻辑
-        return []
+        tree = []
+
+        for item in items:
+            # 支持对象和字典两种格式
+            if hasattr(item, value_name):
+                value = getattr(item, value_name)
+                parent_key = getattr(item, parent_key_name)
+                title = getattr(item, title_name)
+            elif isinstance(item, dict):
+                value = item.get(value_name)
+                parent_key = item.get(parent_key_name)
+                title = item.get(title_name)
+            else:
+                # 如果既不是对象也不是字典，跳过该项
+                continue
+
+            if parent_key == pid:
+                children = self.build_tree(
+                    items, value, parent_key_name, title_name, value_name
+                )
+                option = TreeData(title=title, value=value, children=children)
+                tree.append(option)
+
+        return tree
 
     def list_to_tree_data(
         self,

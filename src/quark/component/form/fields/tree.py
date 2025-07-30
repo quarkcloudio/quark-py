@@ -540,28 +540,28 @@ class Tree(Base):
         Returns:
             List[TreeData]: 构建好的树节点数据列表。
         """
-        tree: List[TreeData] = []
-
-        if not isinstance(items, list):
-            return tree
+        tree = []
 
         for item in items:
-            if isinstance(item, dict):
+            # 支持对象和字典两种格式
+            if hasattr(item, key_name):
+                key = getattr(item, key_name)
+                parent_key = getattr(item, parent_key_name)
+                title = getattr(item, title_name)
+            elif isinstance(item, dict):
                 key = item.get(key_name)
                 parent_key = item.get(parent_key_name)
-                title = item.get(title_name, "")
+                title = item.get(title_name)
             else:
-                key = getattr(item, key_name, None)
-                parent_key = getattr(item, parent_key_name, None)
-                title = getattr(item, title_name, "")
+                # 如果既不是对象也不是字典，跳过该项
+                continue
 
-            if key is not None and parent_key is not None and title:
-                if parent_key == pid:
-                    children = self.build_tree(
-                        items, key, parent_key_name, key_name, title_name
-                    )
-                    option = TreeData(key=key, title=title, children=children)
-                    tree.append(option)
+            if parent_key == pid:
+                children = self.build_tree(
+                    items, key, parent_key_name, key_name, title_name
+                )
+                option = TreeData(title=title, key=key, children=children)
+                tree.append(option)
 
         return tree
 
