@@ -91,7 +91,13 @@ class User(Resource):
                     Rule.unique("users", "username", "{id}", "用户名已存在"),
                 ]
             ),
-            field.text("nickname", "昵称"),
+            field.text("nickname", "昵称")
+            .set_editable(True)
+            .set_rules(
+                [
+                    Rule.required("昵称必须填写"),
+                ]
+            ),
             field.text("phone", "手机号"),
             field.password("password", "密码").only_on_forms(),
             field.text("email", "邮箱").set_editable(True),
