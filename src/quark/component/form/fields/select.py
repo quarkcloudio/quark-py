@@ -100,9 +100,7 @@ class Select(Base):
     下拉菜单的 style 属性，默认值为 None
     """
 
-    field_names: FieldNames = FieldNames(
-        label="label", value="value", children="children"
-    )
+    field_names: FieldNames = None
     """
     自定义 options 中 label value children 的字段
     """

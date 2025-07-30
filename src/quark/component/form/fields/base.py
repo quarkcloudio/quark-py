@@ -79,7 +79,7 @@ class Base(Component):
     为 true 时不带样式，作为纯字段控件使用
     """
 
-    required: bool = False
+    required: bool = None
     """
     必填样式设置。如不设置，则会根据校验规则自动生成
     """
@@ -224,7 +224,9 @@ class Base(Component):
     在导入Excel上展示
     """
 
-    callback: Optional[Callable[[Dict[str, Any]], Any]] = None
+    callback: Optional[Callable[[Dict[str, Any]], Any]] = Field(
+        exclude=True, default=None
+    )
     """
     回调函数
     """

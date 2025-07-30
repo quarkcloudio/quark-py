@@ -2,7 +2,7 @@ from typing import List, Dict
 import json
 from quark import services, models, Request, Resource
 from quark.app import searches, actions
-from quark.component.form import field
+from quark.component.form import field, Rule
 from tortoise.models import QuerySet, Q
 
 
@@ -73,11 +73,28 @@ class User(Resource):
                 + "'>"
                 + row.username
                 + "</a>",
+            )
+            .set_rules(
+                [
+                    Rule.required("用户名必须填写"),
+                    Rule.min(6, "用户名不能少于6个字符"),
+                    Rule.max(20, "用户名不能超过20个字符"),
+                ]
+            )
+            .set_creation_rules(
+                [
+                    Rule.unique("users", "username", "用户名已存在"),
+                ]
+            )
+            .set_update_rules(
+                [
+                    Rule.unique("users", "username", "{id}", "用户名已存在"),
+                ]
             ),
             field.text("nickname", "昵称"),
+            field.text("phone", "手机号"),
             field.password("password", "密码").only_on_forms(),
             field.text("email", "邮箱").set_editable(True),
-            field.text("phone", "手机号"),
         ]
 
     async def searches(self, request: Request) -> List[Dict]:

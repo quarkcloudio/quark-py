@@ -35,7 +35,7 @@ class Index(Login):
             (
                 field.Text(name="username")
                 .set_placeholder("用户名")
-                .set_rules([Rule.is_required("请输入用户名")])
+                .set_rules([Rule.required("请输入用户名")])
                 .set_width("100%")
                 .set_size("large")
                 .set_prefix(Icon().set_type("icon-user"))
@@ -43,7 +43,7 @@ class Index(Login):
             (
                 field.Password(name="password")
                 .set_placeholder("密码")
-                .set_rules([Rule.is_required("请输入密码")])
+                .set_rules([Rule.required("请输入密码")])
                 .set_width("100%")
                 .set_size("large")
                 .set_prefix(Icon().set_type("icon-lock"))
@@ -53,7 +53,7 @@ class Index(Login):
                 .set_captcha_id_url("/api/admin/login/index/captchaId")
                 .set_captcha_url("/api/admin/login/index/captcha/:id")
                 .set_placeholder("验证码")
-                .set_rules([Rule.is_required("请输入验证码")])
+                .set_rules([Rule.required("请输入验证码")])
                 .set_width("100%")
                 .set_size("large")
                 .set_prefix(Icon().set_type("icon-safetycertificate"))
