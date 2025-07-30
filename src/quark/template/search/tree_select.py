@@ -1,10 +1,9 @@
-from pydantic import model_validator
 from .search import Search
 
 
 class TreeSelect(Search):
-    @model_validator(mode="after")
-    def init(self):
+
+    def __init__(self, column: str = "", name: str = ""):
         self.component = "treeSelectField"
         return self
 

@@ -1,12 +1,10 @@
-from pydantic import model_validator
 from .search import Search
 
 
 class Radio(Search):
     """单选组件"""
 
-    @model_validator(mode="after")
-    def init(self):
+    def __init__(self, column: str = "", name: str = ""):
         self.component = "radioField"
         return self
 

@@ -8,7 +8,6 @@ class Input(Search):
     """输入框组件"""
 
     def __init__(self, column: str = "", name: str = ""):
-        self.component = "textField"
         self.column = column
         self.name = name
 

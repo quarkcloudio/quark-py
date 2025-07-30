@@ -1,17 +1,15 @@
 from typing import Any, List, Optional
 from .search import Search
 from ...component.form.fields.cascader import Option
-from pydantic import Field, model_validator
 from fastapi import Request
 
 
 class Cascader(Search):
     """级联选择搜索字段配置类"""
 
-    cascader_options: List[Option] = Field(default="")
+    cascader_options: List[Option] = None
 
-    @model_validator(mode="after")
-    def init(self):
+    def __init__(self, column: str = "", name: str = ""):
         self.component = "cascaderField"
         return self
 

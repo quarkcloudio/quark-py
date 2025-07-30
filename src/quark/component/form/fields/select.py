@@ -334,11 +334,8 @@ class Select(Base):
             Component: 返回当前实例，支持链式调用。
         """
         if len(options) == 1:
-            if isinstance(options[0], list) and all(
-                isinstance(option, Option) for option in options[0]
-            ):
-                self.options = options[0]
-                return self
+            self.options = options[0]
+            return self
         if len(options) == 3:
             self.options = self.list_to_options(options[0], options[1], options[2])
         return self

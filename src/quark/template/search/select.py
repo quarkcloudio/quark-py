@@ -1,11 +1,13 @@
-from pydantic import model_validator
+from quark import Request
 from .search import Search
 
 
 class Select(Search):
-    @model_validator(mode="after")
-    def init(self):
+
+    def __init__(self, column: str = "", name: str = ""):
         self.component = "selectField"
+        self.name = name
+        self.column = column
         return self
 
     # 设置 Option
@@ -13,12 +15,12 @@ class Select(Search):
         return {"value": value, "label": label}
 
     # 默认选项列表（子类可重写）
-    def options(self, ctx):
+    def options(self, request: Request):
         return []
 
     # 单向联动，返回数据类型：{"field": "you_want_load_field", "api": "admin/resource_name/action/select-options"}
-    def load(self, ctx):
-        return None
+    def load(self, request: Request):
+        return {"field": "", "api": ""}
 
     # 设置属性，示例：
     # [{"value": 1, "label": "新闻"}, {"value": 2, "label": "音乐"}, {"value": 3, "label": "体育"}]
