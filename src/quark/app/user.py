@@ -69,6 +69,9 @@ class User(Resource):
         # 获取所有部门
         departments = await services.DepartmentService().get_list()
 
+        # 获取所有职位
+        positions = await services.PositionService().get_list()
+
         return [
             field.id("id", "ID"),
             field.image("avatar", "头像"),
@@ -109,9 +112,18 @@ class User(Resource):
             field.tree_select("department_id", "部门")
             .set_tree_data(departments, "pid", "name", "id")
             .only_on_forms(),
+            field.checkbox("position_ids", "职位")
+            .set_options(positions)
+            .only_on_forms(),
+            field.text("email", "邮箱")
+            .set_editable(True)
+            .set_rules(
+                [
+                    Rule.required("邮箱必须填写"),
+                ]
+            ),
             field.text("phone", "手机号"),
             field.password("password", "密码").only_on_forms(),
-            field.text("email", "邮箱").set_editable(True),
         ]
 
     async def searches(self, request: Request) -> List[Dict]:

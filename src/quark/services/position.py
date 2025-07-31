@@ -1,4 +1,5 @@
 from ..models.position import Position
+from quark.component.form.fields.checkbox import Option
 
 
 class PositionService:
@@ -8,7 +9,10 @@ class PositionService:
     # 获取列表
     async def get_list(self):
         positions = await Position.all()
-        return positions
+        options = [
+            Option(label=position.name, value=position.id) for position in positions
+        ]
+        return options
 
     # 通过ID获取信息
     async def get_info_by_id(self, position_id: int):
