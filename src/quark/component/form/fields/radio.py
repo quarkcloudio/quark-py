@@ -60,6 +60,15 @@ class Radio(Base):
     指定选中项
     """
 
+    def get_options(self) -> List[Option]:
+        """
+        获取当前可选项。
+
+        Returns:
+            List[Option]: 可选项列表。
+        """
+        return self.options
+
     def build_options(
         self, items: Any, label_name: str, value_name: str
     ) -> List[Option]:
