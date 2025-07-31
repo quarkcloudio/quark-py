@@ -139,6 +139,10 @@ class User(Resource):
                     Rule.unique("users", "phone", "{id}", "手机号已存在"),
                 ]
             ),
+            field.radio("sex", "性别")
+            .set_options([field.radio_option("男", 1), field.radio_option("女", 2)])
+            .set_filters(True)
+            .set_default_value(1),
             field.password("password", "密码").only_on_forms(),
         ]
 
