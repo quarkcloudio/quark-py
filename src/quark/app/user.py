@@ -143,7 +143,29 @@ class User(Resource):
             .set_options([field.radio_option("男", 1), field.radio_option("女", 2)])
             .set_filters(True)
             .set_default_value(1),
-            field.password("password", "密码").only_on_forms(),
+            field.password("password", "密码")
+            .set_rules(
+                [
+                    Rule.regexp(r"/^.{6,}$/", "密码不少于六位"),
+                    Rule.regexp(r"/[A-Z]/", "至少包含一个大写字母"),
+                    Rule.regexp(r"/[a-z]/", "至少包含一个小写字母"),
+                    Rule.regexp(r"/[0-9]/", "至少包含一个数字"),
+                    Rule.regexp(
+                        r"/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/", "至少包含一个特殊字符"
+                    ),
+                ]
+            )
+            .set_creation_rules(
+                [
+                    Rule.required("密码必须填写"),
+                ]
+            )
+            .only_on_forms(),
+            field.switch("status", "状态")
+            .set_editable(True)
+            .set_true_value("正常")
+            .set_false_value("禁用")
+            .set_default_value(True),
         ]
 
     async def searches(self, request: Request) -> List[Dict]:
