@@ -123,9 +123,20 @@ class User(Resource):
                 ]
             )
             .only_on_forms(),
-            field.text("phone", "手机号").set_rules(
+            field.text("phone", "手机号")
+            .set_rules(
                 [
                     Rule.required("手机号必须填写"),
+                ]
+            )
+            .set_creation_rules(
+                [
+                    Rule.unique("users", "phone", "手机号已存在"),
+                ]
+            )
+            .set_update_rules(
+                [
+                    Rule.unique("users", "phone", "{id}", "手机号已存在"),
                 ]
             ),
             field.password("password", "密码").only_on_forms(),
