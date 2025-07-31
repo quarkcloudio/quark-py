@@ -121,8 +121,13 @@ class User(Resource):
                 [
                     Rule.required("邮箱必须填写"),
                 ]
+            )
+            .only_on_forms(),
+            field.text("phone", "手机号").set_rules(
+                [
+                    Rule.required("手机号必须填写"),
+                ]
             ),
-            field.text("phone", "手机号"),
             field.password("password", "密码").only_on_forms(),
         ]
 
