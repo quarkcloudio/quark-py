@@ -39,7 +39,7 @@ class Datetime(Base):
     禁用状态
     """
 
-    format_str: Optional[str] = "YYYY-MM-DD HH:mm:ss"
+    format: Optional[str] = "YYYY-MM-DD HH:mm:ss"
     """
     设置日期格式，为数组时支持多格式匹配，展示以第一个为准
     """
@@ -214,17 +214,17 @@ class Datetime(Base):
         self.value = value
         return self
 
-    def set_format_str(self, format_str: str):
+    def set_format(self, format: str):
         """
         设置日期格式，为数组时支持多格式匹配，展示以第一个为准
 
         Args:
-            format_str (str): 日期格式字符串
+            format (str): 日期格式字符串
 
         Returns:
             Component: 返回当前 Component 实例，支持链式调用
         """
-        self.format_str = format_str
+        self.format = format
         return self
 
     def set_popup_class_name(self, popup_class_name: str):

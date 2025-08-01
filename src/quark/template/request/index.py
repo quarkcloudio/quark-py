@@ -193,6 +193,18 @@ class IndexRequest:
                                 except:
                                     pass
 
+                        # 单独解析时间和日期组件
+                        if component in ["datetimeField", "dateField"]:
+                            format_str = field.format
+                            format_str = format_str.replace("YYYY", "%Y")
+                            format_str = format_str.replace("MM", "%m")
+                            format_str = format_str.replace("DD", "%d")
+                            format_str = format_str.replace("HH", "%H")
+                            format_str = format_str.replace("mm", "%M")
+                            format_str = format_str.replace("ss", "%S")
+
+                            value = value.strftime(format_str)
+
                         # 图片字段处理
                         if component in ["imageField", "imagePickerField"]:
                             value = AttachmentService().get_image_url(value)
