@@ -161,6 +161,7 @@ class User(Resource):
                 ]
             )
             .only_on_forms(),
+            field.datetime("last_login_time", "最后登录时间").only_on_index(),
             field.switch("status", "状态")
             .set_editable(True)
             .set_true_value("正常")
