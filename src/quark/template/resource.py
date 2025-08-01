@@ -19,6 +19,7 @@ from .request.index import IndexRequest
 from .request.edit import EditRequest
 from .request.update import UpdateRequest
 from .request.editable import EditableRequest
+from .request.detail import DetailRequest
 from .request.action import ActionRequest
 
 
@@ -285,3 +286,22 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
             actions=await self.actions(request),
             fields=await self.fields(request),
         ).handle()
+
+    async def detail_render(self, request: Request) -> Any:
+        """详情页渲染"""
+
+        # 获取列表查询
+        query = await self.query(request)
+
+        fields = ResolvesFields(request, await self.fields(request)).detail_fields()
+
+        data = await DetailRequest(
+            request=request, resource=self, query=query, fields=fields
+        ).fill_data()
+
+        data = await self.before_editing(request, data)
+
+        # 页面组件渲染
+        return await self.page_component_render(
+            request, await self.detail_component_render(request, data)
+        )
