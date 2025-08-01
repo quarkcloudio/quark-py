@@ -13,22 +13,20 @@ class Dropdown(Action):
     # 是否显示箭头图标，默认不显示
     arrow: bool = False
 
+    # 下拉菜单类型
+    action_type: str = "dropdown"
+
     # 菜单弹出位置，默认为 bottomLeft
     placement: str = "bottomLeft"
 
     # 触发下拉的行为，默认为 ["hover"]
-    trigger: List[str] = "hover"
+    trigger: List[str] = ["hover"]
 
     # 下拉根元素的样式，默认为空字典
     overlay_style: Dict[str, Any] = None
 
     # 下拉菜单行为列表
-    actions: List[Any] = ()
-
-    def __init__(self):
-        self.action_type = "dropdown"
-        self.placement = "bottomLeft"
-        self.trigger = ["hover"]
+    actions: List[Any] = None
 
     def get_arrow(self) -> bool:
         """获取是否显示箭头图标"""
@@ -57,7 +55,7 @@ class Dropdown(Action):
 
         # 解析行为并构建菜单项
         for action in actions:
-            items.append(ResolvesActions(request).build_action(action()))
+            items.append(ResolvesActions(request).build_action(action))
 
         return Menu().set_items(items)
 

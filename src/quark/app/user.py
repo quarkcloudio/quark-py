@@ -183,8 +183,8 @@ class User(Resource):
         return [
             actions.CreateLink(self.title),
             actions.BatchDelete(),
-            actions.EditLink(),
-            actions.DeleteSpecial(),
+            actions.DetailLink(),
+            actions.More().set_actions([actions.EditLink(), actions.DeleteSpecial()]),
             actions.FormSubmit(),
             actions.FormReset(),
             actions.FormBack(),

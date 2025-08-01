@@ -166,7 +166,7 @@ class ResolvesActions:
             )
 
         elif action_type == "dropdown":
-            overlay = item.get_menu()
+            overlay = item.get_menu(self.request)
             overlay_style = item.get_overlay_style()
             placement = item.get_placement()
             trigger = item.get_trigger()
