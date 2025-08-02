@@ -1,6 +1,6 @@
 import json
 from fastapi import Request
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional
 from tortoise.models import QuerySet
 from datetime import datetime
 from ..performs_queries import PerformsQueries
