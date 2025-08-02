@@ -97,7 +97,7 @@ class Upload(BaseModel):
         except Exception as e:
             return Message.error(str(e))
 
-    async def handle_from_base64(self, request: Request):
+    async def base64_handle(self, request: Request):
         """
         通过Base64执行上传
         """
