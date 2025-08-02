@@ -293,7 +293,6 @@ class Resource(
     async def detail_render(self, request: Request) -> Any:
         """详情页渲染"""
 
-        # 获取列表查询
         query = await self.query(request)
 
         fields = ResolvesFields(request, await self.fields(request)).detail_fields()
@@ -308,3 +307,14 @@ class Resource(
         return await self.page_component_render(
             request, await self.detail_component_render(request, data)
         )
+
+    async def detail_values_render(self, request: Request) -> Any:
+        """获取详情页值"""
+
+        query = await self.query(request)
+
+        fields = ResolvesFields(request, await self.fields(request)).detail_fields()
+
+        return await DetailRequest(
+            request=request, resource=self, query=query, fields=fields
+        ).values()
