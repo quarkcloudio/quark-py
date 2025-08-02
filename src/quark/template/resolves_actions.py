@@ -71,6 +71,15 @@ class ResolvesActions:
 
         return items
 
+    def detail_extra_actions(self) -> List[Any]:
+        """详情页右上角自定义区域行为"""
+        items = []
+        for action in self.actions:
+            if action.shown_on_detail_extra():
+                items.append(self.build_action(action))
+
+        return items
+
     def build_action(self, item) -> Any:
         """构建行为组件（支持 link/modal/drawer/dropdown/switch 等）"""
         name = item.get_name()

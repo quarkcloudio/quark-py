@@ -58,8 +58,7 @@ class DetailRequest:
             if component == "actionField":
                 # 行为字段
                 items = getattr(field, "items", [])
-                callback: Optional[Callable] = getattr(field, "get_callback", None)
-
+                callback = field.callback
                 if callback:
                     items = callback(result)
 
@@ -73,37 +72,36 @@ class DetailRequest:
 
             else:
                 # 普通字段
-                callback: Optional[Callable] = getattr(field, "get_callback", None)
-
+                callback = field.callback
                 if callback:
                     fields[name] = callback(result)
                 else:
-                    value = result.get(name)
-                    if value is not None:
-                        field_value: Any = value
+                    value = getattr(result, name, None)
+                    if value is None:
+                        continue
 
-                        if isinstance(value, str):
-                            # JSON 解析
-                            try:
-                                field_value = json.loads(value)
-                            except json.JSONDecodeError:
-                                pass
+                    if isinstance(value, str):
+                        # JSON 解析
+                        try:
+                            value = json.loads(value)
+                        except json.JSONDecodeError:
+                            pass
 
-                        # 时间字段处理
-                        if component in ("datetimeField", "dateField"):
-                            format_str = getattr(field, "format", "%Y-%m-%d %H:%M:%S")
-                            format_str = (
-                                format_str.replace("YYYY", "%Y")
-                                .replace("MM", "%m")
-                                .replace("DD", "%d")
-                                .replace("HH", "%H")
-                                .replace("mm", "%M")
-                                .replace("ss", "%S")
-                            )
-                            if isinstance(value, datetime):
-                                field_value = value.strftime(format_str)
+                    # 时间字段处理
+                    if component in ("datetimeField", "dateField"):
+                        format_str = getattr(field, "format", "%Y-%m-%d %H:%M:%S")
+                        format_str = (
+                            format_str.replace("YYYY", "%Y")
+                            .replace("MM", "%m")
+                            .replace("DD", "%d")
+                            .replace("HH", "%H")
+                            .replace("mm", "%M")
+                            .replace("ss", "%S")
+                        )
+                        if isinstance(value, datetime):
+                            value = value.strftime(format_str)
 
-                        fields[name] = field_value
+                    fields[name] = value
 
         return fields
 

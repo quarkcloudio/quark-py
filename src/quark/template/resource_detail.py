@@ -2,12 +2,14 @@ from typing import Any, Dict, List
 from fastapi import Request
 from ..component.tabs.tabs import Tabs
 from ..component.card.card import Card
+from .resolves_fields import ResolvesFields
+from .resolves_actions import ResolvesActions
 from ..utils import replace_last
 
 
 class ResourceDetail:
 
-    def detail_value_api(self, request: Request) -> str:
+    async def detail_value_api(self, request: Request) -> str:
         """
         获取详情页数据接口地址
         """
@@ -17,27 +19,42 @@ class ResourceDetail:
 
         return replace_last(request.url.path, "/detail", "/detail/values?id=${id}")
 
-    def detail_title(self, request: Request) -> str:
+    async def detail_title(self, request: Request) -> str:
         """
         获取详情页标题
         """
-        title = self.get_title()
-        return f"{title}详情"
+        return f"{self.title}详情"
 
-    def detail_component_render(self, request: Request, data: Dict[str, Any]) -> Card:
+    async def detail_component_render(
+        self, request: Request, data: Dict[str, Any]
+    ) -> Card:
         """
         渲染详情页组件
         """
-        title = self.detail_title(request)
-        form_extra_actions = self.detail_extra_actions(request)
-        fields = self.detail_fields_within_components(request, None, data)
-        form_actions = self.detail_actions(request)
+        title = await self.detail_title(request)
+        actions = await self.actions(request)
+        detail_extra_actions = ResolvesActions(
+            request=request, actions=actions
+        ).detail_extra_actions()
 
-        return self.detail_within_card(
-            request, title, form_extra_actions, fields, form_actions, data
+        detail_actions = ResolvesActions(
+            request=request, actions=actions
+        ).detail_actions()
+
+        fields = ResolvesFields(
+            request=request,
+            fields=await self.fields(request),
+        ).detail_fields_within_components(
+            None,
+            data,
+            detail_actions,
         )
 
-    def detail_within_card(
+        return await self.detail_within_card(
+            request, title, detail_extra_actions, fields, detail_actions, data
+        )
+
+    async def detail_within_card(
         self,
         request: Request,
         title: str,
@@ -57,7 +74,7 @@ class ResourceDetail:
             .set_body(fields)
         )
 
-    def detail_within_tabs(
+    async def detail_within_tabs(
         self,
         request: Request,
         title: str,
@@ -71,30 +88,10 @@ class ResourceDetail:
         """
         return Tabs().set_tab_panes(fields).set_tab_bar_extra_content(extra)
 
-    def before_detail_showing(
+    async def before_detail_showing(
         self, request: Request, data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         详情页显示前回调
         """
         return data
-
-    def detail_extra_actions(self, request: Request) -> List[Any]:
-        """
-        详情页右上角自定义区域行为（由模板实现）
-        """
-        return self.detail_extra_actions(request)
-
-    def detail_fields_within_components(
-        self, request: Request, field_type: Any, data: Dict[str, Any]
-    ) -> List[Any]:
-        """
-        获取包裹在组件中的详情页字段（由模板实现）
-        """
-        return self.detail_fields_within_components(request, field_type, data)
-
-    def detail_actions(self, request: Request) -> List[Any]:
-        """
-        获取详情页操作按钮（由模板实现）
-        """
-        return self.detail_actions(request)

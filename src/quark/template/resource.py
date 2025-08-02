@@ -14,6 +14,7 @@ from .resource_index import ResourceIndex
 from .resource_form import ResourceForm
 from .resource_create import ResourceCreate
 from .resource_edit import ResourceEdit
+from .resource_detail import ResourceDetail
 from .resolves_fields import ResolvesFields
 from .request.index import IndexRequest
 from .request.edit import EditRequest
@@ -23,7 +24,9 @@ from .request.detail import DetailRequest
 from .request.action import ActionRequest
 
 
-class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceEdit):
+class Resource(
+    BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceEdit, ResourceDetail
+):
     """资源：增删改查"""
 
     # 页面标题
@@ -299,7 +302,7 @@ class Resource(BaseModel, ResourceIndex, ResourceForm, ResourceCreate, ResourceE
             request=request, resource=self, query=query, fields=fields
         ).fill_data()
 
-        data = await self.before_editing(request, data)
+        data = await self.before_detail_showing(request, data)
 
         # 页面组件渲染
         return await self.page_component_render(
