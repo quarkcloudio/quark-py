@@ -1,8 +1,7 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass
-class Page:
+class Page(BaseModel):
 
     # 页面标题
     title: str = ""
