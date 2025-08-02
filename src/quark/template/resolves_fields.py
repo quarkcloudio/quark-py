@@ -190,7 +190,7 @@ class ResolvesFields:
                 col.set_value_enum(field.get_value_enum())
         elif component == "switchField":
             options = field.get_options()
-            col.set_value_type("switch").set_value_enum(options)
+            col.set_value_type("select").set_value_enum(options)
         elif component == "imageField":
             col.set_value_type("image")
         elif component == "imagePickerField":

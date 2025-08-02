@@ -108,7 +108,7 @@ class User(Resource):
                     Rule.required("昵称必须填写"),
                 ]
             ),
-            field.checkbox("role_ids", "角色").set_options(roles),
+            field.checkbox("role_ids", "角色").set_options(roles).only_on_forms(),
             field.tree_select("department_id", "部门")
             .set_tree_data(departments, "pid", "name", "id")
             .only_on_forms(),
