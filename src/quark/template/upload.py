@@ -1,9 +1,6 @@
 import base64
 from typing import List, Optional, Tuple, Dict, Any
-from fastapi import (
-    Request,
-    HTTPException,
-)
+from fastapi import Request
 from pydantic import BaseModel, Field
 from quark.schemas import FileInfo, OSSConfig, MinioConfig, StorageConfig, FileModel
 from ..component.message.message import Message
