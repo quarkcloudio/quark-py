@@ -1,24 +1,9 @@
-from typing import Dict
-from pydantic import BaseModel, field_validator
 from quark import cache, Request, Login
 from quark.component.form import field, Rule
 from quark.component.icon.icon import Icon
 from quark.component.message.message import Message
 from quark.services.auth import AuthService
-
-
-class LoginData(BaseModel):
-    username: str
-    password: str
-    captcha: Dict[str, str]
-
-    @field_validator("captcha")
-    def captcha_must_have_id_and_value(cls, v):
-        if "id" not in v or not v["id"]:
-            raise ValueError("验证码ID不能为空")
-        if "value" not in v or not v["value"]:
-            raise ValueError("验证码不能为空")
-        return v
+from quark.schemas import LoginData
 
 
 class Index(Login):
