@@ -1,5 +1,7 @@
 import uuid
 import os
+from PIL import Image
+from io import BytesIO
 import base64
 from typing import List
 from fastapi import UploadFile
@@ -79,6 +81,32 @@ class Storage:
         self.limit_image_height = limit_image_height
         self.rand_name = rand_name
         self.save_path = save_path
+
+    def get_content_type(self) -> str:
+        return get_content_type(file_name)
+
+    def get_size(self) -> int:
+        return get_size(file_name)
+
+    def get_bytes(self) -> bytes:
+        return get_bytes(file_name)
+
+    async def check_limit(self):
+        """
+        检查文件是否符合上传限制
+        """
+        if self.limit_size and len(self.file_bytes) > self.limit_size:
+            raise ValueError("文件大小超出限制")
+        if self.limit_type and not any(
+            t in self.file_info.mime_type for t in self.limit_type
+        ):
+            raise ValueError("文件类型不允许")
+        if self.limit_image_width and self.limit_image_height:
+            # 检查图片尺寸
+            with Image.open(BytesIO(self.file_bytes)) as img:
+                width, height = img.size
+                if width > self.limit_image_width or height > self.limit_image_height:
+                    raise ValueError("图片尺寸超出限制")
 
     def path(self, path: str) -> "Storage":
         """
