@@ -2,6 +2,7 @@ import base64
 from typing import List, Optional, Tuple, Dict, Any
 from fastapi import Request
 from pydantic import BaseModel, Field
+from quark.storage import Storage
 from quark.schemas import FileInfo, OSSConfig, MinioConfig, StorageConfig, FileModel
 from ..component.message.message import Message
 
@@ -282,8 +283,8 @@ class Upload(BaseModel):
             return Message.error(str(e))
 
     def before_handle(
-        self, request: Request, file_system: FileSystem
-    ) -> Tuple[FileSystem, Optional[FileInfo]]:
+        self, request: Request, file_system: Storage
+    ) -> Tuple[Storage, Optional[FileInfo]]:
         """
         上传前回调
 

@@ -1,75 +1,6 @@
-from typing import List, Optional, Tuple, Dict
-from pydantic import BaseModel
 import uuid
 import os
-
-
-class OSSConfig(BaseModel):
-    """
-    阿里云 OSS 配置模型
-    """
-
-    access_key_id: str
-    access_key_secret: str
-    endpoint: str
-    bucket: str
-    domain: Optional[str] = None
-    is_https: bool = True
-    path_prefix: Optional[str] = None
-    acl: str = "default"
-
-
-class MinioConfig(BaseModel):
-    """
-    MinIO 配置模型
-    """
-
-    endpoint: str
-    access_key: str
-    secret_key: str
-    bucket: str
-    secure: bool = True
-    region: Optional[str] = None
-    domain: Optional[str] = None
-    path_prefix: Optional[str] = None
-
-
-class FileInfo(BaseModel):
-    """
-    文件信息模型
-    """
-
-    name: str
-    path: str
-    size: int
-    mime_type: str
-    url: str
-
-
-class FileModel:
-    """
-    文件模型类
-    """
-
-    def __init__(self, content: bytes, name: str = "", header: Optional[Dict] = None):
-        self.content = content
-        self.name = name
-        self.header = header or {}
-
-
-class StorageConfig(BaseModel):
-    """
-    存储配置模型
-    """
-
-    limit_size: int = 0
-    limit_type: List[str] = []
-    limit_image_width: int = 0
-    limit_image_height: int = 0
-    driver: str = "local"
-    check_file_exist: bool = True
-    oss_config: Optional[OSSConfig] = None
-    minio_config: Optional[MinioConfig] = None
+from quark.schemas import FileInfo, StorageConfig, FileModel
 
 
 class Storage:
@@ -87,9 +18,6 @@ class Storage:
     def with_image_extra(self) -> "Storage":
         """
         添加图片额外处理
-
-        Returns:
-            FileSystem: 当前实例
         """
         self.with_image_extra = True
         return self
@@ -97,9 +25,6 @@ class Storage:
     def rand_name(self) -> "Storage":
         """
         使用随机文件名
-
-        Returns:
-            FileSystem: 当前实例
         """
         self.rand_name = True
         return self
@@ -107,22 +32,13 @@ class Storage:
     def path(self, path: str) -> "Storage":
         """
         设置保存路径
-
-        Args:
-            path: 保存路径
-
-        Returns:
-            FileSystem: 当前实例
         """
         self.path = path
         return self
 
-    async def save(self) -> Tuple[FileInfo, Optional[Exception]]:
+    async def save(self) -> FileInfo:
         """
         保存文件
-
-        Returns:
-            Tuple[FileInfo, Optional[Exception]]: 文件信息和可能的异常
         """
         try:
             # 根据驱动类型选择保存方式
@@ -136,14 +52,11 @@ class Storage:
                 # 默认本地保存
                 return await self._save_local()
         except Exception as e:
-            return None, e
+            raise e
 
-    async def _save_local(self) -> Tuple[FileInfo, Optional[Exception]]:
+    async def _save_local(self) -> FileInfo:
         """
         本地保存文件
-
-        Returns:
-            Tuple[FileInfo, Optional[Exception]]: 文件信息和可能的异常
         """
         # 处理文件名
         if self.rand_name:
@@ -179,26 +92,19 @@ class Storage:
             ),
             url=f"/{save_path}",
         )
+        return file_info
 
-        return file_info, None
-
-    async def _save_oss(self) -> Tuple[FileInfo, Optional[Exception]]:
+    async def _save_oss(self) -> FileInfo:
         """
         OSS保存文件（模拟实现）
-
-        Returns:
-            Tuple[FileInfo, Optional[Exception]]: 文件信息和可能的异常
         """
         # 这里应该实现真实的OSS上传逻辑
         # 为简化示例，仍然保存到本地
         return await self._save_local()
 
-    async def _save_minio(self) -> Tuple[FileInfo, Optional[Exception]]:
+    async def _save_minio(self) -> FileInfo:
         """
         Minio保存文件（模拟实现）
-
-        Returns:
-            Tuple[FileInfo, Optional[Exception]]: 文件信息和可能的异常
         """
         # 这里应该实现真实的Minio上传逻辑
         # 为简化示例，仍然保存到本地
