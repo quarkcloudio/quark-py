@@ -1,6 +1,9 @@
 import uuid
 import os
-from quark.schemas import FileInfo, StorageConfig, FileModel
+import base64
+from typing import List
+from fastapi import UploadFile
+from quark.schemas import FileInfo, OSSConfig, MinioConfig
 
 
 class Storage:
@@ -8,32 +11,80 @@ class Storage:
     文件系统类
     """
 
-    def __init__(self, config: StorageConfig, file: FileModel):
-        self.config = config
+    # 文件对象
+    file: UploadFile = None
+
+    # Base64文件字符串
+    file_base64_str: str = None
+
+    # 文件字节流
+    file_bytes: bytes = None
+
+    # 上传限制
+    limit_size: int = None
+
+    # 允许的文件类型
+    limit_type: List[str] = None
+
+    # 限制图片宽度
+    limit_image_width: int = None
+
+    # 限制图片高度
+    limit_image_height: int = None
+
+    # 存储驱动
+    driver: str = "local"
+
+    # 是否上传图片时返回图片的额外信息
+    with_image_extra = False
+
+    # 是否随机文件名
+    rand_name: bool = False
+
+    # 保存路径
+    save_path: str = ""
+
+    # OSS配置
+    oss_config: OSSConfig = None
+
+    # Minio配置
+    minio_config: MinioConfig = None
+
+    def __init__(
+        self,
+        file: UploadFile = None,
+        file_base64_str: str = None,
+        file_bytes: bytes = None,
+        limit_size: int = None,
+        limit_type: list = None,
+        limit_image_width: int = None,
+        limit_image_height: int = None,
+        rand_name: bool = None,
+        save_path: str = None,
+        oss_config: OSSConfig = None,
+        minio_config: MinioConfig = None,
+        driver: str = None,
+        with_image_extra: bool = None,
+    ):
         self.file = file
-        self.with_image_extra = False
-        self.rand_name = False
-        self.path = ""
-
-    def with_image_extra(self) -> "Storage":
-        """
-        添加图片额外处理
-        """
-        self.with_image_extra = True
-        return self
-
-    def rand_name(self) -> "Storage":
-        """
-        使用随机文件名
-        """
-        self.rand_name = True
-        return self
+        self.file_base64_str = file_base64_str
+        self.file_bytes = file_bytes
+        self.driver = driver
+        self.with_image_extra = with_image_extra
+        self.oss_config = oss_config
+        self.minio_config = minio_config
+        self.limit_size = limit_size
+        self.limit_type = limit_type
+        self.limit_image_width = limit_image_width
+        self.limit_image_height = limit_image_height
+        self.rand_name = rand_name
+        self.save_path = save_path
 
     def path(self, path: str) -> "Storage":
         """
         设置保存路径
         """
-        self.path = path
+        self.save_path = path
         return self
 
     async def save(self) -> FileInfo:
@@ -42,11 +93,11 @@ class Storage:
         """
         try:
             # 根据驱动类型选择保存方式
-            if self.config.driver == "local":
+            if self.driver == "local":
                 return await self._save_local()
-            elif self.config.driver == "oss" and self.config.oss_config:
+            elif self.driver == "oss" and self.oss_config:
                 return await self._save_oss()
-            elif self.config.driver == "minio" and self.config.minio_config:
+            elif self.driver == "minio" and self.minio_config:
                 return await self._save_minio()
             else:
                 # 默认本地保存
