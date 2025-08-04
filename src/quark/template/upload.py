@@ -185,21 +185,16 @@ class Upload(BaseModel):
             if file_info:
                 return self.after_handle(request, file_info)
 
-            result, err = (
+            result = (
                 await get_file_system.with_image_extra()
                 .rand_name()
                 .path(save_path)
                 .save()
             )
-            if err:
-                raise HTTPException(status_code=400, detail=str(err))
 
             return self.after_handle(request, result)
-
-        except HTTPException:
-            raise
         except Exception as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            return Message.error(str(e))
 
     async def handle_from_base64(self, request: Request) -> Dict[str, Any]:
         """
@@ -221,19 +216,19 @@ class Upload(BaseModel):
             try:
                 data = await request.json()
             except ValueError as e:
-                raise HTTPException(status_code=400, detail=str(e))
+                return Message.error(str(e))
 
             if "file" not in data:
-                raise HTTPException(status_code=400, detail="参数错误")
+                return Message.error("参数错误")
 
             files = data["file"].split(",")
             if len(files) != 2:
-                raise HTTPException(status_code=400, detail="格式错误")
+                return Message.error("格式错误")
 
             try:
                 file_content = base64.b64decode(files[1])
             except Exception as e:
-                raise HTTPException(status_code=400, detail=f"Base64解码失败: {str(e)}")
+                return Message.error(f"Base64解码失败: {str(e)}")
 
             limit_size = self.get_limit_size()
             limit_type = self.get_limit_type()
@@ -277,21 +272,17 @@ class Upload(BaseModel):
             if file_info:
                 return self.after_handle(request, file_info)
 
-            result, err = (
+            result = (
                 await get_file_system.with_image_extra()
                 .rand_name()
                 .path(save_path)
                 .save()
             )
-            if err:
-                raise HTTPException(status_code=400, detail=str(err))
 
             return self.after_handle(request, result)
 
-        except HTTPException:
-            raise
         except Exception as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            return Message.error(str(e))
 
     def before_handle(
         self, request: Request, file_system: FileSystem
