@@ -98,15 +98,15 @@ class Storage:
         """
         检查文件是否符合上传限制
         """
-        if self.limit_size and len(self.file_bytes) > self.limit_size:
+        file_size = await self.get_size()
+        file_mime_type = await self.get_mime_type()
+        if self.limit_size and file_size > self.limit_size:
             raise ValueError("文件大小超出限制")
-        if self.limit_type and not any(
-            t in self.file_info.mime_type for t in self.limit_type
-        ):
+        if self.limit_type and not any(t in file_mime_type for t in self.limit_type):
             raise ValueError("文件类型不允许")
         if self.limit_image_width and self.limit_image_height:
             # 检查图片尺寸
-            with Image.open(BytesIO(self.file_bytes)) as img:
+            with Image.open(BytesIO(await self.get_bytes())) as img:
                 width, height = img.size
                 if width > self.limit_image_width or height > self.limit_image_height:
                     raise ValueError("图片尺寸超出限制")
@@ -140,6 +140,8 @@ class Storage:
         """
         本地保存文件
         """
+        # 检查文件是否符合上传限制
+        await self.check_limit()
         # 处理文件名
         if self.rand_name:
             ext = os.path.splitext(self.file.name)[1] if self.file.name else ""
