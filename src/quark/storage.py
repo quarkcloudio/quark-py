@@ -82,14 +82,17 @@ class Storage:
         self.rand_name = rand_name
         self.save_path = save_path
 
-    def get_content_type(self) -> str:
-        return get_content_type(file_name)
+    async def get_mime_type(self) -> str:
+        return self.file.content_type
 
-    def get_size(self) -> int:
-        return get_size(file_name)
+    async def get_size(self) -> int:
+        content = await self.file.read()
+        size_in_bytes = len(content)
+        return size_in_bytes
 
-    def get_bytes(self) -> bytes:
-        return get_bytes(file_name)
+    async def get_bytes(self) -> bytes:
+        content = await self.file.read()
+        return content
 
     async def check_limit(self):
         """

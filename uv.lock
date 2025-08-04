@@ -288,6 +288,15 @@ wheels = [
 ]
 
 [[package]]
+name = "filetype"
+version = "1.2.0"
+source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/bb/29/745f7d30d47fe0f251d3ad3dc2978a23141917661998763bebb6da007eb1/filetype-1.2.0.tar.gz", hash = "sha256:66b56cd6474bf41d8c54660347d37afcc3f7d1970648de365c102ef77548aadb" }
+wheels = [
+    { url = "https://mirrors.aliyun.com/pypi/packages/18/79/1b8fa1bb3568781e84c9200f951c735f3f157429f44be0495da55894d620/filetype-1.2.0-py2.py3-none-any.whl", hash = "sha256:7ce71b6880181241cf7ac8697a2f1eb6a8bd9b429f7ad6d27b8db9ba5f1c2d25" },
+]
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -755,6 +764,7 @@ dependencies = [
     { name = "captcha" },
     { name = "fastapi" },
     { name = "fastapi-cache2" },
+    { name = "filetype" },
     { name = "inflection" },
     { name = "openpyxl" },
     { name = "pandas" },
@@ -772,6 +782,7 @@ requires-dist = [
     { name = "captcha", specifier = ">=0.7.1" },
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "fastapi-cache2", specifier = ">=0.2.2" },
+    { name = "filetype", specifier = ">=1.2.0" },
     { name = "inflection", specifier = ">=0.5.1" },
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "pandas", specifier = ">=2.3.1" },
