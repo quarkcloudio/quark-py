@@ -35,10 +35,10 @@ class Upload(BaseModel):
     save_path: str = Field(default="uploads")
 
     # OSS配置
-    oss_config: Any = Field(default=None)
+    oss_config: OSSConfig = Field(default=None)
 
     # Minio配置
-    minio_config: Any = Field(default=None)
+    minio_config: MinioConfig = Field(default=None)
 
     def get_limit_size(self) -> int:
         """
