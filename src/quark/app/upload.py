@@ -3,12 +3,12 @@ import hashlib
 import json
 import os
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple
 
-from fastapi import Depends, File, Form, HTTPException, Query, UploadFile
+from fastapi import HTTPException, Request
 
 from quark import Message, Upload
-from quark.schemas import ImageCropRequest, ImageDeleteRequest, ImageListRequest
+from quark.schemas import FileInfo, ImageCropRequest, ImageDeleteRequest
 from quark.services import AttachmentCategoryService, AttachmentService, AuthService
 
 
@@ -36,25 +36,33 @@ class Image(Upload):
 
         return self
 
-    async def get_list(
-        self,
-        category_id: Optional[int] = Query(None, alias="categoryId"),
-        name: Optional[str] = None,
-        createtime: Optional[str] = None,
-        page: int = Query(1),
-        current_admin: dict = Depends(get_current_admin),
-    ):
+    async def get_list(self, request: Request):
         """
         获取文件列表
         """
         try:
+            # 从request中获取参数
+            category_id = request.query_params.get("categoryId")
+            name = request.query_params.get("name")
+            createtime = request.query_params.get("createtime")
+            page = request.query_params.get("page", "1")
+
+            # 类型转换
+            try:
+                category_id = int(category_id) if category_id else None
+                page = int(page) if page else 1
+            except ValueError:
+                page = 1
+
+            current_admin = await AuthService(request).get_current_admin()
+
             # 使用服务层获取数据
-            pictures, total = await AttachmentService.get_list_by_search(
-                current_admin["id"], "IMAGE", category_id, name, createtime, page
+            images, total = await AttachmentService.get_list_by_search(
+                current_admin.id, "IMAGE", category_id, name, createtime, page
             )
 
             # 获取分类列表
-            categorys = await AttachmentCategoryService.get_list(current_admin["id"])
+            categorys = await AttachmentCategoryService.get_list(current_admin.id)
         except Exception as e:
             return Message.error(str(e))
 
@@ -67,51 +75,50 @@ class Image(Upload):
                     "pageSize": 8,
                     "total": total,
                 },
-                "list": pictures,
+                "list": images,
                 "categorys": categorys,
             },
         )
 
-    async def delete(
-        self, request: Dict[str, int], current_admin: dict = Depends(get_current_admin)
-    ):
+    async def delete(self, request: Request):
         """
         图片删除
         """
         try:
-            image_delete_req = request
-            if "id" not in image_delete_req:
-                return Message.error("参数错误")
-            await AttachmentService.delete_by_id(image_delete_req["id"])
+            # 从request中解析JSON数据
+            request_data = await request.json()
+
+            image_delete_req = ImageDeleteRequest(**request_data)
+
+            await AttachmentService.delete_by_id(image_delete_req.id)
         except Exception as e:
             return Message.error(str(e))
 
         return Message.success("操作成功")
 
-    async def crop(
-        self,
-        request: Dict[str, Union[int, str]],
-        limitW: Optional[str] = Query(None),
-        limitH: Optional[str] = Query(None),
-        current_admin: dict = Depends(get_current_admin),
-    ):
+    async def crop(self, request: Request):
         """
         图片裁剪
         """
         try:
-            image_crop_req = request
-            if "id" not in image_crop_req or "file" not in image_crop_req:
-                return Message.error("参数错误")
+            # 从request中解析JSON数据
+            request_data = await request.json()
+
+            image_crop_req = ImageCropRequest(**request_data)
+
+            # 获取查询参数
+            limit_w = request.query_params.get("limitW")
+            limit_h = request.query_params.get("limitH")
 
             # 获取图片信息
-            image_info = await AttachmentService.get_info_by_id(image_crop_req["id"])
+            image_info = await AttachmentService.get_info_by_id(image_crop_req.id)
             if not image_info:
-                return Message.error("图片不存在")
+                raise HTTPException(status_code=404, detail="图片不存在")
 
             # 解析base64数据
-            files = image_crop_req["file"].split(",")
+            files = image_crop_req.file.split(",")
             if len(files) != 2:
-                return Message.error("格式错误")
+                raise HTTPException(status_code=400, detail="格式错误")
 
             file_data = base64.b64decode(files[1])
 
@@ -119,15 +126,15 @@ class Image(Upload):
             limit_image_width = getattr(self, "limit_image_width", 0)
             limit_image_height = getattr(self, "limit_image_height", 0)
 
-            if limitW:
+            if limit_w:
                 try:
-                    limit_image_width = int(limitW)
+                    limit_image_width = int(limit_w)
                 except ValueError:
                     pass
 
-            if limitH:
+            if limit_h:
                 try:
-                    limit_image_height = int(limitH)
+                    limit_image_height = int(limit_h)
                 except ValueError:
                     pass
 
@@ -146,15 +153,21 @@ class Image(Upload):
 
             result = await storage.save_from_data(file_data, file_name, self.save_path)
 
+            # 重写URL
+            if getattr(self, "driver", "local") == "local":
+                result["url"] = AttachmentService.get_image_url(result["url"])
+
             # 更新数据库
             extra = ""
             if result.get("extra"):
                 extra = json.dumps(result["extra"])
 
+            current_admin = await AuthService(request).get_current_admin()
+
             await AttachmentService.update_by_id(
                 image_info.id,
                 source="ADMIN",
-                uid=current_admin["id"],
+                uid=current_admin.id,
                 name=result["name"],
                 type="IMAGE",
                 size=result["size"],
@@ -223,20 +236,25 @@ class Image(Upload):
         except Exception as e:
             return file_system, None, e
 
-    async def after_handle(self, result: Dict, current_admin: dict) -> Dict:
+    async def after_handle(self, request: Request, result: FileInfo) -> Dict:
         """
         上传完成后回调
         """
         try:
+            # 重写url
+            if getattr(self, "driver", "local") == "local":
+                result["url"] = AttachmentService.get_image_url(result["url"])
 
             extra = ""
             if result.get("extra"):
                 extra = json.dumps(result["extra"])
 
+            current_admin = await AuthService(request).get_current_admin()
+
             # 插入数据库
             attachment_id = await AttachmentService.insert_get_id(
                 source="ADMIN",
-                uid=current_admin["id"],
+                uid=current_admin.id,
                 name=result["name"],
                 type="IMAGE",
                 size=result["size"],
@@ -266,11 +284,7 @@ class Image(Upload):
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    async def handle(
-        self,
-        file: UploadFile = File(...),
-        current_admin: dict = Depends(get_current_admin),
-    ):
+    async def handle(self, request: Request):
         """
         文件上传处理
         """
@@ -322,19 +336,26 @@ class Image(Upload):
                 "content_type": file.content_type,
             }
 
+            current_admin = await AuthService(request).get_current_admin()
+
             # 上传后回调
             return await self.after_handle(result, current_admin)
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    async def handle_from_base64(
-        self, file: str = Form(...), current_admin: dict = Depends(get_current_admin)
-    ):
+    async def handle_from_base64(self, request: Request):
         """
         Base64文件上传处理
         """
         try:
+            # 从request中解析表单数据
+            form_data = await request.form()
+            file = form_data.get("file")
+
+            if not file:
+                raise HTTPException(status_code=400, detail="文件数据为空")
+
             # 解析base64数据
             files = file.split(",")
             if len(files) != 2:
@@ -381,6 +402,8 @@ class Image(Upload):
                 "hash": file_system.get_file_hash(),
                 "content_type": "image/png",
             }
+
+            current_admin = await AuthService(self.request).get_current_admin()
 
             # 上传后回调
             return await self.after_handle(result, current_admin)

@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import Request, HTTPException
+
+from fastapi import HTTPException, Request
 from jose import JWTError, jwt
 from tortoise.exceptions import DoesNotExist
+
+from .. import config
 from ..models.user import User
 from ..services.user import UserService
 from ..utils import verify_password
-from .. import config
 
 
 class AuthService:
@@ -93,6 +95,9 @@ class AuthService:
         if user.status != 1:
             raise HTTPException(status_code=403, detail="User is disabled")
         return user
+
+    async def get_current_admin(self) -> User:
+        return await self.get_current_user("admin")
 
     def get_real_ip(self, request: Request):
         forwarded_for = request.headers.get("X-Forwarded-For")
