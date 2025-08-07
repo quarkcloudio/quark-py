@@ -238,7 +238,7 @@ class Image(Upload):
         """
         try:
             # 重写url
-            if getattr(self, "driver", "local") == "local":
+            if self.driver == "local":
                 result["url"] = AttachmentService.get_image_url(result["url"])
 
             extra = ""
@@ -261,11 +261,9 @@ class Image(Upload):
                 extra=extra,
                 status=1,
             )
-
-            return {
-                "code": 200,
-                "msg": "上传成功",
-                "data": {
+            return Message.success(
+                "上传成功",
+                {
                     "id": attachment_id,
                     "contentType": result.get("content_type", ""),
                     "ext": result["ext"],
@@ -276,9 +274,10 @@ class Image(Upload):
                     "url": result["url"],
                     "extra": result.get("extra", {}),
                 },
-            }
+            )
+
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            return Message.error(str(e))
 
     async def handle(self, request: Request):
         """
@@ -332,10 +331,8 @@ class Image(Upload):
                 "content_type": file.content_type,
             }
 
-            current_admin = await AuthService(request).get_current_admin()
-
             # 上传后回调
-            return await self.after_handle(result, current_admin)
+            return await self.after_handle(result, result)
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
@@ -399,10 +396,8 @@ class Image(Upload):
                 "content_type": "image/png",
             }
 
-            current_admin = await AuthService(self.request).get_current_admin()
-
             # 上传后回调
-            return await self.after_handle(result, current_admin)
+            return await self.after_handle(result, result)
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))

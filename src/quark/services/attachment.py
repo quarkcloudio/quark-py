@@ -1,9 +1,10 @@
-from tortoise.expressions import Q
+import json
+from datetime import datetime
+
+import openpyxl
+
 from ..models.attachment import Attachment
 from ..services.config import ConfigService
-from datetime import datetime, timezone
-import json
-import openpyxl
 
 
 class AttachmentService:
@@ -48,8 +49,7 @@ class AttachmentService:
         return await Attachment.filter(status=1, id=attachment_id).update(**data)
 
     async def get_info_by_hash(self, hash_value):
-        attachment = await Attachment.filter(status=1, hash=hash_value).first()
-        return attachment
+        return await Attachment.filter(status=1, hash=hash_value).first()
 
     async def get_url(self, *params):
         id = None
