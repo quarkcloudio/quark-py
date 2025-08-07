@@ -1,4 +1,5 @@
-from typing import Optional, Dict
+from typing import Dict, Optional
+
 from pydantic import BaseModel, field_validator
 
 
@@ -56,3 +57,19 @@ class FileInfo(BaseModel):
     size: int
     mime_type: str
     url: str
+
+
+class ImageListRequest(BaseModel):
+    categoryId: Optional[int] = None
+    name: Optional[str] = None
+    createtime: Optional[str] = None
+    page: int = 1
+
+
+class ImageDeleteRequest(BaseModel):
+    id: int
+
+
+class ImageCropRequest(BaseModel):
+    id: int
+    file: str

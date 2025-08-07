@@ -1,6 +1,6 @@
 from .action_log import ActionLogService
-from .attachment_category import AttachmentCategoryService
 from .attachment import AttachmentService
+from .attachment_category import AttachmentCategoryService
 from .auth import AuthService
 from .config import ConfigService
 from .department import DepartmentService
