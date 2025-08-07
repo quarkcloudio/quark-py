@@ -1,11 +1,14 @@
-import uuid
-import os
-from PIL import Image
-from io import BytesIO
 import base64
+import os
+import uuid
+from io import BytesIO
 from typing import List
+
+import filetype
 from fastapi import UploadFile
-from quark.schemas import FileInfo, OSSConfig, MinioConfig
+from PIL import Image
+
+from quark.schemas import FileInfo, MinioConfig, OSSConfig
 
 
 class Storage:
@@ -83,16 +86,42 @@ class Storage:
         self.save_path = save_path
 
     async def get_mime_type(self) -> str:
-        return self.file.content_type
+        if self.file is not None:
+            return self.file.content_type
+        elif self.file_base64_str is not None:
+            kind = filetype.guess(base64.b64decode(self.file_base64_str))
+            if kind is not None:
+                return kind.mime
+            else:
+                return "application/octet-stream"
+        elif self.file_bytes is not None:
+            kind = filetype.guess(self.file_bytes)
+            if kind is not None:
+                return kind.mime
+            else:
+                return "application/octet-stream"
+        else:
+            return "application/octet-stream"
 
     async def get_size(self) -> int:
-        content = await self.file.read()
-        size_in_bytes = len(content)
-        return size_in_bytes
+        if self.file is not None:
+            return self.file.size
+        elif self.file_base64_str is not None:
+            return len(base64.b64decode(self.file_base64_str))
+        elif self.file_bytes is not None:
+            return len(self.file_bytes)
+        else:
+            return 0
 
     async def get_bytes(self) -> bytes:
-        content = await self.file.read()
-        return content
+        if self.file is not None:
+            return self.file.file.read()
+        elif self.file_base64_str is not None:
+            return base64.b64decode(self.file_base64_str)
+        elif self.file_bytes is not None:
+            return self.file_bytes
+        else:
+            return b""
 
     async def check_limit(self):
         """
@@ -142,6 +171,7 @@ class Storage:
         """
         # 检查文件是否符合上传限制
         await self.check_limit()
+
         # 处理文件名
         if self.rand_name:
             ext = os.path.splitext(self.file.name)[1] if self.file.name else ""
@@ -160,20 +190,20 @@ class Storage:
         if directory and not os.path.exists(directory):
             os.makedirs(directory)
 
+        file_bytes = await self.get_bytes()
+        file_size = await self.get_size()
+        file_mime_type = await self.get_mime_type()
+
         # 保存文件
         with open(save_path, "wb") as f:
-            f.write(self.file.content)
+            f.write(file_bytes)
 
         # 创建文件信息
         file_info = FileInfo(
             name=filename,
             path=save_path,
-            size=len(self.file.content),
-            mime_type=(
-                self.file.header.get("Content-Type", "application/octet-stream")
-                if self.file.header
-                else "application/octet-stream"
-            ),
+            size=file_size,
+            mime_type=file_mime_type,
             url=f"/{save_path}",
         )
         return file_info
