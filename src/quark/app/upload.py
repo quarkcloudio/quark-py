@@ -100,107 +100,103 @@ class Image(Upload):
         """
         图片裁剪
         """
-        try:
-            # 从request中解析JSON数据
-            request_data = await request.json()
+        # 从request中解析JSON数据
+        request_data = await request.json()
 
-            image_crop_req = ImageCropRequest(**request_data)
+        image_crop_req = ImageCropRequest(**request_data)
 
-            # 获取查询参数
-            limit_w = request.query_params.get("limitW")
-            limit_h = request.query_params.get("limitH")
+        # 获取查询参数
+        limit_w = request.query_params.get("limitW")
+        limit_h = request.query_params.get("limitH")
 
-            # 获取图片信息
-            image_info = await AttachmentService.get_info_by_id(image_crop_req.id)
-            if not image_info:
-                raise HTTPException(status_code=404, detail="图片不存在")
+        # 获取图片信息
+        image_info = await AttachmentService.get_info_by_id(image_crop_req.id)
+        if not image_info:
+            return Message.error("图片不存在")
 
-            # 解析base64数据
-            files = image_crop_req.file.split(",")
-            if len(files) != 2:
-                raise HTTPException(status_code=400, detail="格式错误")
+        # 解析base64数据
+        files = image_crop_req.file.split(",")
+        if len(files) != 2:
+            return Message.error("格式错误")
 
-            file_data = base64.b64decode(files[1])
+        file_data = base64.b64decode(files[1])
 
-            # 获取尺寸限制
-            limit_image_width = getattr(self, "limit_image_width", 0)
-            limit_image_height = getattr(self, "limit_image_height", 0)
+        # 获取尺寸限制
+        limit_image_width = getattr(self, "limit_image_width", 0)
+        limit_image_height = getattr(self, "limit_image_height", 0)
 
-            if limit_w:
-                try:
-                    limit_image_width = int(limit_w)
-                except ValueError:
-                    pass
+        if limit_w:
+            try:
+                limit_image_width = int(limit_w)
+            except ValueError:
+                pass
 
-            if limit_h:
-                try:
-                    limit_image_height = int(limit_h)
-                except ValueError:
-                    pass
+        if limit_h:
+            try:
+                limit_image_height = int(limit_h)
+            except ValueError:
+                pass
 
-            # 创建存储实例
-            storage = Storage(
-                limit_size=self.limit_size,
-                limit_types=self.limit_type,
-                limit_image_width=limit_image_width,
-                limit_image_height=limit_image_height,
-                driver=getattr(self, "driver", "local"),
-            )
+        # 创建存储实例
+        storage = Storage(
+            limit_size=self.limit_size,
+            limit_types=self.limit_type,
+            limit_image_width=limit_image_width,
+            limit_image_height=limit_image_height,
+            driver=getattr(self, "driver", "local"),
+        )
 
-            # 处理文件
-            file_paths = image_info.path.split("/")
-            file_name = file_paths[-1]
+        # 处理文件
+        file_paths = image_info.path.split("/")
+        file_name = file_paths[-1]
 
-            result = await storage.save_from_data(file_data, file_name, self.save_path)
+        result = await storage.save_from_data(file_data, file_name, self.save_path)
 
-            # 重写URL
-            if getattr(self, "driver", "local") == "local":
-                result["url"] = AttachmentService.get_image_url(result["url"])
+        # 重写URL
+        if self.driver == "local":
+            result["url"] = AttachmentService.get_image_url(result["url"])
 
-            # 更新数据库
-            extra = ""
-            if result.get("extra"):
-                extra = json.dumps(result["extra"])
+        # 更新数据库
+        extra = ""
+        if result.get("extra"):
+            extra = json.dumps(result["extra"])
 
-            current_admin = await AuthService(request).get_current_admin()
+        current_admin = await AuthService(request).get_current_admin()
 
-            await AttachmentService.update_by_id(
-                image_info.id,
-                source="ADMIN",
-                uid=current_admin.id,
-                name=result["name"],
-                type="IMAGE",
-                size=result["size"],
-                ext=result["ext"],
-                path=result["path"],
-                url=result["url"],
-                hash=result["hash"],
-                extra=extra,
-                status=1,
-            )
+        await AttachmentService.update_by_id(
+            image_info.id,
+            source="ADMIN",
+            uid=current_admin.id,
+            name=result["name"],
+            type="IMAGE",
+            size=result["size"],
+            ext=result["ext"],
+            path=result["path"],
+            url=result["url"],
+            hash=result["hash"],
+            extra=extra,
+            status=1,
+        )
 
-            # 重新获取更新后的数据
-            updated_attachment = await AttachmentService.get_info_by_id(image_info.id)
+        # 重新获取更新后的数据
+        updated_attachment = await AttachmentService.get_info_by_id(image_info.id)
 
-            return {
-                "code": 200,
-                "msg": "操作成功",
-                "data": {
-                    "name": updated_attachment.name,
-                    "size": updated_attachment.size,
-                    "ext": updated_attachment.ext,
-                    "path": updated_attachment.path,
-                    "url": updated_attachment.url,
-                    "hash": updated_attachment.hash,
-                    "extra": (
-                        json.loads(updated_attachment.extra)
-                        if updated_attachment.extra
-                        else None
-                    ),
-                },
-            }
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        return Message.success(
+            "操作成功",
+            {
+                "name": updated_attachment.name,
+                "size": updated_attachment.size,
+                "ext": updated_attachment.ext,
+                "path": updated_attachment.path,
+                "url": updated_attachment.url,
+                "hash": updated_attachment.hash,
+                "extra": (
+                    json.loads(updated_attachment.extra)
+                    if updated_attachment.extra
+                    else None
+                ),
+            },
+        )
 
     async def before_handle(
         self, file_system: Any
