@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from . import cache, config, utils
 from .component.message.message import Message
 from .quark import Quark
+from .storage import Storage
 from .template.dashboard import Dashboard
 from .template.layout import Layout
 from .template.login import Login

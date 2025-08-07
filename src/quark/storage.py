@@ -49,6 +49,9 @@ class Storage:
     # 保存路径
     save_path: str = ""
 
+    # 保存文件名称
+    save_name: str = ""
+
     # OSS配置
     oss_config: OSSConfig = None
 
@@ -66,6 +69,7 @@ class Storage:
         limit_image_height: int = None,
         rand_name: bool = None,
         save_path: str = None,
+        save_name: str = None,
         oss_config: OSSConfig = None,
         minio_config: MinioConfig = None,
         driver: str = None,
@@ -84,6 +88,7 @@ class Storage:
         self.limit_image_height = limit_image_height
         self.rand_name = rand_name
         self.save_path = save_path
+        self.save_name = save_name
 
     async def get_mime_type(self) -> str:
         if self.file is not None:
@@ -174,10 +179,10 @@ class Storage:
 
         # 处理文件名
         if self.rand_name:
-            ext = os.path.splitext(self.file.name)[1] if self.file.name else ""
+            ext = os.path.splitext(self.file.filename)[1] if self.file.filename else ""
             filename = f"{uuid.uuid4()}{ext}"
         else:
-            filename = self.file.name or str(uuid.uuid4())
+            filename = self.file.filename or str(uuid.uuid4())
 
         # 构建完整路径
         if self.path:

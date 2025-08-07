@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional, Tuple
 
 from fastapi import HTTPException, Request
 
-from quark import Message, Upload
+from quark import Message, Storage, Upload
 from quark.schemas import FileInfo, ImageCropRequest, ImageDeleteRequest
 from quark.services import AttachmentCategoryService, AttachmentService, AuthService
 
@@ -119,8 +119,6 @@ class Image(Upload):
         if len(files) != 2:
             return Message.error("格式错误")
 
-        file_data = base64.b64decode(files[1])
-
         # 获取尺寸限制
         limit_image_width = getattr(self, "limit_image_width", 0)
         limit_image_height = getattr(self, "limit_image_height", 0)
@@ -143,14 +141,16 @@ class Image(Upload):
             limit_types=self.limit_type,
             limit_image_width=limit_image_width,
             limit_image_height=limit_image_height,
-            driver=getattr(self, "driver", "local"),
+            driver=self.driver,
+            save_path=self.save_path,
+            file_base64_str=files[1],
         )
 
         # 处理文件
         file_paths = image_info.path.split("/")
         file_name = file_paths[-1]
 
-        result = await storage.save_from_data(file_data, file_name, self.save_path)
+        result = await storage.save()
 
         # 重写URL
         if self.driver == "local":
