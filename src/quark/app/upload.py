@@ -150,7 +150,7 @@ class Image(Upload):
         file_paths = image_info.path.split("/")
         file_name = file_paths[-1]
 
-        result = await storage.save()
+        result = await storage.name(file_name).save()
 
         # 重写URL
         if self.driver == "local":

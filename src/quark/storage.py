@@ -152,6 +152,13 @@ class Storage:
         self.save_path = path
         return self
 
+    def name(self, name: str) -> "Storage":
+        """
+        设置保存文件名
+        """
+        self.save_name = name
+        return self
+
     async def save(self) -> FileInfo:
         """
         保存文件
@@ -182,11 +189,11 @@ class Storage:
             ext = os.path.splitext(self.file.filename)[1] if self.file.filename else ""
             filename = f"{uuid.uuid4()}{ext}"
         else:
-            filename = self.file.filename or str(uuid.uuid4())
+            filename = self.save_name or self.file.filename or f"{uuid.uuid4()}{ext}"
 
         # 构建完整路径
-        if self.path:
-            save_path = os.path.join(self.path, filename)
+        if self.save_path:
+            save_path = os.path.join(self.save_path, filename)
         else:
             save_path = filename
 
