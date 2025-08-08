@@ -1,13 +1,11 @@
-import base64
-import hashlib
 import json
-import os
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
-from fastapi import HTTPException, Request
+from fastapi import Request
 
 from quark import Message, Storage, Upload
+from quark.models import Attachment
 from quark.schemas import FileInfo, ImageCropRequest, ImageDeleteRequest
 from quark.services import AttachmentCategoryService, AttachmentService, AuthService
 
@@ -198,14 +196,12 @@ class Image(Upload):
             },
         )
 
-    async def before_handle(
-        self, file_system: Any
-    ) -> Tuple[Any, Optional[Dict], Optional[Exception]]:
+    async def before_handle(self, storage: Storage) -> Any:
         """
         上传前回调
         """
         try:
-            file_hash = file_system.get_file_hash()
+            file_hash = storage.get_file_hash()
             image_info = await AttachmentService.get_info_by_hash(file_hash)
 
             if image_info and image_info.id != 0:
@@ -226,13 +222,13 @@ class Image(Upload):
                     "extra": extra,
                 }
 
-                return file_system, file_info, None
+                return Message.success("获取成功", file_info)
 
-            return file_system, None, None
+            return None
         except Exception as e:
-            return file_system, None, e
+            return Message.error(str(e))
 
-    async def after_handle(self, request: Request, result: FileInfo) -> Dict:
+    async def after_handle(self, request: Request, result: FileInfo) -> Any:
         """
         上传完成后回调
         """
@@ -279,125 +275,150 @@ class Image(Upload):
         except Exception as e:
             return Message.error(str(e))
 
-    async def handle(self, request: Request):
+
+class File(Upload):
+    """
+    文件上传处理类
+    """
+
+    def init(self) -> "File":
         """
-        文件上传处理
+        初始化文件上传配置
+
+        Args:
+            ctx: Quark上下文对象
+
+        Returns:
+            File: 配置后的File对象
         """
-        try:
-            # 检查文件类型
-            if file.content_type not in self.limit_type:
-                raise HTTPException(status_code=400, detail="不支持的文件类型")
+        # 限制文件大小为2GB
+        self.limit_size = 1024 * 1024 * 1024 * 2
 
-            # 读取文件内容
-            file_content = await file.read()
+        # 限制文件类型
+        self.limit_type = [
+            "image/png",
+            "image/gif",
+            "image/jpeg",
+            "video/mp4",
+            "video/mpeg",
+            "application/x-xls",
+            "application/x-ppt",
+            "application/msword",
+            "application/zip",
+            "application/pdf",
+            "application/vnd.ms-excel",
+            "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ]
 
-            # 创建文件系统模拟对象
-            class FileSystemMock:
-                def __init__(self, content):
-                    self.content = content
+        # 设置文件上传路径
+        self.save_path = f"./web/app/storage/files/{datetime.now().strftime('%Y%m%d')}/"
 
-                def get_file_hash(self):
-                    return hashlib.md5(self.content).hexdigest()
+        return self
 
-            file_system = FileSystemMock(file_content)
-
-            # 上传前回调
-            _, file_info, _ = await self.before_handle(file_system)
-
-            if file_info:
-                return {"code": 200, "msg": "上传成功", "data": file_info}
-
-            # 保存文件
-            filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{file.filename}"
-
-            # 确保目录存在
-            os.makedirs(self.save_path, exist_ok=True)
-
-            file_path = os.path.join(self.save_path, filename)
-            async with aiofiles.open(file_path, "wb") as out_file:
-                await out_file.write(file_content)
-
-            # 获取文件URL
-            file_url = f"/storage/images/{datetime.now().strftime('%Y%m%d')}/{filename}"
-
-            # 构造结果
-            result = {
-                "name": filename,
-                "size": len(file_content),
-                "ext": os.path.splitext(filename)[1],
-                "path": file_path,
-                "url": file_url,
-                "hash": file_system.get_file_hash(),
-                "content_type": file.content_type,
-            }
-
-            # 上传后回调
-            return await self.after_handle(result, result)
-
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-
-    async def handle_from_base64(self, request: Request):
+    async def before_handle(self, request: Request, storage: Storage) -> Any:
         """
-        Base64文件上传处理
+        上传前回调处理
+
+        Args:
+            request: 请求对象
+            storage: 存储对象
+
+        Returns:
+            Any: 处理结果
         """
         try:
-            # 从request中解析表单数据
-            form_data = await request.form()
-            file = form_data.get("file")
-
-            if not file:
-                raise HTTPException(status_code=400, detail="文件数据为空")
-
-            # 解析base64数据
-            files = file.split(",")
-            if len(files) != 2:
-                raise HTTPException(status_code=400, detail="格式错误")
-
-            image_data = base64.b64decode(files[1])
-
-            # 创建文件系统模拟对象
-            class FileSystemMock:
-                def __init__(self, content):
-                    self.content = content
-
-                def get_file_hash(self):
-                    return hashlib.md5(self.content).hexdigest()
-
-            file_system = FileSystemMock(image_data)
-
-            # 上传前回调
-            _, file_info, _ = await self.before_handle(file_system)
-
-            if file_info:
-                return {"code": 200, "msg": "上传成功", "data": file_info}
-
-            # 保存文件
-            filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}.png"  # 默认png格式
-
-            # 确保目录存在
-            os.makedirs(self.save_path, exist_ok=True)
-
-            file_path = os.path.join(self.save_path, filename)
-            async with aiofiles.open(file_path, "wb") as out_file:
-                await out_file.write(image_data)
-
-            # 获取文件URL
-            file_url = f"/storage/images/{datetime.now().strftime('%Y%m%d')}/{filename}"
-
-            # 构造结果
-            result = {
-                "name": filename,
-                "size": len(image_data),
-                "ext": ".png",
-                "path": file_path,
-                "url": file_url,
-                "hash": file_system.get_file_hash(),
-                "content_type": "image/png",
-            }
-
-            # 上传后回调
-            return await self.after_handle(result, result)
-
+            file_hash = storage.get_file_hash()
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            return Message.error(str(e))
+
+        try:
+            file_info = await AttachmentService().get_info_by_hash(file_hash)
+        except Exception as e:
+            return Message.error(str(e))
+
+        if file_info.id != 0:
+            extra = {}
+            if file_info.extra:
+                try:
+                    extra = json.loads(file_info.extra)
+                except (json.JSONDecodeError, TypeError):
+                    pass
+
+            file_info_obj = FileInfo(
+                name=file_info.name,
+                size=file_info.size,
+                ext=file_info.ext,
+                path=file_info.path,
+                url=file_info.url,
+                hash=file_info.hash,
+                extra=extra,
+            )
+            return Message.success("获取成功", file_info_obj)
+
+        return Message.error(str(e))
+
+    async def after_handle(self, request: Request, result: FileInfo) -> Any:
+        """
+        上传完成后回调处理
+
+        Args:
+            request: 请求对象
+            result: 文件信息对象
+
+        Returns:
+            Any: 处理结果
+        """
+
+        # 重写url
+        if self.driver == "local":
+            result.url = await AttachmentService().get_file_url(result.url)
+
+        try:
+            admin_info = await AuthService(request).get_current_admin()
+        except Exception as e:
+            return Message.error(str(e))
+
+        extra = ""
+        if result.extra is not None:
+            try:
+                extra_data = json.dumps(result.extra)
+                extra = extra_data
+            except (TypeError, ValueError):
+                pass
+
+        # 插入数据库
+        try:
+            attachment = Attachment(
+                source="ADMIN",
+                uid=admin_info.id,
+                name=result.name,
+                type="FILE",
+                size=result.size,
+                ext=result.ext,
+                path=result.path,
+                url=result.url,
+                hash=result.hash,
+                extra=extra,
+                status=1,
+            )
+            id = await AttachmentService().insert_get_id(attachment)
+        except Exception as e:
+            return Message.error(str(e))
+
+        return Message.success(
+            "上传成功",
+            {
+                "id": id,
+                "contentType": result.get("content_type", ""),
+                "ext": result["ext"],
+                "hash": result["hash"],
+                "name": result["name"],
+                "path": result["path"],
+                "size": result["size"],
+                "url": result["url"],
+                "extra": result.get("extra", {}),
+            },
+        )
