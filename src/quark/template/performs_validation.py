@@ -61,7 +61,11 @@ class PerformsValidation:
                         return rule.message
             elif rule.rule_type == "regexp":
                 if isinstance(field_value, str):
-                    if not re.fullmatch(rule.pattern, field_value):
+                    # 标准化正则表达式模式
+                    pattern = rule.pattern
+                    if pattern.startswith("/") and pattern.endswith("/"):
+                        pattern = pattern[1:-1]
+                    if not re.fullmatch(pattern, field_value):
                         return rule.message
             elif rule.rule_type == "unique":
                 try:

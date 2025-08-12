@@ -149,11 +149,12 @@ class User(Resource):
             .set_rules(
                 [
                     Rule.regexp(r"/^.{6,}$/", "密码不少于六位"),
-                    Rule.regexp(r"/[A-Z]/", "至少包含一个大写字母"),
-                    Rule.regexp(r"/[a-z]/", "至少包含一个小写字母"),
-                    Rule.regexp(r"/[0-9]/", "至少包含一个数字"),
+                    Rule.regexp(r"/.*[A-Z].*/", "至少包含一个大写字母"),
+                    Rule.regexp(r"/.*[a-z].*/", "至少包含一个小写字母"),
+                    Rule.regexp(r"/.*[0-9].*/", "至少包含一个数字"),
                     Rule.regexp(
-                        r"/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/", "至少包含一个特殊字符"
+                        r"/.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-].*/",
+                        "至少包含一个特殊字符",
                     ),
                 ]
             )
@@ -220,5 +221,4 @@ class User(Resource):
         return submit_data
 
     async def after_saved(self, request, id, data, result):
-        # 保存角色
         await services.RoleService().save_roles_by_user_id(id, data["role_ids"])

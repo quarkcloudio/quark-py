@@ -75,7 +75,6 @@ class AttachmentService:
             if "://" in id and "{" not in id:
                 return id
             if "./" in id and "{" not in id:
-                print(http + web_site_domain + id.replace("./web/app/", "/", 1))
                 return http + web_site_domain + id.replace("./web/app/", "/", 1)
             if "/" in id and "{" not in id:
                 return http + web_site_domain + id

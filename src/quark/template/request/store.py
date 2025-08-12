@@ -58,14 +58,15 @@ class StoreRequest:
 
         # 保存数据
         try:
-            await self.model.create(**new_data)
+            instance = await self.model.create(**new_data)
+
         except Exception as e:
             return Message.error(str(e))
 
-        if not hasattr(self.model, "id"):
+        id = getattr(instance, "id", None)
+        if not id:
             return Message.error("参数错误")
 
-        id = self.model.id
         # 保存后回调
         try:
             await self.resource.after_saved(self.request, id, data, self.model)
