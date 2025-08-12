@@ -1,12 +1,14 @@
 from typing import Any, Dict, List, Optional
+
 from fastapi import Request
-from .request.store import StoreRequest
-from ..component.form.form import Form
-from ..component.tabs.tabs import Tabs
+
 from ..component.card.card import Card
+from ..component.form.form import Form
 from ..component.message.message import Message
-from .resolves_fields import ResolvesFields
+from ..component.tabs.tabs import Tabs
 from ..utils import is_creating, is_editing
+from .request.store import StoreRequest
+from .resolves_fields import ResolvesFields
 
 
 class ResourceForm:
@@ -140,19 +142,17 @@ class ResourceForm:
 
     async def after_imported(
         self, request: Request, id_: int, data: Dict[str, Any], result: Any
-    ) -> Optional[Exception]:
+    ):
         """
         导入数据后回调
         """
-        return None
 
     async def after_saved(
         self, request: Request, id: int, data: Dict[str, Any], result: Any
-    ) -> Optional[Exception]:
+    ):
         """
         保存数据后回调
         """
-        return None
 
     async def after_saved_redirect_to(
         self, request: Request, id: int, data: Dict[str, Any]

@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from tortoise.models import Q, QuerySet
 
-from quark import Request, Resource, models, services
+from quark import Request, Resource, models, services, utils
 from quark.app import actions, searches
 from quark.component.form import Rule, field
 
@@ -210,3 +210,15 @@ class User(Resource):
 
         # 返回数据
         return data
+
+    async def before_saving(self, request, submit_data):
+
+        # 密码处理
+        if submit_data.get("password"):
+            submit_data["password"] = utils.hash_password(submit_data["password"])
+
+        return submit_data
+
+    async def after_saved(self, request, id, data, result):
+        # 保存角色
+        await services.RoleService().save_roles_by_user_id(id, data["role_ids"])

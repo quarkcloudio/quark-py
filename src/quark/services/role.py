@@ -26,7 +26,7 @@ class RoleService:
             if data_scope == 2:
                 await self.add_department_to_role(role_id, department_ids, connection)
             else:
-                await self.remove_role_departments(role_id, connection)
+                await self.remove_role_departments(role_id)
 
     async def get_list(self) -> List[Option]:
         roles = await Role.filter(status=1).all()
@@ -36,6 +36,16 @@ class RoleService:
     async def get_list_by_ids(self, ids: List[int]) -> List[Role]:
         roles = await Role.filter(id__in=ids).all()
         return roles
+
+    async def save_roles_by_user_id(self, user_id: int, role_ids: List[int]):
+        async with in_transaction() as connection:
+            # 删除用户原有的角色
+            await UserHasRole.filter(uid=user_id).delete()  # 移除 using_db 参数
+
+            # 保存新的角色
+            for role_id in role_ids:
+                user_role = UserHasRole(uid=user_id, role_id=role_id)
+                await user_role.save(using_db=connection)
 
     async def get_role_ids_by_user_id(self, user_id: int) -> List[int]:
         user_roles = await UserHasRole.filter(uid=user_id).all()

@@ -1,11 +1,14 @@
 import re
-from typing import List, Dict, Any, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 from urllib.parse import parse_qs, urlparse
+
 from fastapi import Request
-from tortoise.models import Model
+from tortoise import Tortoise
 from tortoise.expressions import Q
+from tortoise.models import Model
+
 from ..component.form import Rule
-from ..component.form.fields.when import When, Item
+from ..component.form.fields.when import Item, When
 
 
 class PerformsValidation:
@@ -61,21 +64,47 @@ class PerformsValidation:
                     if not re.fullmatch(rule.pattern, field_value):
                         return rule.message
             elif rule.rule_type == "unique":
-                table: Type[Model] = globals()[rule.unique_table]
-                field = rule.unique_table_field
-                ignore_value = rule.unique_ignore_value
-                if ignore_value:
-                    ignore_key = ignore_value.strip("{}")
-                    ignore_val = data.get(ignore_key)
-                    count = (
-                        await table.filter(**{f"{field}": field_value})
-                        .filter(~Q(**{f"{ignore_key}": ignore_val}))
-                        .count()
+                try:
+                    # 通过 Tortoise ORM 获取模型
+                    table: Type[Model] = Tortoise.apps.get("models").get(
+                        rule.unique_table
                     )
-                else:
-                    count = await table.filter(**{f"{field}": field_value}).count()
-                if count > 0:
-                    return rule.message
+                    if not table:
+                        # 如果通过表名找不到，尝试通过类名查找
+                        table = Tortoise.apps.get("models").get(
+                            rule.unique_table.rstrip("s").capitalize()
+                        )
+
+                    if not table or not issubclass(table, Model):
+                        return f"验证规则错误: 找不到模型 {rule.unique_table}"
+
+                    # 其余代码保持不变
+                    field = rule.unique_table_field
+                    ignore_value = rule.unique_ignore_value
+
+                    # 构建查询条件
+                    filter_kwargs = {f"{field}": field_value}
+                    query = table.filter(**filter_kwargs)
+
+                    # 处理忽略值（用于更新时排除自身）
+                    if (
+                        ignore_value
+                        and ignore_value.startswith("{")
+                        and ignore_value.endswith("}")
+                    ):
+                        ignore_key = ignore_value.strip("{}")
+                        ignore_val = data.get(ignore_key)
+                        if ignore_val is not None:
+                            query = query.filter(~Q(**{f"{ignore_key}": ignore_val}))
+
+                    count = await query.count()
+                    if count > 0:
+                        return rule.message
+
+                except KeyError:
+                    return f"验证规则错误: 找不到模型 {rule.unique_table}"
+                except Exception as e:
+                    return f"验证规则错误: {str(e)}"
         return None
 
     async def rules_for_creation(self) -> List[Rule]:

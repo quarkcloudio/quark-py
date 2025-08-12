@@ -1,9 +1,11 @@
 import json
 from typing import Any, Dict
+
 from fastapi import Request
 from tortoise.models import Model
-from ..performs_validation import PerformsValidation
+
 from ...component.message.message import Message
+from ..performs_validation import PerformsValidation
 
 
 class StoreRequest:
@@ -43,11 +45,16 @@ class StoreRequest:
 
         # 重组数据
         new_data = {}
+        model_fields = set(self.model._meta.fields_map.keys())
+
         for k, v in data.items():
-            nv = v
-            if isinstance(v, (list, dict)):
-                nv = json.dumps(v, ensure_ascii=False)
-            new_data[k] = nv
+            # 只处理模型中存在的字段
+            if k in model_fields:
+                # 处理特殊数据类型
+                if isinstance(v, (list, dict)):
+                    new_data[k] = json.dumps(v, ensure_ascii=False)
+                else:
+                    new_data[k] = v
 
         # 保存数据
         try:

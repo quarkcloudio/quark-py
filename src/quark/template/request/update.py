@@ -1,10 +1,12 @@
 import json
 from typing import Any
+
 from fastapi import Request
-from tortoise.models import QuerySet
+from tortoise.models import Model, QuerySet
+
+from ...component.message.message import Message
 from ..performs_queries import PerformsQueries
 from ..performs_validation import PerformsValidation
-from ...component.message.message import Message
 
 
 class UpdateRequest:
@@ -14,6 +16,9 @@ class UpdateRequest:
 
     # 资源对象
     resource: Any = None
+
+    # 模型
+    model: Model = None
 
     # 查询对象
     query: QuerySet = None
@@ -25,11 +30,13 @@ class UpdateRequest:
         self,
         request: Request,
         resource: Any,
+        model: Model,
         query: QuerySet,
         fields: list,
     ):
         self.request = request
         self.resource = resource
+        self.model = model
         self.query = query
         self.fields = fields
 
@@ -56,12 +63,16 @@ class UpdateRequest:
 
         # 重组数据
         new_data = {}
-        for k, v in data.items():
-            nv = v
-            if isinstance(v, (list, dict)):
-                nv = json.dumps(v, ensure_ascii=False)
+        model_fields = set(self.model._meta.fields_map.keys())
 
-            new_data[k] = nv
+        for k, v in data.items():
+            # 只处理模型中存在的字段
+            if k in model_fields:
+                # 处理特殊数据类型
+                if isinstance(v, (list, dict)):
+                    new_data[k] = json.dumps(v, ensure_ascii=False)
+                else:
+                    new_data[k] = v
 
         query = await PerformsQueries(self.request).build_update_query(self.query)
 

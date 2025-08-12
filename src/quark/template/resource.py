@@ -1,27 +1,29 @@
-from typing import Any, List, Dict, Optional
+from typing import Any, Dict, List, Optional
+
 from fastapi import Request
 from pydantic import BaseModel, Field
 from tortoise.models import Model, QuerySet
+
 from ..component.form.form import Form
-from ..component.table.table import Table
-from ..component.table.search import Search
-from ..component.table.column import Column
-from ..component.table.tool_bar import ToolBar
-from ..component.table.tree_bar import TreeBar
 from ..component.pagecontainer.pagecontainer import PageContainer
 from ..component.pagecontainer.pageheader import PageHeader
-from .resource_index import ResourceIndex
-from .resource_form import ResourceForm
-from .resource_create import ResourceCreate
-from .resource_edit import ResourceEdit
-from .resource_detail import ResourceDetail
-from .resolves_fields import ResolvesFields
-from .request.index import IndexRequest
-from .request.edit import EditRequest
-from .request.update import UpdateRequest
-from .request.editable import EditableRequest
-from .request.detail import DetailRequest
+from ..component.table.column import Column
+from ..component.table.search import Search
+from ..component.table.table import Table
+from ..component.table.tool_bar import ToolBar
+from ..component.table.tree_bar import TreeBar
 from .request.action import ActionRequest
+from .request.detail import DetailRequest
+from .request.edit import EditRequest
+from .request.editable import EditableRequest
+from .request.index import IndexRequest
+from .request.update import UpdateRequest
+from .resolves_fields import ResolvesFields
+from .resource_create import ResourceCreate
+from .resource_detail import ResourceDetail
+from .resource_edit import ResourceEdit
+from .resource_form import ResourceForm
+from .resource_index import ResourceIndex
 
 
 class Resource(
@@ -246,7 +248,6 @@ class Resource(
     async def edit_render(self, request: Request) -> Any:
         """编辑页渲染"""
 
-        # 获取列表查询
         query = await self.query(request)
 
         fields = ResolvesFields(request, await self.fields(request)).update_fields()
@@ -268,10 +269,12 @@ class Resource(
             request, await self.fields(request)
         ).update_fields_without_when()
 
+        model = await self.get_model()
+
         query = await self.query(request)
 
         return await UpdateRequest(
-            request=request, resource=self, query=query, fields=fields
+            request=request, resource=self, model=model, query=query, fields=fields
         ).handle()
 
     async def editable_render(self, request: Request) -> Any:
