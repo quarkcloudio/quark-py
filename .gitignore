@@ -12,14 +12,13 @@ venv/
 # 构建相关
 build/
 dist/
+examples/web/
 *.egg-info/
 *.egg
 
 # IDE 文件
 .vscode/
 .idea/
-
-/web/app/storage/
 
 # 数据库文件
 *.db
