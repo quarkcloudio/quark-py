@@ -12,7 +12,7 @@ from quark.services import AttachmentCategoryService, AttachmentService, AuthSer
 
 class Image(Upload):
 
-    def init(self) -> "Image":
+    async def init(self, request: Request) -> "Image":
         """
         初始化
         """
@@ -196,7 +196,7 @@ class Image(Upload):
             },
         )
 
-    async def before_handle(self, storage: Storage) -> Any:
+    async def before_handle(self, request: Request, storage: Storage) -> Any:
         """
         上传前回调
         """
@@ -281,7 +281,7 @@ class File(Upload):
     文件上传处理类
     """
 
-    def init(self) -> "File":
+    async def init(self, request: Request) -> "File":
         """
         初始化文件上传配置
 

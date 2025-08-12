@@ -1,8 +1,11 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from fastapi import Request
 from pydantic import BaseModel, Field
+
+from quark.schemas import FileInfo, MinioConfig, OSSConfig
 from quark.storage import Storage
-from quark.schemas import FileInfo, OSSConfig, MinioConfig
+
 from ..component.message.message import Message
 
 
@@ -36,6 +39,10 @@ class Upload(BaseModel):
 
     # Minio配置
     minio_config: MinioConfig = Field(default=None)
+
+    async def init(self, request: Request):
+        """初始化"""
+        return self
 
     async def handle(self, request: Request) -> Dict[str, Any]:
         """

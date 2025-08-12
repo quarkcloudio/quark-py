@@ -1,16 +1,18 @@
 # coding: utf-8
-import os
-import uvicorn
 import logging
-import i18n
+import os
+from contextlib import asynccontextmanager
 from typing import Any
+
+import i18n
+import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
-from contextlib import asynccontextmanager
-from .routes import login, layout, dashboard, resource
+
+from . import cache, config, db
 from .install import setup_all
-from . import config, cache, db
+from .routes import dashboard, layout, login, resource, upload
 
 
 class Quark(FastAPI):
@@ -72,6 +74,7 @@ class Quark(FastAPI):
         self.include_router(layout.router)
         self.include_router(dashboard.router)
         self.include_router(resource.router)
+        self.include_router(upload.router)
 
     def load_static(self):
         """加载静态资源"""
