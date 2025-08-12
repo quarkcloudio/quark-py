@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import os
 import uuid
 from io import BytesIO
@@ -127,6 +128,14 @@ class Storage:
             return self.file_bytes
         else:
             return b""
+
+    async def get_hash(self) -> str:
+        """
+        获取文件哈希值
+        """
+        file_bytes = await self.get_bytes()
+        filename = self.save_name or self.file.filename
+        return hashlib.md5(file_bytes + filename.encode()).hexdigest()
 
     async def check_limit(self):
         """

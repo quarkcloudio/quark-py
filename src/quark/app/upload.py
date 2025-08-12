@@ -201,7 +201,7 @@ class Image(Upload):
         上传前回调
         """
         try:
-            file_hash = storage.get_file_hash()
+            file_hash = await storage.get_hash()
             image_info = await AttachmentService.get_info_by_hash(file_hash)
 
             if image_info and image_info.id != 0:
@@ -235,7 +235,7 @@ class Image(Upload):
         try:
             # 重写url
             if self.driver == "local":
-                result["url"] = AttachmentService.get_image_url(result["url"])
+                result["url"] = await AttachmentService.get_image_url(result["url"])
 
             extra = ""
             if result.get("extra"):
@@ -330,7 +330,7 @@ class File(Upload):
             Any: 处理结果
         """
         try:
-            file_hash = storage.get_file_hash()
+            file_hash = await storage.get_hash()
         except Exception as e:
             return Message.error(str(e))
 
@@ -339,7 +339,7 @@ class File(Upload):
         except Exception as e:
             return Message.error(str(e))
 
-        if file_info.id != 0:
+        if file_info and file_info.id != 0:
             extra = {}
             if file_info.extra:
                 try:
@@ -358,7 +358,7 @@ class File(Upload):
             )
             return Message.success("获取成功", file_info_obj)
 
-        return Message.error(str(e))
+        return None
 
     async def after_handle(self, request: Request, result: FileInfo) -> Any:
         """

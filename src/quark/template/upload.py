@@ -86,14 +86,14 @@ class Upload(BaseModel):
             )
 
             # 上传前回调
-            before_handle_result = self.before_handle(request, storage)
+            before_handle_result = await self.before_handle(request, storage)
 
             if before_handle_result is not None:
                 return before_handle_result
 
             result = await storage.path(self.save_path).save()
 
-            return self.after_handle(request, result)
+            return await self.after_handle(request, result)
         except Exception as e:
             return Message.error(str(e))
 
@@ -142,25 +142,25 @@ class Upload(BaseModel):
             )
 
             # 上传前回调
-            before_handle_result = self.before_handle(request, storage)
+            before_handle_result = await self.before_handle(request, storage)
 
             if before_handle_result is not None:
                 return before_handle_result
 
             result = await storage.path(self.save_path).save()
 
-            return self.after_handle(request, result)
+            return await self.after_handle(request, result)
 
         except Exception as e:
             return Message.error(str(e))
 
-    def before_handle(self, request: Request, storage: Storage) -> Any:
+    async def before_handle(self, request: Request, storage: Storage) -> Any:
         """
         上传前回调
         """
         return None
 
-    def after_handle(self, request: Request, result: FileInfo) -> Any:
+    async def after_handle(self, request: Request, result: FileInfo) -> Any:
         """
         上传后回调
         """
