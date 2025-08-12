@@ -55,12 +55,12 @@ class Image(Upload):
             current_admin = await AuthService(request).get_current_admin()
 
             # 使用服务层获取数据
-            images, total = await AttachmentService.get_list_by_search(
+            images, total = await AttachmentService().get_list_by_search(
                 current_admin.id, "IMAGE", category_id, name, createtime, page
             )
 
             # 获取分类列表
-            categorys = await AttachmentCategoryService.get_list(current_admin.id)
+            categorys = await AttachmentCategoryService().get_list(current_admin.id)
         except Exception as e:
             return Message.error(str(e))
 
@@ -88,7 +88,8 @@ class Image(Upload):
 
             image_delete_req = ImageDeleteRequest(**request_data)
 
-            await AttachmentService.delete_by_id(image_delete_req.id)
+            await AttachmentService().delete_by_id(image_delete_req.id)
+
         except Exception as e:
             return Message.error(str(e))
 
@@ -108,7 +109,7 @@ class Image(Upload):
         limit_h = request.query_params.get("limitH")
 
         # 获取图片信息
-        image_info = await AttachmentService.get_info_by_id(image_crop_req.id)
+        image_info = await AttachmentService().get_info_by_id(image_crop_req.id)
         if not image_info:
             return Message.error("图片不存在")
 
@@ -152,7 +153,7 @@ class Image(Upload):
 
         # 重写URL
         if self.driver == "local":
-            result["url"] = AttachmentService.get_image_url(result["url"])
+            result["url"] = await AttachmentService().get_image_url(result["url"])
 
         # 更新数据库
         extra = ""
@@ -161,7 +162,7 @@ class Image(Upload):
 
         current_admin = await AuthService(request).get_current_admin()
 
-        await AttachmentService.update_by_id(
+        await AttachmentService().update_by_id(
             image_info.id,
             source="ADMIN",
             uid=current_admin.id,
@@ -177,7 +178,7 @@ class Image(Upload):
         )
 
         # 重新获取更新后的数据
-        updated_attachment = await AttachmentService.get_info_by_id(image_info.id)
+        updated_attachment = await AttachmentService().get_info_by_id(image_info.id)
 
         return Message.success(
             "操作成功",
@@ -202,7 +203,7 @@ class Image(Upload):
         """
         try:
             file_hash = await storage.get_hash()
-            image_info = await AttachmentService.get_info_by_hash(file_hash)
+            image_info = await AttachmentService().get_info_by_hash(file_hash)
 
             if image_info and image_info.id != 0:
                 extra = {}
@@ -235,40 +236,42 @@ class Image(Upload):
         try:
             # 重写url
             if self.driver == "local":
-                result["url"] = await AttachmentService.get_image_url(result["url"])
+                result.url = await AttachmentService().get_image_url(result.url)
 
             extra = ""
-            if result.get("extra"):
-                extra = json.dumps(result["extra"])
+            if result.extra:
+                extra = json.dumps(result.extra)
 
             current_admin = await AuthService(request).get_current_admin()
 
-            # 插入数据库
-            attachment_id = await AttachmentService.insert_get_id(
+            attachment = Attachment(
                 source="ADMIN",
                 uid=current_admin.id,
-                name=result["name"],
+                name=result.name,
                 type="IMAGE",
-                size=result["size"],
-                ext=result["ext"],
-                path=result["path"],
-                url=result["url"],
-                hash=result["hash"],
+                size=result.size,
+                ext=result.ext,
+                path=result.path,
+                url=result.url,
+                hash=result.hash,
                 extra=extra,
                 status=1,
             )
+
+            # 插入数据库
+            attachment_id = await AttachmentService().insert_get_id(attachment)
             return Message.success(
                 "上传成功",
                 {
                     "id": attachment_id,
-                    "contentType": result.get("content_type", ""),
-                    "ext": result["ext"],
-                    "hash": result["hash"],
-                    "name": result["name"],
-                    "path": result["path"],
-                    "size": result["size"],
-                    "url": result["url"],
-                    "extra": result.get("extra", {}),
+                    "contentType": result.mime_type,
+                    "ext": result.ext,
+                    "hash": result.hash,
+                    "name": result.name,
+                    "path": result.path,
+                    "size": result.size,
+                    "url": result.url,
+                    "extra": result.extra,
                 },
             )
 
@@ -412,13 +415,13 @@ class File(Upload):
             "上传成功",
             {
                 "id": id,
-                "contentType": result.get("content_type", ""),
-                "ext": result["ext"],
-                "hash": result["hash"],
-                "name": result["name"],
-                "path": result["path"],
-                "size": result["size"],
-                "url": result["url"],
-                "extra": result.get("extra", {}),
+                "contentType": result.mime_type,
+                "ext": result.ext,
+                "hash": result.hash,
+                "name": result.name,
+                "path": result.path,
+                "size": result.size,
+                "url": result.url,
+                "extra": result.extra,
             },
         )

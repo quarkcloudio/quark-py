@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, field_validator
 
@@ -53,10 +53,13 @@ class FileInfo(BaseModel):
     """
 
     name: str
+    ext: str
     path: str
     size: int
     mime_type: str
     url: str
+    hash: str
+    extra: Optional[Dict[str, Any]] = None
 
 
 class ImageListRequest(BaseModel):

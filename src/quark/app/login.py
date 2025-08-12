@@ -1,9 +1,9 @@
-from quark import cache, Request, Login
-from quark.component.form import field, Rule
+from quark import Login, Request, cache
+from quark.component.form import Rule, field
 from quark.component.icon.icon import Icon
 from quark.component.message.message import Message
-from quark.services.auth import AuthService
 from quark.schemas import LoginData
+from quark.services.auth import AuthService
 
 
 class Index(Login):
@@ -61,7 +61,9 @@ class Index(Login):
             return Message.error("用户名或密码不能为空")
 
         try:
-            token = await AuthService(request).login(data.username, data.password)
+            token = await AuthService(request).login(
+                data.username, data.password, "admin"
+            )
         except Exception as e:
             return Message.error(str(e))
 

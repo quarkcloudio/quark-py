@@ -1,12 +1,14 @@
 import time
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+
 from fastapi import Request
-from ..services.auth import AuthService
-from ..services.user import UserService
+from pydantic import BaseModel, Field
+
 from ..component.action.action import Action
 from ..component.footer.footer import Footer
 from ..component.layout.layout import Layout as LayoutComponent
+from ..services.auth import AuthService
+from ..services.user import UserService
 
 
 class Layout(BaseModel):
@@ -100,10 +102,8 @@ class Layout(BaseModel):
 
     async def get_menus(self, request: Request) -> Any:
         auth_service = AuthService(request)
-        user_info = await auth_service.get_current_user()
-
-        user_service = UserService()
-        return await user_service.get_menu_list_by_id(user_info.id)
+        user_info = await auth_service.get_current_admin()
+        return await UserService().get_menu_list_by_id(user_info.id)
 
     async def render(self, request: Request) -> Any:
         footer = Footer().set_links(self.links).set_copyright(self.copyright)

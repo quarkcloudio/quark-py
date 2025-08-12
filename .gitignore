@@ -19,6 +19,8 @@ dist/
 .vscode/
 .idea/
 
+/web/app/storage/
+
 # 数据库文件
 *.db
 *.db-shm

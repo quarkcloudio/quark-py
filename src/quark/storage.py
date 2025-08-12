@@ -109,6 +109,24 @@ class Storage:
         else:
             return "application/octet-stream"
 
+    async def get_ext(self) -> str:
+        if self.file is not None:
+            return os.path.splitext(self.file.filename)[1]
+        elif self.file_base64_str is not None:
+            kind = filetype.guess(base64.b64decode(self.file_base64_str))
+            if kind is not None:
+                return kind.extension
+            else:
+                return ""
+        elif self.file_bytes is not None:
+            kind = filetype.guess(self.file_bytes)
+            if kind is not None:
+                return kind.extension
+            else:
+                return ""
+        else:
+            return ""
+
     async def get_size(self) -> int:
         if self.file is not None:
             return self.file.size
@@ -193,9 +211,9 @@ class Storage:
         # 检查文件是否符合上传限制
         await self.check_limit()
 
+        ext = await self.get_ext()
         # 处理文件名
         if self.rand_name:
-            ext = os.path.splitext(self.file.filename)[1] if self.file.filename else ""
             filename = f"{uuid.uuid4()}{ext}"
         else:
             filename = self.save_name or self.file.filename or f"{uuid.uuid4()}{ext}"
@@ -222,10 +240,12 @@ class Storage:
         # 创建文件信息
         file_info = FileInfo(
             name=filename,
+            ext=ext,
             path=save_path,
             size=file_size,
             mime_type=file_mime_type,
             url=f"/{save_path}",
+            hash=await self.get_hash(),
         )
         return file_info
 
