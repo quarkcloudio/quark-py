@@ -1,7 +1,10 @@
 from typing import List, Optional
-from ..models.role import Role
+
 from tortoise.transactions import in_transaction
+
 from quark.component.form.fields.checkbox import Option
+
+from ..models import Role, UserHasRole
 
 
 class RoleService:
@@ -33,6 +36,10 @@ class RoleService:
     async def get_list_by_ids(self, ids: List[int]) -> List[Role]:
         roles = await Role.filter(id__in=ids).all()
         return roles
+
+    async def get_role_ids_by_user_id(self, user_id: int) -> List[int]:
+        user_roles = await UserHasRole.filter(uid=user_id).all()
+        return [user_role.role_id for user_role in user_roles]
 
     # 以下两个方法需要你补充实现（假设你有 RoleDepartment 关联表）
     async def add_department_to_role(

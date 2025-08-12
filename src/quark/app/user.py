@@ -1,9 +1,11 @@
-from typing import List, Dict
 import json
-from quark import services, models, Request, Resource
-from quark.app import searches, actions
-from quark.component.form import field, Rule
-from tortoise.models import QuerySet, Q
+from typing import Any, Dict, List
+
+from tortoise.models import Q, QuerySet
+
+from quark import Request, Resource, models, services
+from quark.app import actions, searches
+from quark.component.form import Rule, field
 
 
 class User(Resource):
@@ -190,3 +192,21 @@ class User(Resource):
             actions.FormBack(),
             actions.FormExtraBack(),
         ]
+
+    async def before_editing(
+        self, request: Request, data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        编辑页面显示前回调
+        """
+
+        # 密码不显示
+        del data["password"]
+
+        # 获取用户角色
+        data["role_ids"] = await services.RoleService().get_role_ids_by_user_id(
+            data["id"]
+        )
+
+        # 返回数据
+        return data
