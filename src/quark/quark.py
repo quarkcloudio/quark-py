@@ -1,6 +1,8 @@
 # coding: utf-8
 import logging
 import os
+import shutil
+import sys
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -78,10 +80,26 @@ class Quark(FastAPI):
 
     def load_static(self):
         """加载静态资源"""
-        static_path = os.path.join(self.current_dir_path, "web", "app", "admin")
-        self.mount(
-            "/admin", StaticFiles(directory=static_path, html=True), name="admin"
+
+        # 源目录
+        src_static_path = os.path.join(self.current_dir_path, "web")
+
+        # 目标目录
+        dst_static_path = os.path.join(
+            os.path.dirname(os.path.abspath(sys.argv[0])), "web"
         )
+
+        # 复制文件夹
+        if not os.path.exists(dst_static_path):
+            shutil.copytree(src_static_path, dst_static_path)
+
+        web_static_path = os.path.join(dst_static_path, "static")
+        self.mount(
+            "/static", StaticFiles(directory=web_static_path, html=True), name="static"
+        )
+
+        web_root_path = os.path.join(dst_static_path, "app")
+        self.mount("/", StaticFiles(directory=web_root_path, html=True), name="web")
 
     @asynccontextmanager
     async def lifespan(self, app: FastAPI):
@@ -107,11 +125,11 @@ class Quark(FastAPI):
         # 初始化 locale
         self.init_locale()
 
-        # 设置静态资源
-        self.load_static()
-
         # 注册路由
         self.register_routers()
+
+        # 设置静态资源
+        self.load_static()
 
         # 初始化数据库
         await self.init_db()

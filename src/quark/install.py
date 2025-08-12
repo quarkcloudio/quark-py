@@ -1,9 +1,9 @@
-from .models.user import User
-from .models.role import Role
+from .models.config import Config
+from .models.department import Department
 from .models.menu import Menu
 from .models.position import Position
-from .models.department import Department
-from .models.config import Config
+from .models.role import Role
+from .models.user import User
 
 
 # 执行安装操作
