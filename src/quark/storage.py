@@ -138,10 +138,16 @@ class Storage:
             return 0
 
     async def get_bytes(self) -> bytes:
+        # 如果已经有缓存，直接返回
+        if self.file_bytes is not None:
+            return self.file_bytes
+
         if self.file is not None:
-            return self.file.file.read()
+            self.file_bytes = await self.file.read()
+            return self.file_bytes
         elif self.file_base64_str is not None:
-            return base64.b64decode(self.file_base64_str)
+            self.file_bytes = base64.b64decode(self.file_base64_str)
+            return self.file_bytes
         elif self.file_bytes is not None:
             return self.file_bytes
         else:
@@ -244,7 +250,7 @@ class Storage:
             path=save_path,
             size=file_size,
             mime_type=file_mime_type,
-            url=f"/{save_path}",
+            url=f"{save_path}",
             hash=await self.get_hash(),
         )
         return file_info

@@ -61,19 +61,21 @@ class AttachmentService:
             attachment_type = params[0]
             id = params[1]
 
-        http = (
-            "https://"
-            if await self.config_service.get_value("SSL_OPEN") == "1"
-            else "http://"
-        )
-        web_site_domain = await self.config_service.get_value("WEB_SITE_DOMAIN")
-
+        http = ""
         path = ""
+        web_site_domain = await self.config_service.get_value("WEB_SITE_DOMAIN")
+        if web_site_domain is not None and web_site_domain != "":
+            http = (
+                "https://"
+                if await self.config_service.get_value("SSL_OPEN") == "1"
+                else "http://"
+            )
 
         if isinstance(id, str):
             if "://" in id and "{" not in id:
                 return id
             if "./" in id and "{" not in id:
+                print(http + web_site_domain + id.replace("./web/app/", "/", 1))
                 return http + web_site_domain + id.replace("./web/app/", "/", 1)
             if "/" in id and "{" not in id:
                 return http + web_site_domain + id
