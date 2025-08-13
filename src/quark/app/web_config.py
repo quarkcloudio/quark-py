@@ -1,5 +1,6 @@
-from typing import List, Dict
-from quark import models, Request, Resource
+from typing import Dict, List
+
+from quark import Request, Resource, models
 from quark.app import actions
 from quark.component.form import field
 
