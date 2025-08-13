@@ -1,7 +1,8 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from quark import Request
-from quark.template.action import Action
 from quark.services.auth import AuthService
+from quark.template.action import Action
 
 
 class Import(Action):

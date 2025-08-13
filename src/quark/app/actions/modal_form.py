@@ -1,8 +1,9 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from quark import Request
-from quark.template.action import ModalForm
 from quark.component.form import field
 from quark.component.message.message import Message
+from quark.template.action import ModalForm
 
 
 class ModalForm(ModalForm):

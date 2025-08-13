@@ -1,11 +1,13 @@
 from typing import Any
+
 from quark import Request
-from quark.template.action import Modal
-from quark.component.form.form import Form
 from quark.component.action.action import Action
+from quark.component.form.form import Form
+from quark.template.action import Modal
 
 
 class CreateModal(Modal):
+
     def __init__(self, title: str, api: str, fields: Any, initial_data: dict):
         self.name = "创建" + title
         self.api = api

@@ -1,4 +1,5 @@
-from typing import List, Any
+from typing import Any, List
+
 from quark.template.action import Dropdown
 
 

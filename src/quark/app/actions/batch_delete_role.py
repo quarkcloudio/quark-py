@@ -1,7 +1,7 @@
 from typing import List
-from quark import Request
+
+from quark import Message, Request
 from quark.template.action import Action
-from quark.component.message.message import Message
 
 
 class BatchDeleteRole(Action):

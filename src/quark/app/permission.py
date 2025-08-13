@@ -40,9 +40,9 @@ class Permission(Resource):
     async def actions(self, request: Request) -> List[Dict]:
         """行为定义"""
         return [
-            actions.CreateLink(self.title),
+            actions.CreateModal(self),
             actions.BatchDelete(),
-            actions.EditLink(),
+            actions.EditModal(),
             actions.Delete(),
             actions.FormSubmit(),
             actions.FormReset(),

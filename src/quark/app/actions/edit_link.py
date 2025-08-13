@@ -1,4 +1,5 @@
 from typing import Optional
+
 from quark import Request
 from quark.template.action import Link
 

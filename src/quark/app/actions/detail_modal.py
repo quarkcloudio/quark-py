@@ -1,4 +1,5 @@
 from typing import Any
+
 from quark import Request
 from quark.template.action import Modal
 

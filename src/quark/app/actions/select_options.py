@@ -1,6 +1,6 @@
 from quark import Request
-from quark.template.action import Action
 from quark.component.message.message import Message
+from quark.template.action import Action
 
 
 class SelectOptions(Action):

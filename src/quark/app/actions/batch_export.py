@@ -1,6 +1,6 @@
 from quark import Request
-from quark.template.action import Link
 from quark.services.auth import AuthService
+from quark.template.action import Link
 
 
 class BatchExport(Link):

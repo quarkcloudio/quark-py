@@ -1,8 +1,9 @@
 from typing import Any, List
+
 from quark import Request
-from quark.template.action import Modal
-from quark.component.form.form import Form
 from quark.component.action.action import Action
+from quark.component.form.form import Form
+from quark.template.action import Modal
 
 
 class EditModal(Modal):

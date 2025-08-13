@@ -1,4 +1,5 @@
 from fastapi import Request
+
 from quark.template.action import Link
 
 
