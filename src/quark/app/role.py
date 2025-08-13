@@ -1,6 +1,7 @@
-from typing import List, Dict
-from quark import models, Request, Resource
-from quark.app import searches, actions
+from typing import Dict, List
+
+from quark import Request, Resource, models
+from quark.app import actions, searches
 from quark.component.form import field
 
 
@@ -9,7 +10,7 @@ class Role(Resource):
     角色管理
     """
 
-    def init(self, request: Request):
+    async def init(self, request: Request):
 
         # 页面标题
         self.title = "角色"
