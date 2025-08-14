@@ -1,11 +1,13 @@
 from typing import List
 
-from quark import Request
-from quark.component.message.message import Message
+from tortoise.models import QuerySet
+
+from quark import Message, Request
 from quark.template.action import Action
 
 
 class DeleteSpecial(Action):
+
     def __init__(self, name=None):
         # 名称支持动态表达式，Python中可用字符串或模板渲染实现
         self.name = name or "<%= (id==1 ? '' : '删除') %>"
@@ -21,7 +23,7 @@ class DeleteSpecial(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, request: Request, query) -> any:
+    async def handle(self, request: Request, query: QuerySet):
         try:
             await query.delete()
             return Message.success("操作成功")

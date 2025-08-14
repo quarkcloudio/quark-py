@@ -6,12 +6,13 @@ from quark.template.action import Action
 
 
 class Import(Action):
+
     def __init__(self, name: str = "导入数据"):
         self.name = name
         self.destroy_on_close = True
         self.set_only_on_index(True)
 
-    def get_body(self, request: Request) -> Dict[str, Any]:
+    async def get_body(self, request: Request) -> Dict[str, Any]:
         resource = request.url.path.get("resource", "")
         token = AuthService(request).get_token()
 
@@ -56,7 +57,7 @@ class Import(Action):
 
         return form_component
 
-    def get_actions(self, request: Request) -> List[Dict[str, Any]]:
+    async def get_actions(self, request: Request) -> List[Dict[str, Any]]:
         return [
             {
                 "type": "action",

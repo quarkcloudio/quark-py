@@ -12,6 +12,6 @@ class Export:
         self.target = "_blank"
         self.only_on_index_table_row = True
 
-    def get_href(self, request: Request) -> str:
+    async def get_href(self, request: Request) -> str:
         token = AuthService(request).get_token()
         return request.url.path.replace("/index", f"/export?id=${{id}}&token={token}")

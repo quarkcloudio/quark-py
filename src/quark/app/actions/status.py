@@ -1,7 +1,7 @@
-from fastapi import Request
+from tortoise.models import QuerySet
 from tortoise.transactions import in_transaction
 
-from quark.component.message.message import Message
+from quark import Message, Request
 from quark.template.action import Action
 
 
@@ -17,7 +17,7 @@ class Status(Action):
     def get_api_params(self):
         return ["id"]
 
-    async def handle(self, request: Request, query):
+    async def handle(self, request: Request, query: QuerySet):
         # 获取参数
         status = request.query_params.get("status")
         if status is None:

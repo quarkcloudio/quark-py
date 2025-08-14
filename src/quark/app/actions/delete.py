@@ -1,11 +1,13 @@
 from typing import List
 
-from quark import Request
-from quark.component.message.message import Message
+from tortoise.models import QuerySet
+
+from quark import Message, Request
 from quark.template.action import Action
 
 
 class Delete(Action):
+
     def __init__(self, name: str = "删除"):
         self.name = name
         self.type = "link"
@@ -20,7 +22,7 @@ class Delete(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, request: Request, query) -> any:
+    async def handle(self, request: Request, query: QuerySet):
         try:
             # ORM 需要根据你的实际框架调整，这里示例使用异步删除
             await query.delete()

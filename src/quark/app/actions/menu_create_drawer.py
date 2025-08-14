@@ -7,6 +7,7 @@ from quark.template.action import Drawer
 
 
 class MenuCreateDrawer(Drawer):
+
     def __init__(
         self,
         title: str,

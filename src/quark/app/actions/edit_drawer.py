@@ -7,6 +7,7 @@ from quark.template.action import Drawer
 
 
 class EditDrawer(Drawer):
+
     def __init__(self, name: str, api: str, init_api: str, fields: Any):
         self.name = name
         self.api = api
@@ -18,7 +19,7 @@ class EditDrawer(Drawer):
         self.reload = "table"
         self.set_only_on_index_table_row(True)
 
-    def get_body(self, request: Request) -> Any:
+    async def get_body(self, request: Request) -> Any:
         return (
             Form()
             .set_api(self.api)
@@ -29,7 +30,7 @@ class EditDrawer(Drawer):
             .set_key("editDrawerForm", False)
         )
 
-    def get_actions(self, request: Request) -> List[Any]:
+    async def get_actions(self, request: Request) -> List[Any]:
         return [
             (Action().set_label("取消").set_action_type("cancel")),
             (

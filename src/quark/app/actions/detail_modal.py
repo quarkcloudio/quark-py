@@ -5,6 +5,7 @@ from quark.template.action import Modal
 
 
 class DetailModal(Modal):
+
     def __init__(self, name: str, detail_component: Any):
         self.name = name
         self.detail_component = detail_component
@@ -15,5 +16,5 @@ class DetailModal(Modal):
         self.width = 750
         self.set_only_on_index_table_row(True)
 
-    def get_body(self, request: Request) -> Any:
+    async def get_body(self, request: Request) -> Any:
         return self.detail_component

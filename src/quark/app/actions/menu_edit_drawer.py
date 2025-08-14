@@ -7,6 +7,7 @@ from quark.template.action import Drawer
 
 
 class MenuEditDrawer(Drawer):
+
     def __init__(self, name: str, api: str, init_api: str, fields: Any):
         self.name = name
         self.api = api
@@ -16,10 +17,10 @@ class MenuEditDrawer(Drawer):
         self.size = "small"
         self.destroy_on_close = True
         self.reload = "table"
-        self.Width = 750
+        self.width = 750
         self.set_only_on_index_table_row(True)
 
-    def get_body(self, request: Request) -> Dict[str, Any]:
+    async def get_body(self, request: Request) -> Dict[str, Any]:
         return (
             Form()
             .set_api(self.api)
@@ -29,7 +30,7 @@ class MenuEditDrawer(Drawer):
             .set_key("editDrawerForm", False)
         )
 
-    def get_actions(self, ctx: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def get_actions(self, request: Request) -> List[Dict[str, Any]]:
         return [
             Action().set_label("取消").set_action_type("cancel"),
             Action()

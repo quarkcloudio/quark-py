@@ -19,7 +19,7 @@ class CreateModal(Modal):
         self.destroy_on_close = True
         self.set_only_on_index(True)
 
-    def get_body(self, request: Request):
+    async def get_body(self, request: Request):
         return (
             Form()
             .set_style(
@@ -35,7 +35,7 @@ class CreateModal(Modal):
             .set_key("createModalForm", destroy=False)
         )
 
-    def get_actions(self, request: Request):
+    async def get_actions(self, request: Request):
         return [
             Action().set_label("取消").set_action_type("cancel"),
             Action()

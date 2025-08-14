@@ -7,6 +7,7 @@ from quark.template.action import Modal
 
 
 class EditModal(Modal):
+
     def __init__(self, name: str, api: str, init_api: str, fields: Any):
         self.name = name
         self.api = api

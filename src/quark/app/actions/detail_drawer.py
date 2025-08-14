@@ -5,6 +5,7 @@ from quark.template.action import Drawer
 
 
 class DetailDrawer(Drawer):
+
     def __init__(self, name: str, detail_component: Any):
         self.name = name
         self.detail_component = detail_component
@@ -19,5 +20,5 @@ class DetailDrawer(Drawer):
         # 这里通常 init 方法设置按钮样式等，已在构造函数完成
         return self
 
-    def get_body(self, request: Request) -> Any:
+    async def get_body(self, request: Request) -> Any:
         return self.detail_component

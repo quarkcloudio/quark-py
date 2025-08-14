@@ -1,11 +1,13 @@
 from typing import List
 
-from quark import Request
-from quark.component.message.message import Message
+from tortoise.models import QuerySet
+
+from quark import Message, Request
 from quark.template.action import Action
 
 
 class BatchDelete(Action):
+
     def __init__(self, name: str = "批量删除"):
         self.name = name
         self.type = "link"
@@ -19,9 +21,9 @@ class BatchDelete(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, request: Request, db_model):
+    async def handle(self, request: Request, query: QuerySet):
         try:
-            await db_model.all().delete()
+            await query.all().delete()
             return Message.success("操作成功")
         except Exception as e:
             return Message.error(str(e))

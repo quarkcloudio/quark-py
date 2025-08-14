@@ -1,11 +1,13 @@
 from typing import List
 
-from quark import Request
-from quark.component.message.message import Message
+from tortoise.models import QuerySet
+
+from quark import Message, Request
 from quark.template.action import Action
 
 
 class ChangeStatus(Action):
+
     def __init__(self, name: str = "<%= (status==1 ? '禁用' : '启用') %>"):
         self.name = name
         self.type = "link"
@@ -19,7 +21,7 @@ class ChangeStatus(Action):
     def get_api_params(self) -> List[str]:
         return ["id", "status"]
 
-    async def handle(self, request: Request, db_model):
+    async def handle(self, request: Request, query: QuerySet):
         status = request.query_params.get("status")
         if status is None:
             return Message.error("参数错误")
@@ -33,7 +35,7 @@ class ChangeStatus(Action):
                 return Message.error("缺少 ID 参数")
 
             ids = [int(i) for i in id_param.split(",")]
-            await db_model.filter(id__in=ids).update(status=field_status)
+            await query.filter(id__in=ids).update(status=field_status)
             return Message.success("操作成功")
         except Exception as e:
             return Message.error(str(e))

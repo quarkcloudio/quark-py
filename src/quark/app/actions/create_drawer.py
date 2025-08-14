@@ -7,6 +7,7 @@ from quark.template.action import Drawer
 
 
 class CreateDrawer(Drawer):
+
     def __init__(self, title: str, api: str, fields: Any, initial_values: dict):
         self.name = "创建" + title
         self.api = api
@@ -18,7 +19,7 @@ class CreateDrawer(Drawer):
         self.destroy_on_close = True
         self.set_only_on_index(True)
 
-    def get_body(self, request: Request):
+    async def get_body(self, request: Request):
         return (
             Form()
             .set_api(self.api)
@@ -29,7 +30,7 @@ class CreateDrawer(Drawer):
             .set_key("createDrawerForm", destroy=False)
         )
 
-    def get_actions(self, request: Request):
+    async def get_actions(self, request: Request):
         return [
             Action().set_label("取消").set_action_type("cancel"),
             Action()

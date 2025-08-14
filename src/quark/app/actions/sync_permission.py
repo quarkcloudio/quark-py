@@ -1,10 +1,10 @@
 import re
 
-from fastapi import Request
 from tortoise.exceptions import IntegrityError
+from tortoise.models import QuerySet
 from tortoise.transactions import in_transaction
 
-from quark.component.message.message import Message
+from quark import Message, Request
 from quark.models import Permission
 from quark.template.action import Action
 
@@ -23,7 +23,7 @@ class SyncPermission(Action):
     only_on_index = True
     action_type = "ajax"
 
-    async def handle(self, request: Request):
+    async def handle(self, request: Request, query: QuerySet):
         routes = request.app.routes  # 需要过滤对应路由
 
         # 从数据库查询所有权限名

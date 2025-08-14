@@ -1,5 +1,6 @@
-from quark import Request
-from quark.component.message.message import Message
+from tortoise.models import QuerySet
+
+from quark import Message, Request
 from quark.template.action import Action
 
 
@@ -7,5 +8,5 @@ class SelectOptions(Action):
     def __init__(self):
         pass
 
-    async def handle(self, request: Request, query) -> any:
+    async def handle(self, request: Request, query: QuerySet):
         return Message.success("操作成功")

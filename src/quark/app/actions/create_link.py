@@ -1,5 +1,4 @@
-from fastapi import Request
-
+from quark import Request
 from quark.template.action import Link
 
 
@@ -19,5 +18,5 @@ class CreateLink(Link):
         # 设置只在索引页显示
         self.set_only_on_index(True)
 
-    def get_href(self, request: Request) -> str:
+    async def get_href(self, request: Request) -> str:
         return "#/layout/index?api=" + request.url.path.replace("/index", "/create")

@@ -1,11 +1,13 @@
 from typing import List
 
-from quark import Request
-from quark.component.message.message import Message
+from tortoise.models import QuerySet
+
+from quark import Message, Request
 from quark.template.action import Action
 
 
 class BatchDisable(Action):
+
     def __init__(self, name: str = "批量禁用"):
         super().__init__()
         self.name = name
@@ -20,7 +22,7 @@ class BatchDisable(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, request: Request, db_model):
+    async def handle(self, request: Request, query: QuerySet):
         id_param = request.query_params.get("id")
         if not id_param:
             return Message.error("参数错误")
@@ -29,7 +31,7 @@ class BatchDisable(Action):
             ids = [int(i) for i in id_param.split(",")]
 
             # 更新 status 字段为 0
-            await db_model.filter(id__in=ids).update(status=0)
+            await query.filter(id__in=ids).update(status=0)
             return Message.success("操作成功")
         except Exception as e:
             return Message.error(str(e))

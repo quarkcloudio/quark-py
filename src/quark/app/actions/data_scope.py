@@ -1,16 +1,18 @@
 from typing import Any, Dict, List
 
-from quark import Request
+from tortoise.models import QuerySet
+
+from quark import Message, Request
 from quark.component.form import field
 from quark.component.form.fields.select import Option
 from quark.component.form.rule import Rule
-from quark.component.message.message import Message
 from quark.services.department import DepartmentService
 from quark.services.role import RoleService
 from quark.template.action import ModalForm
 
 
 class DataScope(ModalForm):
+
     def __init__(self, name="数据权限"):
         self.name = name
         self.type = "link"
@@ -19,7 +21,7 @@ class DataScope(ModalForm):
         self.set_only_on_index_table_row(True)
         self.set_api_params(["id", "name"])
 
-    def fields(self, request: Request) -> List[Any]:
+    async def fields(self, request: Request) -> List[Any]:
         departments = DepartmentService().get_list()
 
         return [
@@ -48,7 +50,7 @@ class DataScope(ModalForm):
             ),
         ]
 
-    def data(self, request: Request) -> Dict[str, Any]:
+    async def data(self, request: Request) -> Dict[str, Any]:
         id_str = request.query_params.get("id")
         if not id_str:
             return {}
@@ -72,7 +74,7 @@ class DataScope(ModalForm):
             "department_ids": dept_ids,
         }
 
-    async def handle(self, request: Request, db_model) -> Any:
+    async def handle(self, request: Request, query: QuerySet):
         form = await request.body()
 
         try:
