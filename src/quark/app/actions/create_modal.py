@@ -4,15 +4,14 @@ from quark import Request
 from quark.component.action.action import Action
 from quark.component.form.form import Form
 from quark.template.action import Modal
+from quark.template.resolves_fields import ResolvesFields
 
 
 class CreateModal(Modal):
 
-    def __init__(self, title: str, api: str, fields: Any, initial_data: dict):
-        self.name = "创建" + title
-        self.api = api
-        self.fields = fields
-        self.initial_data = initial_data
+    def __init__(self, resource: Any):
+        self.resource = resource
+        self.name = "创建" + resource.title
         self.type = "primary"
         self.icon = "plus-circle"
         self.reload = "table"
@@ -20,6 +19,13 @@ class CreateModal(Modal):
         self.set_only_on_index(True)
 
     async def get_body(self, request: Request):
+        api = await self.resource.creation_api(request)
+        fields = ResolvesFields(
+            request=request,
+            fields=await self.resource.fields(request),
+        ).creation_fields_within_components()
+        data = await self.resource.before_creating(request)
+
         return (
             Form()
             .set_style(
@@ -27,12 +33,12 @@ class CreateModal(Modal):
                     "paddingTop": "24px",
                 }
             )
-            .set_api(self.api)
-            .set_body(self.fields)
-            .set_initial_values(self.initial_data)
+            .set_api(api)
+            .set_body(fields)
+            .set_initial_values(data)
             .set_label_col({"span": 6})
             .set_wrapper_col({"span": 18})
-            .set_key("createModalForm", destroy=False)
+            .set_key("createModalForm", False)
         )
 
     async def get_actions(self, request: Request):
@@ -44,5 +50,5 @@ class CreateModal(Modal):
             .set_with_loading(True)
             .set_reload("table")
             .set_action_type("submit")
-            .set_type("primary", ghost=False),
+            .set_type("primary", False),
         ]

@@ -10,12 +10,13 @@ class Modal(Action):
     表示一个模态框组件，支持配置宽度和关闭时的行为。
     """
 
-    width: int = 520  # 弹出层宽度，默认值为 520
-    destroy_on_close: bool = False  # 关闭时销毁弹出层里的子元素，默认为 False
+    action_type: str = "modal"
 
-    def __init__(self):
-        self.action_type = "modal"
-        self.width = 520
+    # 弹出层宽度，默认值为 520
+    width: int = 520
+
+    # 关闭时销毁弹出层里的子元素，默认为 False
+    destroy_on_close: bool = False
 
     async def content(self, request: Request) -> Optional[Any]:
         """

@@ -10,14 +10,13 @@ class Drawer(Action):
     表示一个抽屉式弹窗组件，支持配置宽度和关闭时的行为。
     """
 
+    action_type: str = "drawer"
+
     # 抽屉弹出层宽度，默认值为 520
     width: int = 520
 
     # 关闭时销毁弹出层里的子元素，默认为 False
     destroy_on_close: bool = False
-
-    def __init__(self):
-        self.action_type = "drawer"
 
     async def content(self, request: Request) -> Optional[Any]:
         """

@@ -10,6 +10,8 @@ class DrawerForm(Action):
     表示一个抽屉式表单组件，支持配置宽度、按钮文案、API 类型等。
     """
 
+    action_type: str = "drawerForm"
+
     # 抽屉弹出层宽度，默认值为 520
     width: int = 520
 
@@ -28,9 +30,8 @@ class DrawerForm(Action):
     # 提交表单的数据是否打开新页面，只有在 GET 类型的时候有效，默认为 False
     target_blank: bool = False
 
-    def __init__(self):
-        self.action_type = "drawerForm"
-        self.reload = "table"
+    # 抽屉关闭时是否刷新表格数据，默认为 False
+    reload: Any = "table"
 
     async def fields(self, request: Request) -> List[Any]:
         """

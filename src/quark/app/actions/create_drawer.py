@@ -27,7 +27,7 @@ class CreateDrawer(Drawer):
             .set_initial_values(self.initial_values)
             .set_label_col({"span": 6})
             .set_wrapper_col({"span": 18})
-            .set_key("createDrawerForm", destroy=False)
+            .set_key("createDrawerForm", False)
         )
 
     async def get_actions(self, request: Request):
@@ -39,5 +39,5 @@ class CreateDrawer(Drawer):
             .set_with_loading(True)
             .set_reload("table")
             .set_action_type("submit")
-            .set_type("primary", ghost=False),
+            .set_type("primary", False),
         ]

@@ -42,7 +42,7 @@ class Permission(Resource):
         return [
             actions.CreateModal(self),
             actions.BatchDelete(),
-            actions.EditModal(),
+            actions.EditModal(self),
             actions.Delete(),
             actions.FormSubmit(),
             actions.FormReset(),

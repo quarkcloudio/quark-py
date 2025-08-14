@@ -10,6 +10,8 @@ class ModalForm(Action):
     表示一个模态框表单组件，支持配置宽度、按钮文案、API 类型等。
     """
 
+    action_type: str = "modalForm"
+
     # 弹出层宽度，默认值为 520
     width: int = 520
 
@@ -28,13 +30,8 @@ class ModalForm(Action):
     # 提交表单的数据是否打开新页面，只有在 GET 类型的时候有效，默认为 False
     target_blank: bool = False
 
-    def __init__(self):
-        self.action_type = "modalForm"
-        self.reload = "table"
-        self.cancel_text = "取消"
-        self.submit_text = "提交"
-        self.api_type = "POST"
-        self.target_blank = False
+    # 抽屉关闭时是否刷新表格数据，默认为 False
+    reload: Any = "table"
 
     async def fields(self, request: Request) -> List[Any]:
         """

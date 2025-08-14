@@ -125,7 +125,7 @@ class ActionRequest:
 
         return result
 
-    def values(self):
+    async def values(self):
         """
         获取行为对应的表单数据。
 
@@ -146,9 +146,10 @@ class ActionRequest:
                 for dropdown_action in dropdown_actioner.get_actions():
                     current_uri_key = dropdown_actioner.get_uri_key(dropdown_action)
                     if uri_key == current_uri_key:
-                        data = dropdown_action.data(self.request)
+                        data = await dropdown_action.data(self.request)
+
             else:
                 if uri_key == current_uri_key:
-                    data = action.data(self.request)
+                    data = await action.data(self.request)
 
         return Message.success("获取成功", data)

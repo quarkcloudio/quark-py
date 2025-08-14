@@ -4,35 +4,40 @@ from quark import Request
 from quark.component.action.action import Action
 from quark.component.form.form import Form
 from quark.template.action import Modal
+from quark.template.resolves_fields import ResolvesFields
 
 
 class EditModal(Modal):
 
-    def __init__(self, name: str, api: str, init_api: str, fields: Any):
-        self.name = name
-        self.api = api
-        self.init_api = init_api
-        self.fields = fields
+    def __init__(self, resource: Any):
+        self.resource = resource
+        self.name = "编辑" + resource.title
         self.type = "link"
         self.size = "small"
         self.destroy_on_close = True
         self.reload = "table"
         self.set_only_on_index_table_row(True)
 
-    def get_body(self, request: Request) -> Any:
-        form = (
+    async def get_body(self, request: Request) -> Any:
+        api = await self.resource.update_api(request)
+        init_api = await self.resource.edit_value_api(request)
+        fields = ResolvesFields(
+            request=request,
+            fields=await self.resource.fields(request),
+        ).update_fields_within_components()
+
+        return (
             Form()
             .set_style({"paddingTop": "24px"})
-            .set_api(self.api)
-            .set_init_api(self.init_api)
-            .set_body(self.fields)
+            .set_api(api)
+            .set_init_api(init_api)
+            .set_body(fields)
             .set_label_col({"span": 6})
             .set_wrapper_col({"span": 18})
             .set_key("editModalForm", False)
         )
-        return form
 
-    def get_actions(self, request: Request) -> List[Any]:
+    async def get_actions(self, request: Request) -> List[Any]:
         cancel = Action().set_label("取消").set_action_type("cancel")
 
         submit = (

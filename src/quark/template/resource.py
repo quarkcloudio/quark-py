@@ -285,7 +285,7 @@ class Resource(
         ).handle()
 
     async def action_render(self, request: Request) -> Any:
-        """表格行内编辑"""
+        """行为渲染"""
         return await ActionRequest(
             request=request,
             resource=self,
@@ -293,6 +293,16 @@ class Resource(
             actions=await self.actions(request),
             fields=await self.fields(request),
         ).handle()
+
+    async def action_values_render(self, request: Request) -> Any:
+        """行为值渲染"""
+        return await ActionRequest(
+            request=request,
+            resource=self,
+            query=await self.query(request),
+            actions=await self.actions(request),
+            fields=await self.fields(request),
+        ).values()
 
     async def detail_render(self, request: Request) -> Any:
         """详情页渲染"""
