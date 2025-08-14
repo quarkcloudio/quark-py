@@ -24,7 +24,9 @@ class SyncPermission(Action):
     action_type = "ajax"
 
     async def handle(self, request: Request, query: QuerySet):
-        routes = request.app.routes  # 需要过滤对应路由
+
+        # 需要过滤对应路由
+        routes = request.app.routes
 
         # 从数据库查询所有权限名
         existing_names = await Permission.all().values_list("name", flat=True)
@@ -33,7 +35,6 @@ class SyncPermission(Action):
         names_set = set(existing_names)
 
         for route in routes:
-            # route.path 和 route.methods 视框架结构而定，假设符合FastAPI标准
             path = getattr(route, "path", "")
             methods = getattr(route, "methods", [])
 
@@ -45,7 +46,6 @@ class SyncPermission(Action):
                 url = url.replace("/", "_") + "_" + method.lower()
 
                 name = pascal_case(url)
-
                 if name not in names_set and all(
                     p.name != name for p in new_permissions
                 ):
