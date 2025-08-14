@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from quark import Request, Resource, models
 from quark.app import actions, searches
-from quark.component.form import field
+from quark.component.form import Rule, field
 
 
 class Permission(Resource):
@@ -24,9 +24,30 @@ class Permission(Resource):
         """字段定义"""
         return [
             field.id("id", "ID"),
-            field.text("name", "名称"),
-            field.text("path", "路径"),
-            field.select("method", "方法"),
+            field.text("name", "名称").set_rules(
+                [
+                    Rule.required("名称必须填写"),
+                ]
+            ),
+            field.text("path", "路径").set_rules(
+                [
+                    Rule.required("路径必须填写"),
+                ]
+            ),
+            field.select("method", "方法")
+            .set_options(
+                [
+                    field.select_option("GET", "GET"),
+                    field.select_option("HEAD", "HEAD"),
+                    field.select_option("OPTIONS", "OPTIONS"),
+                    field.select_option("POST", "POST"),
+                    field.select_option("PUT", "PUT"),
+                    field.select_option("PATCH", "PATCH"),
+                    field.select_option("DELETE", "DELETE"),
+                ]
+            )
+            .set_filters(True)
+            .set_default_value("GET"),
             field.textarea("remark", "备注"),
         ]
 
