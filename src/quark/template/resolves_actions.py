@@ -134,13 +134,7 @@ class ResolvesActions:
             body = await item.get_body(self.request)
             actions = await item.get_actions(self.request)
 
-            form_component = (
-                Form()
-                .set_api(api)
-                .set_init_api(init_api)
-                .set_body(body)
-                .set_actions(actions)
-            )
+            form_component = Form().set_api(api).set_init_api(init_api).set_body(body)
             form_component.label_col = {"span": 6}
             form_component.wrapper_col = {"span": 18}
 
@@ -159,13 +153,7 @@ class ResolvesActions:
             body = await item.get_body(self.request)
             actions = await item.get_actions(self.request)
 
-            form_component = (
-                Form()
-                .set_api(api)
-                .set_init_api(init_api)
-                .set_body(body)
-                .set_actions(actions)
-            )
+            form_component = Form().set_api(api).set_init_api(init_api).set_body(body)
             form_component.label_col = {"span": 6}
             form_component.wrapper_col = {"span": 18}
 

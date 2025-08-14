@@ -1,7 +1,9 @@
-from pydantic import model_validator
 import json
-from ..component import Component
 from typing import Any, Dict, List, Optional
+
+from pydantic import model_validator
+
+from ..component import Component
 
 
 class Form(Component):
@@ -32,9 +34,9 @@ class Form(Component):
     target_blank: bool = False
     init_api: Optional[str] = None
     body: Any = None
-    actions: List[Any] = []
+    actions: List[Any] = None
     component_key: Optional[str] = None
-    style: Dict[str, Any] = {}
+    style: Dict[str, Any] = None
 
     @model_validator(mode="after")
     def init(self) -> "Form":
