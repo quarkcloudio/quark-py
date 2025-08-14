@@ -46,7 +46,7 @@ class Dropdown(Action):
         """获取下拉根元素的样式"""
         return self.overlay_style
 
-    def get_menu(self, request: Request) -> Menu:
+    async def get_menu(self, request: Request) -> Menu:
         """
         构建下拉菜单内容
         """
@@ -57,7 +57,7 @@ class Dropdown(Action):
 
         # 解析行为并构建菜单项
         for action in actions:
-            items.append(ResolvesActions(request).build_action(action))
+            items.append(await ResolvesActions(request).build_action(action))
 
         return Menu().set_items(items)
 

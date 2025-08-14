@@ -38,7 +38,7 @@ class ResourceCreate:
         """
         title = await self.form_title(request)
         actions = await self.actions(request)
-        form_extra_actions = ResolvesActions(
+        form_extra_actions = await ResolvesActions(
             request=request, actions=actions
         ).form_extra_actions()
         api = await self.creation_api(request)
@@ -46,7 +46,9 @@ class ResourceCreate:
             request=request,
             fields=await self.fields(request),
         ).creation_fields_within_components()
-        form_actions = ResolvesActions(request=request, actions=actions).form_actions()
+        form_actions = await ResolvesActions(
+            request=request, actions=actions
+        ).form_actions()
 
         return await self.form_component_render(
             request, title, form_extra_actions, api, fields, form_actions, data

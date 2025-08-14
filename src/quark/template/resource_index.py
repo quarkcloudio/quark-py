@@ -50,7 +50,7 @@ class ResourceIndex:
         列表页工具栏组件
         """
         actions = await self.actions(request)
-        index_table_actions = ResolvesActions(
+        index_table_actions = await ResolvesActions(
             request=request, actions=actions
         ).index_table_actions()
         index_table_title = await self.index_table_title(request)
@@ -96,7 +96,7 @@ class ResourceIndex:
         fields = await self.fields(request)
         actions = await self.actions(request)
         searches = await self.searches(request)
-        index_table_row_actions = ResolvesActions(
+        index_table_row_actions = await ResolvesActions(
             request=request, actions=actions
         ).index_table_row_actions()
         table_columns = ResolvesFields(
@@ -107,7 +107,7 @@ class ResourceIndex:
             table_action_column_title=self.table_action_column_title,
             table_action_column_width=self.table_action_column_width,
         ).index_table_columns()
-        index_table_alert_actions = ResolvesActions(
+        index_table_alert_actions = await ResolvesActions(
             request=request, actions=actions
         ).index_table_alert_actions()
         index_searches = ResolvesSearches(

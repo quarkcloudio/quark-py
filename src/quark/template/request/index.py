@@ -113,7 +113,7 @@ class IndexRequest:
         )
 
         # 解析列表数据
-        parsed_items = self.performs_list(results)
+        parsed_items = await self.performs_list(results)
 
         # 构建返回数据
         data = {
@@ -150,7 +150,7 @@ class IndexRequest:
             pass
         return orderings
 
-    def performs_list(self, items):
+    async def performs_list(self, items):
         """
         处理列表字段
         """
@@ -173,9 +173,7 @@ class IndexRequest:
                     rendered_actions = []
                     for action in action_items:
                         rendered_actions.append(
-                            ResolvesActions()
-                            .set_request(self.request)
-                            .build_action(action)
+                            await ResolvesActions(self.request).build_action(action)
                         )
 
                     fields[name] = rendered_actions

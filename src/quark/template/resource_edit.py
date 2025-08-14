@@ -41,7 +41,7 @@ class ResourceEdit:
         """
         title = await self.form_title(request)
         actions = await self.actions(request)
-        form_extra_actions = ResolvesActions(
+        form_extra_actions = await ResolvesActions(
             request=request, actions=actions
         ).form_extra_actions()
         api = await self.update_api(request)
@@ -49,7 +49,10 @@ class ResourceEdit:
             request=request,
             fields=await self.fields(request),
         ).update_fields_within_components()
-        form_actions = ResolvesActions(request=request, actions=actions).form_actions()
+        form_actions = await ResolvesActions(
+            request=request, actions=actions
+        ).form_actions()
+
         return await self.form_component_render(
             request, title, form_extra_actions, api, fields, form_actions, data
         )

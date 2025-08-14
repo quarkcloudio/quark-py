@@ -67,7 +67,7 @@ class DetailRequest:
                 parsed_items = []
                 for action in items:
                     parsed_items.append(
-                        ResolvesActions(self.request).build_action(action)
+                        await ResolvesActions(self.request).build_action(action)
                     )
 
                 fields[name] = parsed_items

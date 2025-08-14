@@ -20,69 +20,70 @@ class ResolvesActions:
         self.request = request
         self.actions = actions
 
-    def index_table_actions(self) -> List[Any]:
+    async def index_table_actions(self) -> List[Any]:
         """获取列表页顶部工具栏中的动作"""
         items = []
         for action in self.actions:
             if action.shown_on_index():
-                items.append(self.build_action(action))
+                items.append(await self.build_action(action))
 
         return self._wrap_in_space(items)
 
-    def index_table_row_actions(self) -> List[Any]:
+    async def index_table_row_actions(self) -> List[Any]:
         """获取列表页行内动作"""
         items = []
         for action in self.actions:
             if action.shown_on_index_table_row():
-                items.append(self.build_action(action))
+                items.append(await self.build_action(action))
+
         return items
 
-    def index_table_alert_actions(self) -> List[Any]:
+    async def index_table_alert_actions(self) -> List[Any]:
         """获取多选弹出层动作"""
         items = []
         for action in self.actions:
             if action.shown_on_index_table_alert():
-                items.append(self.build_action(action))
+                items.append(await self.build_action(action))
 
         return items
 
-    def form_actions(self) -> List[Any]:
+    async def form_actions(self) -> List[Any]:
         """获取表单页动作"""
         items = []
         for action in self.actions:
             if action.shown_on_form():
-                items.append(self.build_action(action))
+                items.append(await self.build_action(action))
 
         return items
 
-    def form_extra_actions(self) -> List[Any]:
+    async def form_extra_actions(self) -> List[Any]:
         """表单页右上角自定义区域行为"""
         items = []
         for action in self.actions:
             if action.shown_on_form_extra():
-                items.append(self.build_action(action))
+                items.append(await self.build_action(action))
 
         return items
 
-    def detail_actions(self) -> List[Any]:
+    async def detail_actions(self) -> List[Any]:
         """获取详情页动作"""
         items = []
         for action in self.actions:
             if action.shown_on_detail():
-                items.append(self.build_action(action))
+                items.append(await self.build_action(action))
 
         return items
 
-    def detail_extra_actions(self) -> List[Any]:
+    async def detail_extra_actions(self) -> List[Any]:
         """详情页右上角自定义区域行为"""
         items = []
         for action in self.actions:
             if action.shown_on_detail_extra():
-                items.append(self.build_action(action))
+                items.append(await self.build_action(action))
 
         return items
 
-    def build_action(self, item) -> Any:
+    async def build_action(self, item) -> Any:
         """构建行为组件（支持 link/modal/drawer/dropdown/switch 等）"""
         name = item.get_name()
         with_loading = item.get_with_loading()
@@ -122,16 +123,16 @@ class ResolvesActions:
 
         # 特定行为类型渲染
         if action_type == "link":
-            href = item.get_href(self.request)
-            target = item.get_target(self.request)
+            href = await item.get_href(self.request)
+            target = await item.get_target(self.request)
             action_component.set_link(href, target)
 
         elif action_type == "modal":
             init_api = self.build_init_api(params, uri_key)
             width = item.get_width()
             destroy_on_close = item.get_destroy_on_close()
-            body = item.get_body()
-            actions = item.get_actions()
+            body = await item.get_body(self.request)
+            actions = await item.get_actions(self.request)
 
             form_component = (
                 Form()
@@ -155,8 +156,8 @@ class ResolvesActions:
             init_api = self.build_init_api(params, uri_key)
             width = item.get_width()
             destroy_on_close = item.get_destroy_on_close()
-            body = item.get_body()
-            actions = item.get_actions()
+            body = await item.get_body(self.request)
+            actions = await item.get_actions(self.request)
 
             form_component = (
                 Form()
@@ -177,7 +178,7 @@ class ResolvesActions:
             )
 
         elif action_type == "dropdown":
-            overlay = item.get_menu(self.request)
+            overlay = await item.get_menu(self.request)
             overlay_style = item.get_overlay_style()
             placement = item.get_placement()
             trigger = item.get_trigger()

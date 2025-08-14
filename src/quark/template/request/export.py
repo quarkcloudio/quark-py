@@ -116,7 +116,7 @@ class ExportRequest:
             headers=headers,
         )
 
-    def query_data(self):
+    async def query_data(self):
         """
         查询数据
         """
@@ -140,9 +140,9 @@ class ExportRequest:
 
         result = query.all()
 
-        return self.performs_list(result)
+        return await self.performs_list(result)
 
-    def performs_list(self, items):
+    async def performs_list(self, items):
         """
         处理列表字段
         """
@@ -165,9 +165,7 @@ class ExportRequest:
                     rendered_actions = []
                     for action in action_items:
                         rendered_actions.append(
-                            ResolvesActions()
-                            .set_request(self.request)
-                            .build_action(action)
+                            await ResolvesActions(self.request).build_action(action)
                         )
 
                     fields[name] = rendered_actions

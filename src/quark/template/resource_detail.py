@@ -35,11 +35,11 @@ class ResourceDetail:
         """
         title = await self.detail_title(request)
         actions = await self.actions(request)
-        detail_extra_actions = ResolvesActions(
+        detail_extra_actions = await ResolvesActions(
             request=request, actions=actions
         ).detail_extra_actions()
 
-        detail_actions = ResolvesActions(
+        detail_actions = await ResolvesActions(
             request=request, actions=actions
         ).detail_actions()
 
