@@ -264,6 +264,15 @@ class Resource(
             request, await self.update_component_render(request, data)
         )
 
+    async def edit_values_render(self, request: Request) -> Any:
+        query = await self.query(request)
+
+        fields = ResolvesFields(request, await self.fields(request)).update_fields()
+
+        return await EditRequest(
+            request=request, resource=self, query=query, fields=fields
+        ).values()
+
     async def save_render(self, request: Request) -> Any:
         """更新方法"""
         fields = ResolvesFields(

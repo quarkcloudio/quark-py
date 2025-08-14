@@ -11,7 +11,7 @@ class EditModal(Modal):
 
     def __init__(self, resource: Any):
         self.resource = resource
-        self.name = "编辑" + resource.title
+        self.name = "编辑"
         self.type = "link"
         self.size = "small"
         self.destroy_on_close = True

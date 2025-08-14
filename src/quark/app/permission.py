@@ -61,6 +61,7 @@ class Permission(Resource):
     async def actions(self, request: Request) -> List[Dict]:
         """行为定义"""
         return [
+            actions.SyncPermission(),
             actions.CreateModal(self),
             actions.BatchDelete(),
             actions.EditModal(self),
