@@ -1,8 +1,10 @@
-from fastapi import Request
 from typing import Any
+
 from tortoise.models import QuerySet
+
+from quark import Message, Request
+
 from ..performs_queries import PerformsQueries
-from ...component.message.message import Message
 
 
 class EditableRequest:

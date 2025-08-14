@@ -1,7 +1,9 @@
-from fastapi import Request
 from typing import Any, Optional
-from ..component.table.search import Search as TableSearch
+
+from quark import Request
+
 from ..component.form import field
+from ..component.table.search import Search as TableSearch
 
 
 class ResolvesSearches:

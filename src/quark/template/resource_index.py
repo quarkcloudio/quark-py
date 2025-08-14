@@ -1,9 +1,11 @@
-from typing import Any, List, Dict
-from fastapi import Request
-from .resolves_fields import ResolvesFields
-from .resolves_actions import ResolvesActions
-from .resolves_searches import ResolvesSearches
+from typing import Any, Dict, List
+
+from quark import Request
+
 from ..utils import list_to_tree
+from .resolves_actions import ResolvesActions
+from .resolves_fields import ResolvesFields
+from .resolves_searches import ResolvesSearches
 
 
 class ResourceIndex:

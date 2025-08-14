@@ -1,8 +1,9 @@
 from typing import Any, Dict, List, Optional
 
-from fastapi import Request
 from pydantic import BaseModel, Field
 from tortoise.models import Model, QuerySet
+
+from quark import Request
 
 from ..component.form.form import Form
 from ..component.pagecontainer.pagecontainer import PageContainer

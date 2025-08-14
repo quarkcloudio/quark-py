@@ -1,10 +1,10 @@
 import json
 from typing import Any, Dict
 
-from fastapi import Request
 from tortoise.models import Model
 
-from ...component.message.message import Message
+from quark import Message, Request
+
 from ..performs_validation import PerformsValidation
 
 

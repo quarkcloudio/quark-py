@@ -1,5 +1,7 @@
 from typing import List
 
+from tortoise.models import QuerySet
+
 from quark import Message, Request
 from quark.template.action import Action
 
@@ -19,7 +21,7 @@ class BatchDeleteRole(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, request: Request, db_model):
+    async def handle(self, request: Request, query: QuerySet):
         id_param = request.query_params.get("id")
 
         if not id_param:
@@ -30,7 +32,7 @@ class BatchDeleteRole(Action):
             id_list = [int(i) for i in ids]
 
             # 删除角色
-            await db_model.filter(id__in=id_list).delete()
+            await query.filter(id__in=id_list).delete()
 
             # 清理 casbin 权限
             # casbin_service = CasbinService()

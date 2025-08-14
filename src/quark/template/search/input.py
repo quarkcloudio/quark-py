@@ -1,7 +1,10 @@
 from typing import Any
-from .search import Search
-from fastapi import Request
+
 from tortoise.models import Model
+
+from quark import Request
+
+from .search import Search
 
 
 class Input(Search):

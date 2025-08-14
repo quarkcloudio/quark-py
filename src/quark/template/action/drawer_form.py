@@ -1,6 +1,8 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
+from quark import Request
+
 from .action import Action
-from fastapi import Request
 
 
 class DrawerForm(Action):
@@ -30,13 +32,13 @@ class DrawerForm(Action):
         self.action_type = "drawerForm"
         self.reload = "table"
 
-    def fields(self, request: Request) -> List[Any]:
+    async def fields(self, request: Request) -> List[Any]:
         """
         表单字段定义
         """
         return []
 
-    def data(self, request: Request) -> Dict[str, Any]:
+    async def data(self, request: Request) -> Dict[str, Any]:
         """
         异步获取表单数据
         """

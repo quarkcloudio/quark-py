@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from fastapi import Request
+from quark import Request
 
 from ..component.card.card import Card
 from ..component.form.form import Form

@@ -1,8 +1,10 @@
-from typing import List, Dict, Any
-from .action import Action
-from fastapi import Request
+from typing import Any, Dict, List
+
+from quark import Request
+
 from ...component.menu.menu import Menu
 from ..resolves_actions import ResolvesActions
+from .action import Action
 
 
 class Dropdown(Action):

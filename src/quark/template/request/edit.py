@@ -1,10 +1,12 @@
 import json
-from fastapi import Request
-from typing import Dict, Any, Optional
-from tortoise.queryset import QuerySet
 from datetime import datetime
+from typing import Any, Dict, Optional
+
+from tortoise.queryset import QuerySet
+
+from quark import Message, Request
+
 from ..performs_queries import PerformsQueries
-from ...component.message.message import Message
 
 
 class EditRequest:

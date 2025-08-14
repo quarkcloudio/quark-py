@@ -1,7 +1,9 @@
 from typing import Any, List, Optional
-from .search import Search
+
+from quark import Request
+
 from ...component.form.fields.cascader import Option
-from fastapi import Request
+from .search import Search
 
 
 class Cascader(Search):

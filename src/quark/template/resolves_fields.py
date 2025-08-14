@@ -1,8 +1,10 @@
-from fastapi import Request
-from typing import Any, List, Dict, Optional
-from ..component.table.column import Column as ColumnComponent
+from typing import Any, Dict, List, Optional
+
+from quark import Request
+
 from ..component.descriptions.descriptions import Descriptions as DescriptionsComponent
 from ..component.table.column import Column
+from ..component.table.column import Column as ColumnComponent
 
 
 class ResolvesFields:

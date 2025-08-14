@@ -1,12 +1,10 @@
 from typing import Any, Dict, List
 
-from fastapi import Request
 from pydantic import BaseModel, Field
 
+from quark import Message, Request
 from quark.schemas import FileInfo, MinioConfig, OSSConfig
 from quark.storage import Storage
-
-from ..component.message.message import Message
 
 
 class Upload(BaseModel):

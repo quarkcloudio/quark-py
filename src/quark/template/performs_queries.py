@@ -1,8 +1,10 @@
 import json
-from fastapi import Request
 from typing import Optional
-from tortoise.models import QuerySet
+
 from tortoise.expressions import Q
+from tortoise.models import QuerySet
+
+from quark import Request
 
 
 class PerformsQueries:

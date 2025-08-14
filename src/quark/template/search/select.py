@@ -1,6 +1,7 @@
 from quark import Request
+
+from ...component.form.fields.select import Option
 from .search import Search
-from quark.component.form.fields.select import Option
 
 
 class Select(Search):

@@ -1,9 +1,12 @@
 import json
-from fastapi import Request
+
 from tortoise.models import QuerySet
+
+from quark import Request
+
+from ...services.attachment import AttachmentService
 from ..performs_queries import PerformsQueries
 from ..resolves_actions import ResolvesActions
-from ...services.attachment import AttachmentService
 
 
 class IndexRequest:

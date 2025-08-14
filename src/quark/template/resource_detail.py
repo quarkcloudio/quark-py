@@ -1,10 +1,12 @@
 from typing import Any, Dict, List
-from fastapi import Request
-from ..component.tabs.tabs import Tabs
+
+from quark import Request
+
 from ..component.card.card import Card
-from .resolves_fields import ResolvesFields
-from .resolves_actions import ResolvesActions
+from ..component.tabs.tabs import Tabs
 from ..utils import replace_last
+from .resolves_actions import ResolvesActions
+from .resolves_fields import ResolvesFields
 
 
 class ResourceDetail:

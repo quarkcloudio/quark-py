@@ -1,8 +1,10 @@
 from typing import Any, Dict
-from fastapi import Request
-from .resolves_fields import ResolvesFields
-from .resolves_actions import ResolvesActions
+
+from quark import Request
+
 from ..utils import replace_last
+from .resolves_actions import ResolvesActions
+from .resolves_fields import ResolvesFields
 
 
 class ResourceCreate:

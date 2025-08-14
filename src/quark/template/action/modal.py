@@ -1,6 +1,8 @@
-from typing import List, Dict, Any, Optional
-from .action import Action
+from typing import Any, Dict, List, Optional
+
 from fastapi import Request
+
+from .action import Action
 
 
 class Modal(Action):
@@ -15,13 +17,13 @@ class Modal(Action):
         self.action_type = "modal"
         self.width = 520
 
-    def content(self, request: Request) -> Optional[Any]:
+    async def content(self, request: Request) -> Optional[Any]:
         """
         获取模态框内容，可以是任意类型的数据
         """
         return None
 
-    def data(self, request: Request) -> Dict[str, Any]:
+    async def data(self, request: Request) -> Dict[str, Any]:
         """
         异步获取数据
         """
@@ -35,11 +37,11 @@ class Modal(Action):
         """关闭时销毁 Modal 里的子元素"""
         return self.destroy_on_close
 
-    def get_body(self, request: Request) -> Optional[Any]:
+    async def get_body(self, request: Request) -> Optional[Any]:
         """获取弹窗主体内容"""
-        return self.content(request)
+        return await self.content(request)
 
-    def get_actions(self, request: Request) -> List[Any]:
+    async def get_actions(self, request: Request) -> List[Any]:
         """
         获取弹窗行为按钮列表
         """

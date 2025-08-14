@@ -1,6 +1,8 @@
 from typing import Any, List
-from fastapi import Request
+
 from tortoise.models import Model
+
+from quark import Request
 
 
 class Action:
@@ -80,7 +82,7 @@ class Action:
     # 在详情页扩展栏展示
     show_on_detail_extra: bool = False
 
-    def handle(self, request: Request, query: Model) -> str:
+    async def handle(self, request: Request, query: Model) -> str:
         """执行行为句柄"""
         raise NotImplementedError("method not implemented")
 

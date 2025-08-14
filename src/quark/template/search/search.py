@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
-from tortoise.models import Model
+
 from fastapi import Request
+from tortoise.models import Model
 
 
 class Search:

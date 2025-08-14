@@ -1,17 +1,18 @@
-from typing import Any, Optional
-import uuid
 import random
 import string
+import uuid
 from io import BytesIO
+from typing import Any, Optional
+
 from captcha.image import ImageCaptcha
-from fastapi.responses import StreamingResponse
-from fastapi import Request
 from pydantic import BaseModel, Field
-from ..component.message.message import Message
-from ..component.divider.divider import Divider
-from ..component.tabs.tabs import Tabs
-from ..component.login.login import Login as LoginComponent
+
+from quark import Message, Request, StreamingResponse
+
 from .. import cache
+from ..component.divider.divider import Divider
+from ..component.login.login import Login as LoginComponent
+from ..component.tabs.tabs import Tabs
 
 
 class Login(BaseModel):
