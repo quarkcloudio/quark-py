@@ -1,8 +1,9 @@
-import os
-import inflection
 import importlib
-from . import Request
-from . import config
+import os
+
+import inflection
+
+from . import Request, config
 
 
 def load_class(file_path, class_name):
@@ -28,40 +29,6 @@ def load_method(file_path, class_name, method_name, *args, **kwargs):
     obj = load_object(file_path, class_name)
     method = getattr(obj, method_name)
     return method(*args, **kwargs)
-
-
-def load_resource(resource: str, class_type: str):
-    """从应用程序目录或quark包加载资源类对象"""
-    app_class = None
-
-    #  遍历应用目录下的所有类
-    app_classes = get_classes_in_package(config.get("MODULE_PATH"))
-
-    # 遍历quark包目录下的所有类
-    quark_package_classes = get_classes_in_package(
-        os.path.join(os.path.dirname(__file__), "app")
-    )
-
-    # 查找指定类名的类
-    for getclass in app_classes:
-        if (
-            getclass.__name__ == inflection.camelize(resource)
-            and getclass.__bases__[0].__name__ == class_type
-        ):
-            app_class = getclass
-
-    if app_class is not None:
-        return app_class
-
-    # 查找指定类名的类
-    for getclass in quark_package_classes:
-        if (
-            getclass.__name__ == inflection.camelize(resource)
-            and getclass.__bases__[0].__name__ == class_type
-        ):
-            app_class = getclass
-
-    return app_class
 
 
 def get_classes_in_package(package_path):
@@ -99,6 +66,65 @@ def get_classes_in_package(package_path):
                         classes.append(attr)
 
     return classes
+
+
+def load_resource_classes(class_type: str):
+    """从应用程序目录或quark包加载资源类"""
+    get_classes = []
+
+    #  遍历应用目录下的所有类
+    app_classes = get_classes_in_package(config.get("MODULE_PATH"))
+
+    # 遍历quark包目录下的所有类
+    quark_package_classes = get_classes_in_package(
+        os.path.join(os.path.dirname(__file__), "app")
+    )
+
+    # 查找指定类名的类
+    for getclass in app_classes:
+        if getclass.__bases__[0].__name__ == class_type:
+            get_classes.append(getclass)
+
+    # 查找指定类名的类
+    for getclass in quark_package_classes:
+        if getclass.__bases__[0].__name__ == class_type:
+            get_classes.append(getclass)
+
+    return get_classes
+
+
+def load_resource(resource: str, class_type: str):
+    """从应用程序目录或quark包加载资源类对象"""
+    app_class = None
+
+    #  遍历应用目录下的所有类
+    app_classes = get_classes_in_package(config.get("MODULE_PATH"))
+
+    # 遍历quark包目录下的所有类
+    quark_package_classes = get_classes_in_package(
+        os.path.join(os.path.dirname(__file__), "app")
+    )
+
+    # 查找指定类名的类
+    for getclass in app_classes:
+        if (
+            getclass.__name__ == inflection.camelize(resource)
+            and getclass.__bases__[0].__name__ == class_type
+        ):
+            app_class = getclass
+
+    if app_class is not None:
+        return app_class
+
+    # 查找指定类名的类
+    for getclass in quark_package_classes:
+        if (
+            getclass.__name__ == inflection.camelize(resource)
+            and getclass.__bases__[0].__name__ == class_type
+        ):
+            app_class = getclass
+
+    return app_class
 
 
 async def load_resource_object(

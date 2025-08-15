@@ -1,4 +1,5 @@
-from quark import APIRouter, Request, JSONResponse, jsonable_encoder
+from quark import APIRouter, JSONResponse, Request, jsonable_encoder
+
 from .. import loader
 
 router = APIRouter(prefix="/api/admin", tags=["后台增、删、改、查"])

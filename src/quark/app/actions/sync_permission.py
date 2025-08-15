@@ -1,19 +1,43 @@
 import re
 
+import inflection
 from tortoise.exceptions import IntegrityError
 from tortoise.models import QuerySet
 from tortoise.transactions import in_transaction
 
 from quark import Message, Request
+from quark.loader import load_resource_classes
 from quark.models import Permission
 from quark.template.action import Action
 
 
 # 辅助函数：PascalCase转换
-def pascal_case(s: str) -> str:
+def pascal_case(path: str, method: str) -> str:
+    s = path.replace("/api/admin/", "").replace("/", "_") + "_" + method.lower()
     # 简单实现，将下划线分隔转成PascalCase
     parts = re.split(r"[^a-zA-Z0-9]", s)
     return "".join(word.capitalize() for word in parts if word)
+
+
+def paser_routes(routes: list, class_type: str) -> list:
+    new_permissions = []
+    classes = load_resource_classes(class_type)
+    for get_class in classes:
+        for route in routes:
+            path = route["path"].replace(
+                "{resource}",
+                inflection.camelize(get_class.__name__.lower(), False),
+            )
+            name = pascal_case(path, route["method"])
+            new_permissions.append(
+                Permission(
+                    name=name,
+                    method=route["method"],
+                    path=path,
+                    guard_name="admin",
+                )
+            )
+    return new_permissions
 
 
 class SyncPermission(Action):
@@ -41,19 +65,273 @@ class SyncPermission(Action):
             if not path.startswith("/api/admin"):
                 continue
 
-            for method in methods:
-                url = path.replace("/api/admin/", "")
-                url = url.replace("/", "_") + "_" + method.lower()
-
-                name = pascal_case(url)
-                if name not in names_set and all(
-                    p.name != name for p in new_permissions
-                ):
-                    new_permissions.append(
-                        Permission(
-                            name=name, method=method, path=path, guard_name="admin"
+            if path not in [
+                "/api/admin/dashboard/{resource}/index",
+                "/api/admin/layout/{resource}/index",
+                "/api/admin/login/{resource}/index",
+                "/api/admin/login/{resource}/captchaId",
+                "/api/admin/login/{resource}/captcha/{id}",
+                "/api/admin/login/{resource}/handle",
+                "/api/admin/logout/{resource}/handle",
+                "/api/admin/{resource}/index",
+                "/api/admin/{resource}/editable",
+                "/api/admin/{resource}/create",
+                "/api/admin/{resource}/store",
+                "/api/admin/{resource}/edit",
+                "/api/admin/{resource}/edit/values",
+                "/api/admin/{resource}/save",
+                "/api/admin/{resource}/import",
+                "/api/admin/{resource}/export",
+                "/api/admin/{resource}/detail",
+                "/api/admin/{resource}/detail/values",
+                "/api/admin/{resource}/import/template",
+                "/api/admin/{resource}/form",
+                "/api/admin/{resource}/action/{uriKey}",
+                "/api/admin/{resource}/action/{uriKey}/values",
+                "/api/admin/upload/{resource}/getList",
+                "/api/admin/upload/{resource}/delete",
+                "/api/admin/upload/{resource}/crop",
+                "/api/admin/upload/{resource}/handle",
+                "/api/admin/upload/{resource}/base64Handle",
+            ]:
+                for method in methods:
+                    name = pascal_case(path, method)
+                    if name not in names_set and all(
+                        p.name != name for p in new_permissions
+                    ):
+                        new_permissions.append(
+                            Permission(
+                                name=name,
+                                method=method,
+                                path=path,
+                                guard_name="admin",
+                            )
                         )
+
+        # 仪表盘
+        classes = load_resource_classes("Dashboard")
+        for get_class in classes:
+            path = "/api/admin/dashboard/{resource}/index"
+            method = "get"
+            path = path.replace(
+                "{resource}",
+                inflection.camelize(get_class.__name__.lower(), False),
+            )
+            name = pascal_case(path, method)
+            if name not in names_set and all(p.name != name for p in new_permissions):
+                new_permissions.append(
+                    Permission(
+                        name=name,
+                        method=method,
+                        path=path,
+                        guard_name="admin",
                     )
+                )
+
+        # 布局
+        classes = load_resource_classes("Layout")
+        path = "/api/admin/layout/{resource}/index"
+        method = "get"
+        for get_class in classes:
+            path = path.replace(
+                "{resource}",
+                inflection.camelize(get_class.__name__.lower(), False),
+            )
+            name = pascal_case(path, method)
+            if name not in names_set and all(p.name != name for p in new_permissions):
+                new_permissions.append(
+                    Permission(
+                        name=name,
+                        method=method,
+                        path=path,
+                        guard_name="admin",
+                    )
+                )
+
+        # 登录
+        login_routes = [
+            {
+                "path": "/api/admin/login/{resource}/index",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/login/{resource}/captchaId",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/login/{resource}/captcha/{id}",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/login/{resource}/handle",
+                "method": "post",
+            },
+            {
+                "path": "/api/admin/logout/{resource}/handle",
+                "method": "get",
+            },
+        ]
+
+        new_permissions += paser_routes(login_routes, "Login")
+
+        # 资源
+        resource_routes = [
+            {
+                "path": "/api/admin/{resource}/index",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/editable",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/create",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/store",
+                "method": "post",
+            },
+            {
+                "path": "/api/admin/{resource}/edit",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/edit/values",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/save",
+                "method": "post",
+            },
+            {
+                "path": "/api/admin/{resource}/import",
+                "method": "post",
+            },
+            {
+                "path": "/api/admin/{resource}/export",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/detail",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/detail/values",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/import/template",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/form",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/action/{uriKey}",
+                "method": "get",
+            },
+        ]
+        new_permissions += paser_routes(resource_routes, "Resource")
+
+        # 上传
+        upload_routes = [
+            {
+                "path": "/api/admin/upload/{resource}/getList",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/upload/{resource}/delete",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/upload/{resource}/delete",
+                "method": "post",
+            },
+            {
+                "path": "/api/admin/upload/{resource}/crop",
+                "method": "post",
+            },
+            {
+                "path": "/api/admin/upload/{resource}/handle",
+                "method": "post",
+            },
+            {
+                "path": "/api/admin/upload/{resource}/base64Handle",
+                "method": "post",
+            },
+        ]
+        new_permissions += paser_routes(upload_routes, "Upload")
+
+        # 资源行为
+        action_routes = [
+            {
+                "path": "/api/admin/{resource}/action/{uriKey}",
+                "method": "get",
+            },
+            {
+                "path": "/api/admin/{resource}/action/{uriKey}/values",
+                "method": "get",
+            },
+        ]
+        classes = load_resource_classes("Resource")
+        for get_class in classes:
+            object = await get_class().init(request)
+            actions = await object.actions(request)
+            for action in actions:
+                uri_key = action.get_uri_key(action)
+                action_type = action.get_action_type()
+                if action_type == "dropdown":
+                    for dropdown_action in action.get_actions():
+                        current_uri_key = action.get_uri_key(dropdown_action)
+                        for action_route in action_routes:
+                            path = action_route["path"]
+                            method = action_route["method"]
+                            path = path.replace(
+                                "{uriKey}",
+                                current_uri_key,
+                            )
+                            path = path.replace(
+                                "{resource}",
+                                inflection.camelize(get_class.__name__.lower(), False),
+                            )
+                            name = pascal_case(path, method)
+                            if name not in names_set and all(
+                                p.name != name for p in new_permissions
+                            ):
+                                new_permissions.append(
+                                    Permission(
+                                        name=name,
+                                        method=method,
+                                        path=path,
+                                        guard_name="admin",
+                                    )
+                                )
+                else:
+                    for action_route in action_routes:
+                        path = action_route["path"]
+                        method = action_route["method"]
+                        path = path.replace(
+                            "{uriKey}",
+                            uri_key,
+                        )
+                        path = path.replace(
+                            "{resource}",
+                            inflection.camelize(get_class.__name__.lower(), False),
+                        )
+                        name = pascal_case(path, method)
+                        if name not in names_set and all(
+                            p.name != name for p in new_permissions
+                        ):
+                            new_permissions.append(
+                                Permission(
+                                    name=name,
+                                    method=method,
+                                    path=path,
+                                    guard_name="admin",
+                                )
+                            )
 
         if not new_permissions:
             return Message.error("无新增权限")
