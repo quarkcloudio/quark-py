@@ -1,8 +1,9 @@
 from typing import Dict, List
 
-from quark import Request, Resource, models
+from quark import Request, Resource, models, services
 from quark.app import actions, searches
 from quark.component.form import field
+from quark.component.form.rule import Rule
 
 
 class Role(Resource):
@@ -24,17 +25,40 @@ class Role(Resource):
         """字段定义"""
         return [
             field.id("id", "ID"),
-            field.text("name", "名称"),
-            field.text("path", "路径"),
-            field.select("method", "方法"),
-            field.textarea("remark", "备注"),
+            field.text("name", "名称")
+            .set_rules(
+                [
+                    Rule.required("名称必须填写"),
+                ]
+            )
+            .set_creation_rules(
+                [
+                    Rule.unique("roles", "name", "名称已存在"),
+                ]
+            )
+            .set_update_rules(
+                [
+                    Rule.unique("roles", "name", "{id}", "名称已存在"),
+                ]
+            ),
+            field.text("guard_name", "守卫名称").set_default_value("admin"),
+            field.tree("menu_ids", "权限")
+            .set_tree_data(await services.MenuService().get_list(), "pid", "id", "name")
+            .only_on_forms(),
+            field.datetime("created_at", "创建时间").only_on_index(),
+            field.datetime("updated_at", "更新时间").only_on_index(),
+            field.switch("status", "状态")
+            .set_editable(True)
+            .set_true_value("正常")
+            .set_false_value("禁用")
+            .set_default_value(True),
         ]
 
     async def searches(self, request: Request) -> List[Dict]:
         """搜索项定义"""
         return [
             searches.Input("name", "名称"),
-            searches.Input("path", "路径"),
+            searches.Input("guard_name", "守卫名称"),
         ]
 
     async def actions(self, request: Request) -> List[Dict]:
