@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 from .base import Base
 
 
@@ -34,13 +35,13 @@ class TreeData(Base):
         children (List['TreeData']): 子节点。
     """
 
-    checkable: bool = False
-    disable_checkbox: bool = False
-    disabled: bool = False
+    checkable: bool = None
+    disable_checkbox: bool = None
+    disabled: bool = None
     icon: Optional[Any] = None
-    is_leaf: bool = False
+    is_leaf: bool = None
     key: Any
-    selectable: bool = True
+    selectable: bool = None
     title: str
     children: List["TreeData"] = []
 
