@@ -35,10 +35,10 @@ class Department(Resource):
     async def fields(self, request: Request) -> List[Dict]:
         """字段定义"""
         return [
-            field.id("id", "ID"),
+            field.hidden("id", "ID"),
             field.hidden("pid", "父级ID").only_on_index(),
             field.text("name", "名称"),
-            field.number("sort", "排序").set_default_value(0),
+            field.number("sort", "排序").set_editable(True).set_default_value(0),
             field.switch("status", "状态")
             .set_editable(True)
             .set_true_value("正常")
@@ -56,12 +56,10 @@ class Department(Resource):
     async def actions(self, request: Request) -> List[Dict]:
         """行为定义"""
         return [
-            actions.CreateLink(self.title),
+            actions.CreateModal(self),
             actions.BatchDelete(),
-            actions.EditLink(),
-            actions.Delete(),
-            actions.FormSubmit(),
-            actions.FormReset(),
-            actions.FormBack(),
-            actions.FormExtraBack(),
+            actions.BatchDisable(),
+            actions.BatchEnable(),
+            actions.EditModal(self),
+            actions.DeleteSpecial(),
         ]

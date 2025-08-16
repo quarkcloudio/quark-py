@@ -1,5 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 from pydantic import Field, model_validator
-from typing import Any, List, Optional, Dict
+
 from ..component import Component
 
 
@@ -7,16 +9,16 @@ class Expandable(Component):
     children_column_name: Optional[str] = None
     column_title: Optional[Any] = None
     column_width: Optional[Any] = None
-    default_expand_all_rows: bool = False
-    default_expanded_row_keys: List[Any] = Field(default_factory=list)
+    default_expand_all_rows: bool = None
+    default_expanded_row_keys: List[Any] = None
     expanded_row_class_name: Optional[str] = None
-    expanded_row_keys: List[Any] = Field(default_factory=list)
+    expanded_row_keys: List[Any] = None
     expand_icon: Optional[Any] = None
-    expand_row_by_click: bool = False
+    expand_row_by_click: bool = None
     fixed: Optional[Any] = None
     indent_size: int = None
-    row_expandable: bool = False
-    show_expand_column: bool = False
+    row_expandable: bool = None
+    show_expand_column: bool = None
 
 
 class Table(Component):
