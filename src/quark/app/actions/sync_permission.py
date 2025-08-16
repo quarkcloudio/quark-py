@@ -112,7 +112,7 @@ class SyncPermission(Action):
         classes = load_resource_classes("Dashboard")
         for get_class in classes:
             path = "/api/admin/dashboard/{resource}/index"
-            method = "get"
+            method = "GET"
             path = path.replace(
                 "{resource}",
                 inflection.camelize(get_class.__name__.lower(), False),
@@ -131,7 +131,7 @@ class SyncPermission(Action):
         # 布局
         classes = load_resource_classes("Layout")
         path = "/api/admin/layout/{resource}/index"
-        method = "get"
+        method = "GET"
         for get_class in classes:
             path = path.replace(
                 "{resource}",
@@ -152,23 +152,23 @@ class SyncPermission(Action):
         login_routes = [
             {
                 "path": "/api/admin/login/{resource}/index",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/login/{resource}/captchaId",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/login/{resource}/captcha/{id}",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/login/{resource}/handle",
-                "method": "post",
+                "method": "POST",
             },
             {
                 "path": "/api/admin/logout/{resource}/handle",
-                "method": "get",
+                "method": "GET",
             },
         ]
 
@@ -178,59 +178,59 @@ class SyncPermission(Action):
         resource_routes = [
             {
                 "path": "/api/admin/{resource}/index",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/editable",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/create",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/store",
-                "method": "post",
+                "method": "POST",
             },
             {
                 "path": "/api/admin/{resource}/edit",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/edit/values",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/save",
-                "method": "post",
+                "method": "POST",
             },
             {
                 "path": "/api/admin/{resource}/import",
-                "method": "post",
+                "method": "POST",
             },
             {
                 "path": "/api/admin/{resource}/export",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/detail",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/detail/values",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/import/template",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/form",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/action/{uriKey}",
-                "method": "get",
+                "method": "GET",
             },
         ]
         new_permissions += paser_routes(resource_routes, "Resource")
@@ -239,27 +239,27 @@ class SyncPermission(Action):
         upload_routes = [
             {
                 "path": "/api/admin/upload/{resource}/getList",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/upload/{resource}/delete",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/upload/{resource}/delete",
-                "method": "post",
+                "method": "POST",
             },
             {
                 "path": "/api/admin/upload/{resource}/crop",
-                "method": "post",
+                "method": "POST",
             },
             {
                 "path": "/api/admin/upload/{resource}/handle",
-                "method": "post",
+                "method": "POST",
             },
             {
                 "path": "/api/admin/upload/{resource}/base64Handle",
-                "method": "post",
+                "method": "POST",
             },
         ]
         new_permissions += paser_routes(upload_routes, "Upload")
@@ -268,11 +268,11 @@ class SyncPermission(Action):
         action_routes = [
             {
                 "path": "/api/admin/{resource}/action/{uriKey}",
-                "method": "get",
+                "method": "GET",
             },
             {
                 "path": "/api/admin/{resource}/action/{uriKey}/values",
-                "method": "get",
+                "method": "GET",
             },
         ]
         classes = load_resource_classes("Resource")
