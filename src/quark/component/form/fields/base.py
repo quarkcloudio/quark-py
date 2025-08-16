@@ -1,10 +1,12 @@
-from pydantic import Field, model_validator
-from typing import Any, List, Optional, Dict, Callable
 import json
+from typing import Any, Callable, Dict, List, Optional
+
+from pydantic import Field, model_validator
+
 from ...component import Component
 from ...table.column import Column
 from ..rule import Rule
-from .when import When, Item
+from .when import Item, When
 
 
 class Base(Component):
@@ -54,7 +56,7 @@ class Base(Component):
     设置子元素默认值，如果与 Form 的 initialValues 冲突则以 Form 为准
     """
 
-    label: str = None
+    label: str = ""
     """
     label 标签的文本
     """
@@ -69,7 +71,7 @@ class Base(Component):
     label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span: 3, offset: 12}。你可以通过 Form 的 labelCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准
     """
 
-    name: str = None
+    name: str = ""
     """
     字段名，支持数组
     """
