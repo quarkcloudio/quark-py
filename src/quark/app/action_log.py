@@ -24,28 +24,23 @@ class ActionLog(Resource):
         """字段定义"""
         return [
             field.id("id", "ID"),
-            field.text("nickname", "昵称"),
-            field.text("username", "用户名"),
-            field.password("password", "密码").only_on_forms(),
-            field.text("email", "邮箱").set_editable(True),
-            field.text("phone", "手机号"),
+            field.text("username", "用户信息"),
+            field.text("url", "行为"),
+            field.text("ip", "IP").set_ellipsis(True),
+            field.text("created_at", "发生时间"),
         ]
 
     async def searches(self, request: Request) -> List[Any]:
         """搜索项定义"""
         return [
-            searches.Input("username", "用户名"),
+            searches.Input("username", "账号"),
+            searches.Input("url", "行为"),
+            searches.Input("ip", "IP"),
         ]
 
     async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return [
-            actions.CreateLink(self.title),
             actions.BatchDelete(),
-            actions.EditLink(),
-            actions.DeleteSpecial(),
-            actions.FormSubmit(),
-            actions.FormReset(),
-            actions.FormBack(),
-            actions.FormExtraBack(),
+            actions.Delete(),
         ]
