@@ -5,7 +5,7 @@ from quark.app import actions, searches
 from quark.component.form import field
 
 
-class Config(Resource):
+class Account(Resource):
     """
     个人设置
     """
