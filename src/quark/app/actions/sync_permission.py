@@ -26,7 +26,7 @@ def paser_routes(routes: list, class_type: str) -> list:
         for route in routes:
             path = route["path"].replace(
                 "{resource}",
-                inflection.camelize(get_class.__name__.lower(), False),
+                inflection.camelize(get_class.__name__, False),
             )
             name = pascal_case(path, route["method"])
             new_permissions.append(
@@ -294,7 +294,7 @@ class SyncPermission(Action):
                             )
                             path = path.replace(
                                 "{resource}",
-                                inflection.camelize(get_class.__name__.lower(), False),
+                                inflection.camelize(get_class.__name__, False),
                             )
                             name = pascal_case(path, method)
                             if name not in names_set and all(
@@ -318,7 +318,7 @@ class SyncPermission(Action):
                         )
                         path = path.replace(
                             "{resource}",
-                            inflection.camelize(get_class.__name__.lower(), False),
+                            inflection.camelize(get_class.__name__, False),
                         )
                         name = pascal_case(path, method)
                         if name not in names_set and all(
