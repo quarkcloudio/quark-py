@@ -2,7 +2,7 @@ import json
 from typing import Optional
 
 from tortoise.expressions import Q
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 
 from quark import Request
 

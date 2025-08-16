@@ -1,4 +1,5 @@
 # coding: utf-8
+from typing import Any
 from quark import Quark, Response
 
 # 创建对象
@@ -10,7 +11,7 @@ app.config["DB_URL"] = "sqlite://data.db"
 
 # 创建路由
 @app.get("/")
-def index() -> str:
+def index() -> Any:
     return Response(content="Hello World!", media_type="text/html")
 
 

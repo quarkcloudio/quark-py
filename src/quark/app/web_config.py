@@ -1,6 +1,8 @@
 import json
 from typing import Any, Dict, List
 
+from tortoise import Model
+
 from quark import Message, Request, Resource, models
 from quark.app import actions
 from quark.component.form import field
@@ -24,7 +26,7 @@ class WebConfig(Resource):
 
         return self
 
-    async def fields(self, request: Request) -> List[Dict]:
+    async def fields(self, request: Request) -> List[Any]:
         # 获取所有分组
         group_names = (
             await Config.filter(status=1)
@@ -78,7 +80,7 @@ class WebConfig(Resource):
 
         return tab_panes
 
-    async def actions(self, request: Request) -> List[Dict]:
+    async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return [
             actions.FormSubmit(),
@@ -107,7 +109,7 @@ class WebConfig(Resource):
                 data[config["name"]] = value
         return data
 
-    async def form_handle(self, request: Request, model: Config, data: Dict[str, Any]):
+    async def form_handle(self, request: Request, model: Model, data: Dict[str, Any]) -> Any:
         try:
             for k, v in data.items():
                 if isinstance(v, (list, dict)):

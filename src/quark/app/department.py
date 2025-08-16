@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, List
 
 from quark import Request, Resource, models, services
 from quark.app import actions, searches
@@ -33,7 +33,7 @@ class Department(Resource):
 
         return self
 
-    async def fields(self, request: Request) -> List[Dict]:
+    async def fields(self, request: Request) -> List[Any]:
         """字段定义"""
         departments = await services.DepartmentService().get_list()
 
@@ -76,14 +76,14 @@ class Department(Resource):
             .set_default_value(True),
         ]
 
-    async def searches(self, request: Request) -> List[Dict]:
+    async def searches(self, request: Request) -> List[Any]:
         """搜索项定义"""
         return [
             searches.Input("name", "名称"),
             searches.Status(),
         ]
 
-    async def actions(self, request: Request) -> List[Dict]:
+    async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return [
             actions.CreateModal(self),

@@ -1,7 +1,8 @@
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
-from tortoise.models import Model, QuerySet
+from tortoise.models import Model
+from tortoise.queryset import QuerySet
 
 from quark import Request
 
@@ -105,15 +106,15 @@ class Resource(
         """初始化"""
         return self
 
-    async def fields(self, request: Request) -> List[Dict]:
+    async def fields(self, request: Request) -> List[Any]:
         """字段定义"""
         return []
 
-    async def searches(self, request: Request) -> List[Dict]:
+    async def searches(self, request: Request) -> List[Any]:
         """搜索项定义"""
         return []
 
-    async def actions(self, request: Request) -> List[Dict]:
+    async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return []
 

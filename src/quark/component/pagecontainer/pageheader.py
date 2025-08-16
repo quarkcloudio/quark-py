@@ -17,11 +17,10 @@ class PageHeader(Component):
     footer: Optional[Any] = Field(
         None, description="PageHeader 的页脚，一般用于渲染 TabBar"
     )
-    ghost: bool = Field(None, description="pageHeader 的类型，将会改变背景颜色")
+    ghost: bool = Field(True, description="pageHeader 的类型，将会改变背景颜色")
     sub_title: Optional[str] = Field(None, description="自定义的二级标题文字")
     tags: Optional[Any] = Field(None, description="title 旁的 tag 列表")
     title: Optional[str] = Field(None, description="自定义标题文字")
-    style: Optional[Dict[str, Any]] = Field(None, description="样式")
 
     @model_validator(mode="after")
     def init(self):

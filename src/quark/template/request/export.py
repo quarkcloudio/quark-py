@@ -4,7 +4,7 @@ from io import BytesIO
 
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 
 from quark import Request, Response
 

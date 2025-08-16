@@ -1,3 +1,4 @@
+from typing import Any, List
 from quark import Login, Request, cache
 from quark.component.form import Rule, field
 from quark.component.icon.icon import Icon
@@ -15,7 +16,7 @@ class Index(Login):
         self.sub_title = "信息丰富的世界里，唯一稀缺的就是人类的注意力"
         return self
 
-    async def fields(self, request: Request):
+    async def fields(self, request: Request) -> List[Any]:
         return [
             (
                 field.Text(name="username")

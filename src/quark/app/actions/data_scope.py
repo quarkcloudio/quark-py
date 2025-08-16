@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 
 from quark import Message, Request
 from quark.component.form import field

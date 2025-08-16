@@ -1,4 +1,4 @@
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 
 from quark import Message, Request
 from quark.template.action import Action

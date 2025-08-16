@@ -66,7 +66,7 @@ class Checkbox(Base):
         """从列表中构建选项"""
         return self.build_options(items, label_name, value_name)
 
-    def set_options(self, *args) -> "Component":
+    def set_options(self, *args):
         """设置选项"""
         if len(args) == 1 and isinstance(args[0], list):
             self.options = args[0]

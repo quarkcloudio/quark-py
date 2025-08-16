@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 
 from quark import Message, Request
 

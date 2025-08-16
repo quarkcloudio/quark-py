@@ -532,7 +532,7 @@ class TreeBar(Component):
             list_data, root_id, parent_key_name, key_name, title_name
         )
 
-    def set_tree_data(self, *tree_data: Union[List[TreeData], int, str]):
+    def set_tree_data(self, *tree_data: Any):
         """
         设置树节点数据。
 

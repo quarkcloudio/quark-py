@@ -1,6 +1,6 @@
-from typing import List
+from typing import Any, List
 
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 
 from quark import Message, Request
 from quark.template.action import Action
@@ -21,11 +21,7 @@ class DeleteRole(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, request: Request, query: QuerySet):
-        """
-        query: ORM 查询对象，比如 Tortoise ORM 或 SQLAlchemy QuerySet
-        ctx: 请求上下文，负责读取参数和返回JSON结果
-        """
+    async def handle(self, request: Request, query: QuerySet) -> Any:
         id_str = request.query_params.get("id")
         if not id_str:
             return Message.error("参数错误")

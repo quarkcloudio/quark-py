@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 
 from quark import Request
 

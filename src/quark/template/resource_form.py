@@ -120,7 +120,7 @@ class ResourceForm:
 
     async def form_handle(
         self, request: Request, model: Model, data: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Any:
         """
         表单提交处理
         """
@@ -157,7 +157,7 @@ class ResourceForm:
 
     async def after_saved_redirect_to(
         self, request: Request, id: int, data: Dict[str, Any]
-    ) -> Dict[str, str]:
+    ) -> Any:
         """
         保存数据后跳转处理
         """

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, List
 
 from quark import Request, Resource, models
 from quark.app import actions, searches
@@ -20,7 +20,7 @@ class Permission(Resource):
 
         return self
 
-    async def fields(self, request: Request) -> List[Dict]:
+    async def fields(self, request: Request) -> List[Any]:
         """字段定义"""
         return [
             field.id("id", "ID"),
@@ -51,14 +51,14 @@ class Permission(Resource):
             field.textarea("remark", "备注"),
         ]
 
-    async def searches(self, request: Request) -> List[Dict]:
+    async def searches(self, request: Request) -> List[Any]:
         """搜索项定义"""
         return [
             searches.Input("name", "名称"),
             searches.Input("path", "路径"),
         ]
 
-    async def actions(self, request: Request) -> List[Dict]:
+    async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return [
             actions.SyncPermission(),

@@ -2,7 +2,7 @@ import re
 
 import inflection
 from tortoise.exceptions import IntegrityError
-from tortoise.models import QuerySet
+from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from quark import Message, Request

@@ -1,7 +1,8 @@
 import json
 from typing import Any, Dict, List
 
-from tortoise.models import Q, QuerySet
+from tortoise.queryset import QuerySet
+from tortoise.expressions import Q
 
 from quark import Request, Resource, models, services, utils
 from quark.app import actions, searches
@@ -62,7 +63,7 @@ class User(Resource):
         # 构建筛选条件
         return query.filter(Q(department_id__in=all_ids))
 
-    async def fields(self, request: Request) -> List[Dict]:
+    async def fields(self, request: Request) -> List[Any]:
         """字段定义"""
 
         # 获取所有角色
@@ -172,7 +173,7 @@ class User(Resource):
             .set_default_value(True),
         ]
 
-    async def searches(self, request: Request) -> List[Dict]:
+    async def searches(self, request: Request) -> List[Any]:
         """搜索项定义"""
         return [
             searches.Input("username", "用户名"),
@@ -181,7 +182,7 @@ class User(Resource):
             searches.DatetimeRange("created_at", "创建时间"),
         ]
 
-    async def actions(self, request: Request) -> List[Dict]:
+    async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return [
             actions.CreateLink(self.title),
