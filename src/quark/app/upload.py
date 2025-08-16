@@ -12,7 +12,7 @@ from quark.services import AttachmentCategoryService, AttachmentService, AuthSer
 
 class Image(Upload):
 
-    async def init(self, request: Request) -> "Image":
+    async def init(self, request: Request):
         """
         初始化
         """
@@ -137,7 +137,7 @@ class Image(Upload):
         # 创建存储实例
         storage = Storage(
             limit_size=self.limit_size,
-            limit_types=self.limit_type,
+            limit_type=self.limit_type,
             limit_image_width=limit_image_width,
             limit_image_height=limit_image_height,
             driver=self.driver,
@@ -153,12 +153,12 @@ class Image(Upload):
 
         # 重写URL
         if self.driver == "local":
-            result["url"] = await AttachmentService().get_image_url(result["url"])
+            result.url = await AttachmentService().get_image_url(result.url)
 
         # 更新数据库
         extra = ""
-        if result.get("extra"):
-            extra = json.dumps(result["extra"])
+        if result.extra:
+            extra = json.dumps(result.extra)
 
         current_admin = await AuthService(request).get_current_admin()
 
@@ -284,7 +284,7 @@ class File(Upload):
     文件上传处理类
     """
 
-    async def init(self, request: Request) -> "File":
+    async def init(self, request: Request):
         """
         初始化文件上传配置
 

@@ -32,7 +32,7 @@ class AttachmentService:
                 + f"?timestamp={int(datetime.now().timestamp())}"
             )
 
-        return attachments, total, None
+        return attachments, total
 
     async def insert_get_id(self, attachment):
         await attachment.save()
