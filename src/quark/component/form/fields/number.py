@@ -1,4 +1,7 @@
-from typing import Dict, Optional, Any
+from typing import Any, Dict, Optional
+
+from pydantic import model_validator
+
 from .base import Base
 
 
@@ -113,6 +116,12 @@ class Number(Base):
     """
     自定义样式
     """
+
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        self.set_width(200)
+        return self
 
     def set_addon_after(self, addon_after: Any):
         """
