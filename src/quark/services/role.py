@@ -3,6 +3,9 @@ from typing import List, Optional
 from tortoise.transactions import in_transaction
 
 from quark.component.form.fields.checkbox import Option
+from quark.models.menu_has_permission import MenuHasPermission
+from quark.models.role_has_menu import RoleHasMenu
+from quark.models.role_has_permission import RoleHasPermission
 
 from ..models import Role, UserHasRole
 
@@ -51,7 +54,25 @@ class RoleService:
         user_roles = await UserHasRole.filter(uid=user_id).all()
         return [user_role.role_id for user_role in user_roles]
 
-    # 以下两个方法需要你补充实现（假设你有 RoleDepartment 关联表）
+    async def get_menu_ids_by_role_id(self, role_id: int) -> List[int]:
+        role_menus = await RoleHasMenu.filter(role_id=role_id).all()
+        return [role_menu.menu_id for role_menu in role_menus]
+
+    async def save_menus_by_role_id(
+        self, role_id: int, menu_ids: List[int]
+    ) -> List[int]:
+        await RoleHasMenu.filter(role_id=role_id).delete()
+        await RoleHasPermission.filter(role_id=role_id).delete()
+        for menu_id in menu_ids:
+            role_menu = RoleHasMenu(role_id=role_id, menu_id=menu_id)
+            await role_menu.save()
+            menu_permissions = await MenuHasPermission.filter(menu_id=menu_id).all()
+            for menu_permission in menu_permissions:
+                role_permission = RoleHasPermission(
+                    role_id=role_id, permission_id=menu_permission.permission_id
+                )
+                await role_permission.save()
+
     async def add_department_to_role(
         self, role_id: int, department_ids: List[int], connection=None
     ):

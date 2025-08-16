@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from quark import Request, Resource, models, services
 from quark.app import actions, searches
@@ -58,7 +58,6 @@ class Role(Resource):
         """搜索项定义"""
         return [
             searches.Input("name", "名称"),
-            searches.Input("guard_name", "守卫名称"),
         ]
 
     async def actions(self, request: Request) -> List[Dict]:
@@ -73,3 +72,21 @@ class Role(Resource):
             actions.FormBack(),
             actions.FormExtraBack(),
         ]
+
+    async def before_editing(
+        self, request: Request, data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        编辑页面显示前回调
+        """
+
+        # 获取用户菜单
+        data["menu_ids"] = await services.RoleService().get_menu_ids_by_role_id(
+            data["id"]
+        )
+
+        # 返回数据
+        return data
+
+    async def after_saved(self, request, id, data, result):
+        await services.RoleService().save_menus_by_role_id(id, data["menu_ids"])
