@@ -162,19 +162,22 @@ class Image(Upload):
 
         current_admin = await AuthService(request).get_current_admin()
 
-        await AttachmentService().update_by_id(
-            image_info.id,
+        attachment = Attachment(
             source="ADMIN",
             uid=current_admin.id,
-            name=result["name"],
+            name=result.name,
             type="IMAGE",
-            size=result["size"],
-            ext=result["ext"],
-            path=result["path"],
-            url=result["url"],
-            hash=result["hash"],
+            size=result.size,
+            ext=result.ext,
+            path=result.path,
+            url=result.url,
+            hash=result.hash,
             extra=extra,
             status=1,
+        )
+
+        await AttachmentService().update_by_id(
+            image_info.id,attachment
         )
 
         # 重新获取更新后的数据

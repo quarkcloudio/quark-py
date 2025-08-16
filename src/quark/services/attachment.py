@@ -45,7 +45,7 @@ class AttachmentService:
         attachment = await Attachment.filter(status=1, id=attachment_id).first()
         return attachment
 
-    async def update_by_id(self, attachment_id, data: dict):
+    async def update_by_id(self, attachment_id, data: Attachment):
         return await Attachment.filter(status=1, id=attachment_id).update(**data)
 
     async def get_info_by_hash(self, hash_value):
