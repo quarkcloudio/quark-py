@@ -339,3 +339,13 @@ class Resource(
         return await DetailRequest(
             request=request, resource=self, query=query, fields=fields
         ).values()
+
+    async def form_render(self, request: Request) -> Any:
+        """列表页渲染"""
+
+        data = await self.before_form_showing(request)
+
+        # 页面组件渲染
+        return await self.page_component_render(
+            request, await self.creation_component_render(request, data)
+        )

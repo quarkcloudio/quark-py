@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional
 
+from tortoise import Model
+
 from quark import Request
 
 from ..component.card.card import Card
@@ -103,8 +105,7 @@ class ResourceForm:
         tabs_component = Tabs().set_tab_panes(fields).set_tab_bar_extra_content(extra)
 
         return (
-            self.get_form()
-            .set_style({"backgroundColor": "#fff", "paddingBottom": "20px"})
+            self.form.set_style({"backgroundColor": "#fff", "paddingBottom": "20px"})
             .set_api(api)
             .set_actions(actions)
             .set_body(tabs_component)
@@ -118,7 +119,7 @@ class ResourceForm:
         return {}
 
     async def form_handle(
-        self, request: Request, model: Any, data: Dict[str, Any]
+        self, request: Request, model: Model, data: Dict[str, Any]
     ) -> Optional[Dict[str, Any]]:
         """
         表单提交处理

@@ -1,6 +1,7 @@
-from ..models.config import Config
-from typing import Dict
 import asyncio
+from typing import Dict
+
+from ..models.config import Config
 
 
 class ConfigService:

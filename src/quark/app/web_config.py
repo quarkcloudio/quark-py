@@ -1,8 +1,12 @@
-from typing import Dict, List
+import json
+from typing import Any, Dict, List
 
-from quark import Request, Resource, models
+from quark import Message, Request, Resource, models
 from quark.app import actions
 from quark.component.form import field
+from quark.component.tabs.tab_pane import TabPane
+from quark.models.config import Config
+from quark.services.config import ConfigService
 
 
 class WebConfig(Resource):
@@ -21,24 +25,98 @@ class WebConfig(Resource):
         return self
 
     async def fields(self, request: Request) -> List[Dict]:
-        """字段定义"""
-        return [
-            field.id("id", "ID"),
-            field.text("name", "名称"),
-            field.text("path", "路径"),
-            field.select("method", "方法"),
-            field.textarea("remark", "备注"),
-        ]
+        # 获取所有分组
+        group_names = (
+            await Config.filter(status=1)
+            .distinct()
+            .values_list("group_name", flat=True)
+        )
+
+        tab_panes = []
+        for group_name in group_names:
+            configs = (
+                await Config.filter(status=1, group_name=group_name)
+                .order_by("sort")
+                .values()
+            )
+            fields_list = []
+
+            for config in configs:
+                remark = config.get("remark", "")
+                if config["type"] == "text":
+                    f = field.text(config["name"], config["title"]).set_extra(remark)
+                elif config["type"] == "textarea":
+                    f = field.textarea(config["name"], config["title"]).set_extra(
+                        remark
+                    )
+                elif config["type"] == "file":
+                    f = (
+                        field.file(config["name"], config["title"])
+                        .set_extra(remark)
+                        .set_button(f"上传{config['title']}")
+                    )
+                elif config["type"] == "picture":
+                    f = (
+                        field.image(config["name"], config["title"])
+                        .set_extra(remark)
+                        .set_button(f"上传{config['title']}")
+                    )
+                elif config["type"] == "switch":
+                    f = (
+                        field.switch(config["name"], config["title"])
+                        .set_editable(True)
+                        .set_true_value("正常")
+                        .set_false_value("禁用")
+                        .set_default_value(True)
+                        .set_extra(remark)
+                    )
+                else:
+                    continue
+                fields_list.append(f)
+
+            tab_panes.append(TabPane(title=group_name, body=fields_list))
+
+        return tab_panes
 
     async def actions(self, request: Request) -> List[Dict]:
         """行为定义"""
         return [
-            actions.CreateLink(self.title),
-            actions.BatchDelete(),
-            actions.EditLink(),
-            actions.Delete(),
             actions.FormSubmit(),
             actions.FormReset(),
             actions.FormBack(),
             actions.FormExtraBack(),
         ]
+
+    async def before_form_showing(self, request: Request) -> Dict[str, Any]:
+        configs = await Config.filter(status=1).values()
+        data = {}
+        for config in configs:
+            value = config["value"]
+            if config["type"] == "switch":
+                data[config["name"]] = value != "0"
+            elif config["type"] in ["picture", "file"]:
+                if value:
+                    try:
+                        json_data = json.loads(value)
+                        data[config["name"]] = json_data
+                    except:
+                        data[config["name"]] = value
+                else:
+                    data[config["name"]] = None
+            else:
+                data[config["name"]] = value
+        return data
+
+    async def form_handle(self, request: Request, model: Config, data: Dict[str, Any]):
+        try:
+            for k, v in data.items():
+                if isinstance(v, (list, dict)):
+                    v = json.dumps(v)
+                await Config.filter(name=k).update(value=v)
+        except Exception as e:
+            return Message.error(str(e))
+
+        # 刷新网站配置
+        await ConfigService.refresh()
+
+        return Message.success("操作成功")
