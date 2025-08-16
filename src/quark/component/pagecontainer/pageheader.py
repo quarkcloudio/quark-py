@@ -1,16 +1,23 @@
-from pydantic import Field, model_validator
 from typing import Any, Dict, Optional
+
+from pydantic import Field, model_validator
+
 from ..component import Component
+
 
 class PageHeader(Component):
     component: str = Field(default="pageHeader")
     avatar: Optional[Any] = Field(None, description="标题栏旁的头像")
-    back_icon: Optional[Any] = Field(None, description="自定义 back icon ，如果为 false 不渲染 back icon")
+    back_icon: Optional[Any] = Field(
+        None, description="自定义 back icon ，如果为 false 不渲染 back icon"
+    )
     breadcrumb: Optional[Any] = Field(None, description="面包屑的配置")
     breadcrumb_render: Optional[Any] = Field(None, description="自定义面包屑区域的内容")
     extra: Optional[Any] = Field(None, description="操作区，位于 title 行的行尾")
-    footer: Optional[Any] = Field(None, description="PageHeader 的页脚，一般用于渲染 TabBar")
-    ghost: bool = Field(False, description="pageHeader 的类型，将会改变背景颜色")
+    footer: Optional[Any] = Field(
+        None, description="PageHeader 的页脚，一般用于渲染 TabBar"
+    )
+    ghost: bool = Field(None, description="pageHeader 的类型，将会改变背景颜色")
     sub_title: Optional[str] = Field(None, description="自定义的二级标题文字")
     tags: Optional[Any] = Field(None, description="title 旁的 tag 列表")
     title: Optional[str] = Field(None, description="自定义标题文字")
