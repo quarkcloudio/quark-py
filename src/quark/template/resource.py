@@ -51,7 +51,7 @@ class Resource(
     export_path: str = Field(default="/api/admin/{resource}/export")
 
     # 每页显示的数据条数，默认为 10
-    page_size: Optional[int] = Field(default=10)
+    page_size: Any = Field(default=10)
 
     # 可选的每页条数选项
     page_size_options: List[int] = Field(default_factory=lambda: [10, 20, 50, 100])
@@ -211,6 +211,7 @@ class Resource(
 
         result = await IndexRequest(
             request=request,
+            resource=self,
             query=query,
             query_order=self.query_order,
             index_query_order=self.index_query_order,
@@ -219,9 +220,6 @@ class Resource(
             page_size=self.page_size,
             page_size_options=self.page_size_options,
         ).query_data()
-
-        # 列表显示前回调
-        result["items"] = await self.before_index_showing(request, result["items"])
 
         # 页面组件渲染
         return await self.page_component_render(

@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from tortoise.models import QuerySet
 
@@ -38,6 +39,7 @@ class IndexRequest:
     def __init__(
         self,
         request: Request,
+        resource: Any,
         query: QuerySet,
         query_order: str,
         index_query_order: str,
@@ -47,6 +49,7 @@ class IndexRequest:
         page_size_options: list,
     ):
         self.request = request
+        self.resource = resource
         self.query = query
         self.query_order = query_order
         self.index_query_order = index_query_order
@@ -83,7 +86,7 @@ class IndexRequest:
             ).apply_index_orderings(query, orderings)
 
             results = await index_query.all()
-            return self.performs_list(results)
+            return await self.performs_list(results)
 
         # 分页参数
         data = self.request.query_params.get("search")
@@ -214,4 +217,4 @@ class IndexRequest:
 
             result.append(fields)
 
-        return result
+        return await self.resource.before_index_showing(self.request, result)

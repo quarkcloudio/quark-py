@@ -36,7 +36,7 @@ class ResourceIndex:
             children_name = table_list_to_tree.get("childrenName", "children")
             root_id = table_list_to_tree.get("rootId", 0)
 
-        tree, _ = list_to_tree(list_data, pk_name, pid_name, children_name, root_id)
+        tree = list_to_tree(list_data, pk_name, pid_name, children_name, root_id)
         return tree
 
     async def index_table_extra_render(self, request: Request) -> Any:
@@ -135,7 +135,7 @@ class ResourceIndex:
             return table.set_datasource(data)
 
         # 如果不是整数分页配置，直接返回数据
-        if not isinstance(page_size, int):
+        if not isinstance(page_size, int) or isinstance(page_size, bool):
             return table.set_datasource(data)
         else:
             current = data.get("page")
