@@ -102,7 +102,7 @@ class Resource(
     # 是否将表格数据转换为树形结构
     table_list_to_tree: bool = Field(default=False)
 
-    async def init(self, request: Request):
+    async def init(self, request: Request) -> Any:
         """初始化"""
         return self
 

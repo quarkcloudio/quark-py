@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from tortoise.models import Model
+from tortoise.queryset import QuerySet
 
 from quark import Request
 
@@ -82,7 +82,7 @@ class Action:
     # 在详情页扩展栏展示
     show_on_detail_extra: bool = False
 
-    async def handle(self, request: Request, query: Model) -> str:
+    async def handle(self, request: Request, query: QuerySet) -> Any:
         """执行行为句柄"""
         raise NotImplementedError("method not implemented")
 

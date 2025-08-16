@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 from tortoise.queryset import QuerySet
 
@@ -21,7 +21,7 @@ class BatchDeleteRole(Action):
     def get_api_params(self) -> List[str]:
         return ["id"]
 
-    async def handle(self, request: Request, query: QuerySet):
+    async def handle(self, request: Request, query: QuerySet) -> Any:
         id_param = request.query_params.get("id")
 
         if not id_param:

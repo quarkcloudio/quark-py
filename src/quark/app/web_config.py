@@ -16,7 +16,7 @@ class WebConfig(Resource):
     网站配置
     """
 
-    async def init(self, request: Request):
+    async def init(self, request: Request) -> Any:
 
         # 页面标题
         self.title = "网站配置"
@@ -119,6 +119,6 @@ class WebConfig(Resource):
             return Message.error(str(e))
 
         # 刷新网站配置
-        await ConfigService.refresh()
+        await ConfigService().refresh()
 
         return Message.success("操作成功")

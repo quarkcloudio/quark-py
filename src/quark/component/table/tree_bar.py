@@ -34,7 +34,7 @@ class TreeData(Component):
         selectable (Optional[bool]): 是否可选中节点。
     """
 
-    title: str
+    title: Any
     key: Any
     children: List["TreeData"] = Field(default_factory=list)
     checkable: Optional[bool] = None
@@ -89,17 +89,17 @@ class TreeBar(Component):
     auto_expand_parent: bool = False
     block_node: bool = False
     checkable: bool = False
-    checked_keys: List[Any] = None
+    checked_keys: Optional[List[Any]] = None
     check_strictly: bool = False
-    default_checked_keys: List[Any] = None
+    default_checked_keys: Optional[List[Any]] = None
     default_expand_all: bool = True
-    default_expanded_keys: List[Any] = None
+    default_expanded_keys: Optional[List[Any]] = None
     default_expand_parent: bool = False
-    default_selected_keys: List[Any] = None
+    default_selected_keys: Optional[List[Any]] = None
     default_value: Optional[Any] = None
     disabled: bool = False
     draggable: bool = False
-    expanded_keys: List[Any] = None
+    expanded_keys: Optional[List[Any]]= None
     field_names: Optional[FieldNames] = None
     height: Optional[int] = None
     icon: Optional[Any] = None
@@ -108,11 +108,11 @@ class TreeBar(Component):
     root_class_name: Optional[str] = None
     root_style: Optional[Any] = None
     selectable: bool = True
-    selected_keys: List[Any] = None
+    selected_keys: Optional[List[Any]] = None
     show_icon: bool = False
     show_line: bool = True
     switcher_icon: Optional[Any] = None
-    tree_data: List[TreeData] = None
+    tree_data: Optional[List[TreeData]] = None
     value: Optional[Any] = None
     virtual: bool = False
     style: dict = Field(default_factory=dict)
@@ -464,7 +464,7 @@ class TreeBar(Component):
     def build_tree(
         self,
         items: Any,
-        pid: int,
+        pid: Any,
         parent_key_name: str,
         key_name: str,
         title_name: str,

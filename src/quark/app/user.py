@@ -14,7 +14,7 @@ class User(Resource):
     用户管理
     """
 
-    async def init(self, request: Request):
+    async def init(self, request: Request) -> Any:
 
         # 部门列表
         departments = await services.DepartmentService().get_list()
