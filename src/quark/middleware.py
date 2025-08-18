@@ -91,6 +91,7 @@ class Middleware(BaseHTTPMiddleware):
                 url=url_path,
                 ip=request.client.host if request.client else "",
                 type="ADMIN",
+                remark="",
             )
         )
 
