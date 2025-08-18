@@ -76,7 +76,7 @@ class WebConfig(Resource):
                     continue
                 fields_list.append(f)
 
-            tab_panes.append(TabPane(title=group_name, body=fields_list))
+            tab_panes.append(TabPane(title=str(group_name), body=fields_list))
 
         return tab_panes
 
@@ -109,7 +109,9 @@ class WebConfig(Resource):
                 data[config["name"]] = value
         return data
 
-    async def form_handle(self, request: Request, model: Model, data: Dict[str, Any]) -> Any:
+    async def form_handle(
+        self, request: Request, model: Model, data: Dict[str, Any]
+    ) -> Any:
         try:
             for k, v in data.items():
                 if isinstance(v, (list, dict)):
