@@ -155,4 +155,6 @@ class Quark(FastAPI):
             app = self
 
         # 启动服务
-        uvicorn.run(app=app, host=host, port=port, reload=reload)
+        uvicorn.run(
+            app=app, host=host or "127.0.0.1", port=port or 8000, reload=reload or False
+        )

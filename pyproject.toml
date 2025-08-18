@@ -34,7 +34,7 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools.package-data]
-quark = ["web/**"]
+quark = ["web/**", "web/.gitkeep", "web/**/.gitkeep"]
 
 [tool.uv]
 index-url = "https://mirrors.aliyun.com/pypi/simple"
