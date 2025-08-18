@@ -2,6 +2,7 @@ from typing import List
 
 from quark.models.menu_has_permission import MenuHasPermission
 
+from ..component.form.fields.transfer import DataSource
 from ..models.permission import Permission
 
 
@@ -20,11 +21,11 @@ class PermissionService:
     async def data_source(self):
         permissions = await Permission.all()
         data_source = [
-            {
-                "key": permission.id,
-                "title": permission.name,
-                "description": permission.remark,
-            }
+            DataSource(
+                key=permission.id,
+                title=permission.name,
+                description=permission.remark,
+            )
             for permission in permissions
         ]
         return data_source

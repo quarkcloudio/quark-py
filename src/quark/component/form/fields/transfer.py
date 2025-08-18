@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 from .base import Base
 
 
@@ -14,8 +15,8 @@ class DataSource(Base):
     """
 
     key: Any = None
-    title: str = ""
-    description: str = ""
+    title: Optional[str] = None
+    description: Optional[str] = None
     disabled: bool = False
 
 
