@@ -1,7 +1,8 @@
+from tortoise.exceptions import DoesNotExist
+
 from ..models.user import User
 from ..services.attachment import AttachmentService
 from ..services.menu import MenuService
-from tortoise.exceptions import DoesNotExist
 
 
 class UserService:
@@ -20,7 +21,7 @@ class UserService:
         try:
             user = await User.get(username=username, status=1)
             if user.avatar:
-                user.avatar = self.attachment_service.get_image_url(user.avatar)
+                user.avatar = await self.attachment_service.get_image_url(user.avatar)
             return user
         except DoesNotExist:
             raise Exception("用户不存在")

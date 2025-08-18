@@ -112,7 +112,7 @@ class ResourceForm:
             .set_initial_values(data)
         )
 
-    async def before_form_showing(self, request: Request) -> Dict[str, Any]:
+    async def before_form_showing(self, request: Request) -> Any:
         """
         表单显示前回调
         """

@@ -89,7 +89,7 @@ class WebConfig(Resource):
             actions.FormExtraBack(),
         ]
 
-    async def before_form_showing(self, request: Request) -> Dict[str, Any]:
+    async def before_form_showing(self, request: Request) -> Any:
         configs = await Config.filter(status=1).values()
         data = {}
         for config in configs:
