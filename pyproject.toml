@@ -1,7 +1,7 @@
 [project]
 name = "quark-py"
-version = "0.1.1"
-description = "FastAPI + Ant Design Pro 前后端分离的管理后台，Build Anything With Quark"
+version = "0.1.2"
+description = "FastAPI + Ant Design Pro front-end and back-end separated admin dashboard, Build Anything With Quark"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
 dependencies = [
