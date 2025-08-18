@@ -1,5 +1,7 @@
 from typing import Any, List
 
+from tortoise.queryset import QuerySet
+
 from quark import Request, Resource, models
 from quark.app import actions, searches
 from quark.component.form import field
@@ -20,32 +22,33 @@ class File(Resource):
 
         return self
 
+    async def index_query(self, request: Request) -> QuerySet:
+        """
+        列表查询
+        """
+        query = await self.query(request)
+        return query.filter(type="FILE")
+
     async def fields(self, request: Request) -> List[Any]:
         """字段定义"""
         return [
             field.id("id", "ID"),
-            field.text("nickname", "昵称"),
-            field.text("username", "用户名"),
-            field.password("password", "密码").only_on_forms(),
-            field.text("email", "邮箱").set_editable(True),
-            field.text("phone", "手机号"),
+            field.text("name", "名称"),
+            field.text("size", "大小").set_sorter(True),
+            field.text("ext", "扩展名"),
+            field.datetime("created_at", "上传时间"),
         ]
 
     async def searches(self, request: Request) -> List[Any]:
         """搜索项定义"""
         return [
-            searches.Input("username", "用户名"),
+            searches.Input("name", "名称"),
+            searches.DatetimeRange("created_at", "上传时间"),
         ]
 
     async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return [
-            actions.CreateLink(self.title),
             actions.BatchDelete(),
-            actions.EditLink(),
-            actions.DeleteSpecial(),
-            actions.FormSubmit(),
-            actions.FormReset(),
-            actions.FormBack(),
-            actions.FormExtraBack(),
+            actions.Delete(),
         ]

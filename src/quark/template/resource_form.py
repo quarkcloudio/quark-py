@@ -163,7 +163,7 @@ class ResourceForm:
         """
         redirect_url = "/layout/index?api=" + "/api/admin/{resource}/index"
         redirect_url = redirect_url.replace(
-            "{resource}", request.path_params.get("resource")
+            "{resource}", request.path_params.get("resource", "")
         )
 
         return Message.success("操作成功", None, redirect_url)
