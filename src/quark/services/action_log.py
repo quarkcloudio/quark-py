@@ -7,7 +7,7 @@ class ActionLogService:
 
     async def insert_get_id(self, data):
         action_log = await ActionLog.create(
-            user_id=data.user_id, action=data.action, ip=data.ip
+            uid=data.uid, path=data.url, ip=data.ip, type=data.type
         )
         return action_log.id
 
