@@ -5,6 +5,11 @@ from fastapi import HTTPException, Request
 from jose import JWTError, jwt
 from tortoise.exceptions import DoesNotExist
 
+from quark.models.role_has_permission import RoleHasPermission
+from quark.models.user_has_role import UserHasRole
+from quark.services.permission import PermissionService
+from quark.services.role import RoleService
+
 from .. import config
 from ..models.user import User
 from ..services.user import UserService
@@ -80,8 +85,8 @@ class AuthService:
         )
         try:
             payload = jwt.decode(self.get_token(), config.get("APP_SECRET_KEY"))
-            user_id: int = payload.get("id")
-            token_guard: str = payload.get("guard_name")
+            user_id: int = payload.get("id") or 0
+            token_guard: str = payload.get("guard_name") or ""
             if user_id is None or token_guard != guard_name:
                 raise credentials_exception
         except JWTError:
@@ -99,10 +104,42 @@ class AuthService:
     async def get_current_admin(self) -> User:
         return await self.get_current_user("admin")
 
+    async def check_permission(self, path: str, method: str) -> bool:
+        admin_info = await self.get_current_admin()
+        role_ids = await RoleService().get_role_ids_by_user_id(admin_info.id)
+
+        if not role_ids:
+            return False
+
+        placeholders = ",".join(str(role_id) for role_id in role_ids)
+        rows = await RoleHasPermission.raw(
+            f"""
+            SELECT p.id, p.name, p.guard_name, p.path, p.method
+            FROM role_has_permissions rhp
+            JOIN permissions p ON rhp.permission_id = p.id
+            WHERE rhp.role_id IN ({placeholders}) AND p.guard_name = 'admin' AND p.path = '{path}' AND p.method = 'Any'
+            """
+        )
+        if rows:
+            return True
+
+        rows = await RoleHasPermission.raw(
+            f"""
+            SELECT p.id, p.name, p.guard_name, p.path, p.method
+            FROM role_has_permissions rhp
+            JOIN permissions p ON rhp.permission_id = p.id
+            WHERE rhp.role_id IN ({placeholders}) AND p.guard_name = 'admin' AND p.path = '{path}' AND p.method = '{method}'
+            """
+        )
+
+        if rows:
+            return True
+        return False
+
     def get_real_ip(self, request: Request):
         forwarded_for = request.headers.get("X-Forwarded-For")
         if forwarded_for:
             ip = forwarded_for.split(",")[0]
         else:
-            ip = request.client.host
+            ip = request.client.host if request.client else ""
         return ip

@@ -1,7 +1,8 @@
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.models import Model
 
 
-class ActionLog(models.Model):
+class ActionLog(Model):
     id = fields.IntField(pk=True)
     uid = fields.IntField()
     username = fields.CharField(max_length=20, null=True)
@@ -13,5 +14,7 @@ class ActionLog(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True, null=True)
 
-    class Meta:
+    class Meta(Model.Meta):
+
         table = "action_logs"
+        table_description = "操作日志表"

@@ -1,5 +1,6 @@
-import importlib
+import importlib.util
 import os
+from typing import Any
 
 import inflection
 
@@ -129,7 +130,7 @@ def load_resource(resource: str, class_type: str):
 
 async def load_resource_object(
     request: Request, resource: str, resource_class_type: str
-):
+) -> Any:
     """从应用程序目录或quark包加载资源类对象"""
     app_class = load_resource(resource, resource_class_type)
     if app_class is None:

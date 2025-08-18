@@ -14,6 +14,7 @@ from tortoise import Tortoise
 
 from . import cache, config, db
 from .install import setup_all
+from .middleware import Middleware
 from .routes import dashboard, layout, login, resource, upload
 
 
@@ -37,6 +38,9 @@ class Quark(FastAPI):
     def __init__(self, *args, **kwargs):
         """初始化"""
         super().__init__(*args, lifespan=self.lifespan, **kwargs)
+
+        # 注册中间件
+        self.register_middleware()
 
         self.logger = logging.getLogger(__name__)
 
@@ -77,6 +81,10 @@ class Quark(FastAPI):
         self.include_router(dashboard.router)
         self.include_router(resource.router)
         self.include_router(upload.router)
+
+    def register_middleware(self) -> None:
+        """注册中间件"""
+        self.add_middleware(Middleware)
 
     def load_static(self):
         """加载静态资源"""

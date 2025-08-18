@@ -37,6 +37,7 @@ class Permission(Resource):
             field.select("method", "方法")
             .set_options(
                 [
+                    field.select_option("Any", "Any"),
                     field.select_option("GET", "GET"),
                     field.select_option("HEAD", "HEAD"),
                     field.select_option("OPTIONS", "OPTIONS"),
