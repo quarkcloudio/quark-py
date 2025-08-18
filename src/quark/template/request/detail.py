@@ -76,7 +76,7 @@ class DetailRequest:
                 # 普通字段
                 callback = field.callback
                 if callback:
-                    fields[name] = callback(result)
+                    fields[name] = await callback(result)
                 else:
                     value = getattr(result, name, None)
                     if value is None:

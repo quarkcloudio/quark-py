@@ -1,9 +1,8 @@
 from typing import Any, List
 
-from quark import Request, Resource, models
+from quark import Request, Resource, models,services
 from quark.app import actions, searches
 from quark.component.form import field
-
 
 class ActionLog(Resource):
     """
@@ -22,12 +21,16 @@ class ActionLog(Resource):
 
     async def fields(self, request: Request) -> List[Any]:
         """字段定义"""
+        async def get_username(row) -> str:
+            user_info = await services.UserService().get_info_by_id(row.uid)
+            return "账号：<a href='#/layout/index?api=/api/admin/user/detail&id=" + str(user_info.id) + "'>" + user_info.username + "</a><br/>昵称：" + user_info.nickname
+        
         return [
             field.id("id", "ID"),
-            field.text("username", "用户信息"),
+            field.text("username", "用户信息", get_username),
             field.text("url", "行为"),
             field.text("ip", "IP").set_ellipsis(True),
-            field.text("created_at", "发生时间"),
+            field.datetime("created_at", "发生时间"),
         ]
 
     async def searches(self, request: Request) -> List[Any]:

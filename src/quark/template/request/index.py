@@ -169,7 +169,7 @@ class IndexRequest:
                 if component == "actionField":
                     items_callback = field.callback
                     if items_callback:
-                        action_items = items_callback(item)
+                        action_items = await items_callback(item)
                     else:
                         action_items = field.items
 
@@ -183,7 +183,7 @@ class IndexRequest:
                 else:
                     callback = field.callback
                     if callback:
-                        fields[name] = callback(item)
+                        fields[name] = await callback(item)
                     else:
                         value = getattr(item, name, None)
                         if value is None:

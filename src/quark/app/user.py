@@ -75,18 +75,18 @@ class User(Resource):
         # 获取所有职位
         positions = await services.PositionService().get_list()
 
-        return [
-            field.id("id", "ID"),
-            field.image("avatar", "头像"),
-            field.text(
-                "username",
-                "用户名",
-                lambda row: "<a href='#/layout/index?api=/api/admin/user/edit&id="
+        async def get_username(row) -> str:
+            return ("<a href='#/layout/index?api=/api/admin/user/edit&id="
                 + str(row.id)
                 + "'>"
                 + row.username
-                + "</a>",
-            )
+                + "</a>")
+            
+
+        return [
+            field.id("id", "ID"),
+            field.image("avatar", "头像"),
+            field.text("username", "用户名", get_username)
             .set_rules(
                 [
                     Rule.required("用户名必须填写"),
