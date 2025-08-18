@@ -12,7 +12,6 @@ from quark.services.attachment import AttachmentService
 class Image(Resource):
     """
     图片管理
-
     """
 
     async def init(self, request: Request):

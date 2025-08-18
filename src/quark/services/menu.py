@@ -1,4 +1,6 @@
 import uuid
+from typing import List
+
 from ..models.menu import Menu
 
 
@@ -10,7 +12,7 @@ class MenuService:
         self.guard_name = guard_name
         return self
 
-    async def get_list(self):
+    async def get_list(self) -> List[Menu]:
         menus = (
             await Menu.filter(guard_name=self.guard_name, status=1)
             .order_by("sort", "id")
@@ -19,9 +21,7 @@ class MenuService:
         return menus
 
     async def get_list_with_root(self):
-        menus, err = await self.get_list()
-        if err:
-            return menus, err
+        menus = await self.get_list()
         menus.append(Menu(id=0, pid=-1, name="根节点"))
         return menus
 

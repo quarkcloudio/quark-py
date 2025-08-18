@@ -1,3 +1,7 @@
+from typing import List
+
+from quark.models.menu_has_permission import MenuHasPermission
+
 from ..models.permission import Permission
 
 
@@ -32,3 +36,16 @@ class PermissionService:
     async def get_list_by_names(self, permission_names):
         permissions = await Permission.filter(name__in=permission_names).all()
         return permissions
+
+    async def get_menu_permissions(self, menu_id: int):
+        permissions = await MenuHasPermission.filter(menu_id=menu_id).all()
+        return permissions
+
+    async def add_menu_permission(self, menu_id: int, permission_ids: List[int]):
+        await MenuHasPermission.filter(menu_id=menu_id).delete()
+        await MenuHasPermission.bulk_create(
+            [
+                MenuHasPermission(menu_id=menu_id, permission_id=permission_id)
+                for permission_id in permission_ids
+            ]
+        )

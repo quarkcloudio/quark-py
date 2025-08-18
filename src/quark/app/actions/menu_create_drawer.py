@@ -4,29 +4,18 @@ from quark import Request
 from quark.component.action.action import Action
 from quark.component.form.form import Form
 from quark.template.action import Drawer
+from quark.template.resolves_fields import ResolvesFields
 
 
 class MenuCreateDrawer(Drawer):
 
-    def __init__(
-        self,
-        title: str,
-        api: str,
-        fields: List[Dict[str, Any]],
-        initial_values: Dict[str, Any],
-    ):
+    def __init__(self, resource: Any):
 
-        # 文字
-        self.name = "创建" + title
+        # 资源
+        self.resource = resource
 
-        # api
-        self.api = api
-
-        # 字段
-        self.fields = fields
-
-        # 初始值
-        self.initial_values = initial_values
+        # 名称
+        self.name = "创建" + resource.title
 
         # 类型
         self.type = "primary"
@@ -46,18 +35,24 @@ class MenuCreateDrawer(Drawer):
         # 设置展示位置（只在列表页显示）
         self.set_only_on_index(True)
 
-    def get_body(self, request: Request) -> Dict[str, Any]:
+    async def get_body(self, request: Request):
+        api = await self.resource.creation_api(request)
+        fields = ResolvesFields(
+            request=request,
+            fields=await self.resource.fields(request),
+        ).creation_fields_within_components()
+        data = await self.resource.before_creating(request)
         return (
             Form()
-            .set_api(self.api)
-            .set_body(self.fields)
-            .set_initial_values(self.initial_values)
+            .set_api(api)
+            .set_body(fields)
+            .set_initial_values(data)
             .set_label_col({"span": 6})
             .set_wrapper_col({"span": 18})
-            .set_key("createDrawerForm", destroy=False)
+            .set_key("createDrawerForm", False)
         )
 
-    def get_actions(self, request: Request) -> List[Dict[str, Any]]:
+    async def get_actions(self, request: Request):
         return [
             Action().set_label("取消").set_action_type("cancel"),
             Action()
@@ -66,5 +61,5 @@ class MenuCreateDrawer(Drawer):
             .set_with_loading(True)
             .set_reload("table")
             .set_action_type("submit")
-            .set_type("primary", ghost=False),
+            .set_type("primary", False),
         ]
