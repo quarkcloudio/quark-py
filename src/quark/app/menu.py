@@ -16,8 +16,10 @@ class Menu(Resource):
         self.title = "菜单"
         self.model = models.Menu
         self.table_list_to_tree = True
-        self.query_order = "sort asc"
-        self.page_size = False  # 不分页
+        self.query_order = "sort"
+        self.page_size = False
+
+        return self
 
     # 字段
     async def fields(self, request: Request) -> List[Any]:

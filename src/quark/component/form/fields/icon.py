@@ -1,5 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 from pydantic import model_validator
-from typing import Any, Optional, Dict, List
+
 from .base import Base
 
 
@@ -359,7 +361,7 @@ class Icon(Base):
             "icon-banner",
         ]
         self.set_width(200)
-        self.set_default("")
+        self.set_default_value("")
         self.set_key()
         return self
 
