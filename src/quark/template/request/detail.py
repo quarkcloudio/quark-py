@@ -61,8 +61,9 @@ class DetailRequest:
                 # 行为字段
                 items = getattr(field, "items", [])
                 callback = field.callback
+
                 if callback:
-                    items = callback(result)
+                    items = await callback(result)
 
                 parsed_items = []
                 for action in items:

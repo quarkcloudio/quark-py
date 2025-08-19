@@ -23,15 +23,15 @@ class Quark(FastAPI):
     # 配置
     config: dict[str, Any] = {
         "APP_NAME": "Quark",
-        "APP_VERSION": "0.1.3",
+        "APP_VERSION": "0.1.4",
         "APP_SECRET_KEY": "your-secret-key",
         "CACHE_PREFIX": "quark-cache",
-        "MODULE_PATH": "app",
+        "MODULE_PATH": "",
         "LOCALE": "zh-hans",
         "DB_CONFIG": None,
         "DB_URL": None,
         "DB_MODULES": {
-            "models": ["quark.models", "app.models"],
+            "models": [],
         },
     }
 
@@ -59,6 +59,9 @@ class Quark(FastAPI):
     # 初始化数据库
     async def init_db(self) -> None:
         """初始化数据库"""
+        self.config["DB_MODULES"]["models"] = self.config["DB_MODULES"]["models"] + [
+            "quark.models"
+        ]
         await db.init(
             config=self.config["DB_CONFIG"],
             db_url=self.config["DB_URL"],
