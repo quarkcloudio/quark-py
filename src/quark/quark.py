@@ -22,7 +22,7 @@ class Quark(FastAPI):
 
     # 配置
     config: dict[str, Any] = {
-        "APP_NAME": "Quark",
+        "APP_NAME": "QuarkPy",
         "APP_VERSION": "0.1.4",
         "APP_SECRET_KEY": "your-secret-key",
         "CACHE_PREFIX": "quark-cache",
