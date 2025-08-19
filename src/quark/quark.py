@@ -26,12 +26,12 @@ class Quark(FastAPI):
         "APP_VERSION": "0.1.3",
         "APP_SECRET_KEY": "your-secret-key",
         "CACHE_PREFIX": "quark-cache",
-        "MODULE_PATH": ".app",
+        "MODULE_PATH": "app",
         "LOCALE": "zh-hans",
         "DB_CONFIG": None,
         "DB_URL": None,
         "DB_MODULES": {
-            "models": ["quark.models", ".app.models"],
+            "models": ["quark.models", "app.models"],
         },
     }
 
