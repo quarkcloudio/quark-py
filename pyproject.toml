@@ -19,7 +19,10 @@ dependencies = [
     "python-jose[cryptography]>=3.5.0",
     "tortoise-orm>=0.25.0",
     "uvicorn>=0.34.2",
-    "filetype>=1.2.0"
+    "filetype>=1.2.0",
+    "aiomcache>=0.8.2",
+    "aiobotocore>=2.24.1",
+    "redis>=6.4.0",
 ]
 
 [build-system]
