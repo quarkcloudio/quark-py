@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, List
 
 from tortoise.queryset import QuerySet
 
@@ -13,36 +13,36 @@ from ..resolves_actions import ResolvesActions
 class IndexRequest:
 
     # 请求对象
-    request: Request = None
+    request: Request
 
     # 查询对象
-    query: QuerySet = None
+    query: QuerySet
 
     # 列表页字段
-    fields: list = None
+    fields: list
 
     # 搜索项
-    searches: list = None
+    searches: list
 
     # 全局数据排序规则
-    query_order: str = None
+    query_order: List[str]
 
     # 列表页面的排序规则
-    index_query_order: str = None
+    index_query_order: List[str]
 
     # 分页数量
-    page_size: int = None
+    page_size: int
 
     # 分页配置
-    page_size_options: list = None
+    page_size_options: list
 
     def __init__(
         self,
         request: Request,
         resource: Any,
         query: QuerySet,
-        query_order: str,
-        index_query_order: str,
+        query_order: List[str],
+        index_query_order: List[str],
         fields: list,
         searches: list,
         page_size: int,

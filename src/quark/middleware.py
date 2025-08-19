@@ -17,7 +17,7 @@ class Middleware(BaseHTTPMiddleware):
         route = request.scope.get("route")
         route_path = route.path if route else url_path
 
-        # 获取登录实例并启动
+        # 登录路由
         login_routes = [
             {
                 "path": "/api/admin/login/{resource}/index",

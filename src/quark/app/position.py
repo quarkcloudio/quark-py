@@ -20,7 +20,7 @@ class Position(Resource):
         self.model = models.Position
 
         # 排序字段
-        self.index_query_order = "id, sort"
+        self.index_query_order = ["sort", "id"]
 
         return self
 

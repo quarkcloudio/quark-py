@@ -1,7 +1,8 @@
 import json
 from typing import Any
 
-from tortoise.models import Model, QuerySet
+from tortoise.models import Model
+from tortoise.queryset import QuerySet
 
 from quark import Message, Request
 
@@ -12,19 +13,19 @@ from ..performs_validation import PerformsValidation
 class UpdateRequest:
 
     # 请求对象
-    request: Request = None
+    request: Request
 
     # 资源对象
-    resource: Any = None
+    resource: Any
 
     # 模型
-    model: Model = None
+    model: Model
 
     # 查询对象
-    query: QuerySet = None
+    query: QuerySet
 
     # 字段列表
-    fields: list = None
+    fields: list
 
     def __init__(
         self,

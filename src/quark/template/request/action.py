@@ -13,27 +13,27 @@ class ActionRequest:
     """
 
     # 请求对象
-    request: Request = None
+    request: Request
 
     # 资源对象
-    resource: Any = None
+    resource: Any
 
     # 查询对象
-    query: QuerySet = None
+    query: QuerySet
 
     # 行为
-    actions: Optional[Any] = None
+    actions: List[Any]
 
     # 字段
-    fields: Optional[Any] = None
+    fields: List[Any]
 
     def __init__(
         self,
         request: Request,
         resource: Any,
         query: QuerySet,
-        actions: Optional[Any],
-        fields: Optional[Any],
+        actions: List[Any] = None,
+        fields: List[Any] = None,
     ):
         self.request = request
         self.resource = resource
@@ -123,7 +123,7 @@ class ActionRequest:
 
                     return result
 
-        return result
+        return Message.error("未找到匹配的行为")
 
     async def values(self):
         """

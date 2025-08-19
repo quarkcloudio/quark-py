@@ -16,22 +16,22 @@ from ..resolves_actions import ResolvesActions
 class ExportRequest:
 
     # 请求对象
-    request: Request = None
+    request: Request
 
     # 查询对象
-    query: QuerySet = None
+    query: QuerySet
 
     # 列表页字段
-    fields: list = None
+    fields: list
 
     # 搜索项
-    searches: list = None
+    searches: list
 
     # 全局数据排序规则
-    query_order: str = None
+    query_order: str
 
     # 列表页面的排序规则
-    export_query_order: str = None
+    export_query_order: str
 
     def __init__(
         self,

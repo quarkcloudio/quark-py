@@ -58,34 +58,34 @@ class Resource(
     page_size_options: List[int] = Field(default_factory=lambda: [10, 20, 50, 100])
 
     # 全局数据排序规则
-    query_order: str = Field(default="-created_at")
+    query_order: List[str] = Field(default_factory=lambda: [])
 
     # 列表页面的排序规则
-    index_query_order: str = Field(default="")
+    index_query_order: List[str] = Field(default_factory=lambda: [])
 
     # 导出数据时的排序规则
-    export_query_order: str = Field(default="")
+    export_query_order: List[str] = Field(default_factory=lambda: [])
 
     # 数据模型对象
     model: Any = Field(default=None)
 
     # 表单组件实例
-    form: Form = Field(default_factory=Form)
+    form: Form = Field(default_factory=lambda: Form())
 
     # 表格组件实例
-    table: Table = Field(default_factory=Table)
+    table: Table = Field(default_factory=lambda: Table())
 
-    # 表格搜索组件
-    table_search: Search = Field(default_factory=Search)
+    # 表格搜索组件实例
+    table_search: Search = Field(default_factory=lambda: Search())
 
-    # 表格列配置组件
-    table_column: Column = Field(default_factory=Column)
+    # 表格列配置组件实例
+    table_column: Column = Field(default_factory=lambda: Column())
 
-    # 表格工具栏组件
-    table_tool_bar: ToolBar = Field(default_factory=ToolBar)
+    # 表格工具栏组件实例
+    table_tool_bar: ToolBar = Field(default_factory=lambda: ToolBar())
 
-    # 表格树形筛选组件
-    table_tree_bar: TreeBar = Field(default_factory=TreeBar)
+    # 表格树形筛选组件实例
+    table_tree_bar: TreeBar = Field(default_factory=lambda: TreeBar())
 
     # 表格标题后缀文字
     table_title_suffix: str = Field(default="列表")

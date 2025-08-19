@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import List, Optional
 
 from tortoise.expressions import Q
 from tortoise.queryset import QuerySet
@@ -10,27 +10,27 @@ from quark import Request
 class PerformsQueries:
 
     # 请求对象
-    request: Request = None
+    request: Request
 
     # 查询对象
-    query: QuerySet = None
+    query: QuerySet
 
     # 全局查询排序
-    query_order: str = None
+    query_order: List[str]
 
     # 列表查询排序
-    index_query_order: str = None
+    index_query_order: List[str]
 
     # 导出查询排序
-    export_query_order: str = None
+    export_query_order: List[str]
 
     def __init__(
         self,
         request: Optional[Request] = None,
         query: Optional[QuerySet] = None,
-        query_order: Optional[str] = None,
-        index_query_order: Optional[str] = None,
-        export_query_order: Optional[str] = None,
+        query_order: Optional[List[str]] = None,
+        index_query_order: Optional[List[str]] = None,
+        export_query_order: Optional[List[str]] = None,
     ):
         self.request = request
         self.query = query
@@ -98,26 +98,27 @@ class PerformsQueries:
 
     def apply_index_orderings(self, query: QuerySet, orderings) -> QuerySet:
         default_order = self.query_order
-        if not default_order:
+        if not default_order or len(default_order) == 0:
             default_order = self.index_query_order
-        if not default_order:
-            default_order = "-id"
+        if not default_order or len(default_order) == 0:
+            default_order = ["-id"]
+
         return self.apply_orderings(query, orderings, default_order)
 
     def apply_export_orderings(self, query: QuerySet, orderings) -> QuerySet:
         default_order = self.query_order
-        if not default_order:
+        if not default_order or len(default_order) == 0:
             default_order = self.export_query_order
-        if not default_order:
-            default_order = "-id"
+        if not default_order or len(default_order) == 0:
+            default_order = ["-id"]
         return self.apply_orderings(query, orderings, default_order)
 
     # 执行排序查询
     def apply_orderings(
-        self, query: QuerySet, orderings, default_order: str
+        self, query: QuerySet, orderings, default_order: List[str]
     ) -> QuerySet:
         if not orderings:
-            return query.order_by(default_order)
+            return query.order_by(*default_order)
         for key, v in orderings.items():
             if v == "descend":
                 query = query.order_by(getattr(query, key).desc())

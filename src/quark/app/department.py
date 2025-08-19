@@ -26,7 +26,7 @@ class Department(Resource):
         self.table_list_to_tree = True
 
         # 排序字段
-        self.index_query_order = "id, sort"
+        self.index_query_order = ["sort", "id"]
 
         # 分页
         self.page_size = False

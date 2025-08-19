@@ -11,16 +11,16 @@ from ..performs_validation import PerformsValidation
 class StoreRequest:
 
     # 请求对象
-    request: Request = None
+    request: Request
 
     # 资源对象
-    resource: Any = None
+    resource: Any
 
     # 查询对象
-    model: Model = None
+    model: Model
 
     # 字段列表
-    fields: list = None
+    fields: list
 
     def __init__(self, request: Request, resource: Any, model: Model, fields: list):
         self.request = request
