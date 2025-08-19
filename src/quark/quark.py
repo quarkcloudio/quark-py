@@ -23,15 +23,15 @@ class Quark(FastAPI):
     # 配置
     config: dict[str, Any] = {
         "APP_NAME": "Quark",
-        "APP_VERSION": "0.1.0",
+        "APP_VERSION": "0.1.3",
         "APP_SECRET_KEY": "your-secret-key",
         "CACHE_PREFIX": "quark-cache",
-        "MODULE_PATH": "app/",
+        "MODULE_PATH": ".app",
         "LOCALE": "zh-hans",
         "DB_CONFIG": None,
         "DB_URL": None,
         "DB_MODULES": {
-            "models": ["quark.models"],
+            "models": ["quark.models", ".app.models"],
         },
     }
 
@@ -42,6 +42,7 @@ class Quark(FastAPI):
         # 注册中间件
         self.register_middleware()
 
+        # 日志
         self.logger = logging.getLogger(__name__)
 
         # 获取当前文件的绝对路径

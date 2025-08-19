@@ -13,7 +13,13 @@ def load_class(file_path, class_name):
     if not os.path.exists(abs_file_path):
         return None
     spec = importlib.util.spec_from_file_location("dynamic_module", file_path)
+    if spec is None:
+        return None
     module = importlib.util.module_from_spec(spec)
+    if module is None:
+        return None
+    if spec.loader is None:
+        return None
     spec.loader.exec_module(module)
     return getattr(module, class_name)
 
@@ -21,6 +27,9 @@ def load_class(file_path, class_name):
 def load_object(file_path, class_name):
     """从文件加载类对象"""
     cls = load_class(file_path, class_name)
+    if cls is None:
+        return None
+
     obj = cls()
     return obj
 
@@ -58,6 +67,10 @@ def get_classes_in_package(package_path):
                 if spec is None:
                     continue
                 module = importlib.util.module_from_spec(spec)
+                if module is None:
+                    continue
+                if spec.loader is None:
+                    continue
                 spec.loader.exec_module(module)
 
                 # 遍历模块中的所有成员，检查是否为类

@@ -22,6 +22,8 @@ app = Quark()
 # 配置数据库
 app.config["DB_URL"] = "sqlite://data.db"
 
+# 配置应用密钥
+app.config["APP_SECRET_KEY"] = "abcdefghijklmnopqrstuvwxyz"
 
 # 创建路由
 @app.get("/")
@@ -50,7 +52,7 @@ python main.py
 密码：```123456```
 
 ## 特别注意
-1. **后台用户认证使用了AppKey作为JWT的加密密串，生产环境请务必更改**
+1. **后台用户认证使用了APP_SECRET_KEY作为JWT的加密密串，生产环境请务必更改**
 
 ## 技术支持
 为了避免打扰作者日常工作，你可以在Github上提交 [Issues](https://github.com/quarkcloudio/quark-py/issues)
