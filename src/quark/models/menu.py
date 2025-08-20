@@ -1,8 +1,10 @@
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.models import Model
 from tortoise.transactions import in_transaction
 
 
-class Menu(models.Model):
+class Menu(Model):
+
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=100)
     guard_name = fields.CharField(max_length=100)
@@ -18,7 +20,7 @@ class Menu(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
-    class Meta:
+    class Meta(Model.Meta):
         table = "menus"
 
     def __str__(self):

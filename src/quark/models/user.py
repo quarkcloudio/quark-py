@@ -1,9 +1,12 @@
-from tortoise import fields, models
 from datetime import datetime
+
+from tortoise import fields
+from tortoise.models import Model
+
 from ..utils import hash_password
 
 
-class User(models.Model):
+class User(Model):
     id = fields.IntField(pk=True)
     username = fields.CharField(max_length=20)
     nickname = fields.CharField(max_length=200)
@@ -23,7 +26,7 @@ class User(models.Model):
     updated_at = fields.DatetimeField(auto_now=True)
     deleted_at = fields.DatetimeField(null=True)
 
-    class Meta:
+    class Meta(Model.Meta):
         table = "users"
         unique_together = (
             ("username",),

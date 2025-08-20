@@ -1,7 +1,8 @@
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.models import Model
 
 
-class Attachment(models.Model):
+class Attachment(Model):
     id = fields.IntField(pk=True)
     uid = fields.IntField(default=0)
     source = fields.CharField(max_length=255, null=True)
@@ -19,5 +20,5 @@ class Attachment(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True, null=True)
 
-    class Meta:
+    class Meta(Model.Meta):
         table = "attachments"

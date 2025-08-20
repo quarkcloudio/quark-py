@@ -1,7 +1,8 @@
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.models import Model
 
 
-class Config(models.Model):
+class Config(Model):
     id = fields.IntField(pk=True)
     title = fields.CharField(max_length=255)
     type = fields.CharField(max_length=20)
@@ -14,7 +15,7 @@ class Config(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True, null=True)
 
-    class Meta:
+    class Meta(Model.Meta):
         table = "configs"
 
     @staticmethod
@@ -134,4 +135,11 @@ class Config(models.Model):
         for data in seeders:
             exists = await Config.filter(name=data["name"]).exists()
             if not exists:
-                await Config.create(**data)
+                await Config.create(
+                    title=data["title"],
+                    type=data["type"],
+                    name=data["name"],
+                    group_name=data["group_name"],
+                    value=data["value"],
+                    remark=data.get("remark", ""),
+                )

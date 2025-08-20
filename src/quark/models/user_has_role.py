@@ -10,5 +10,5 @@ class UserHasRole(Model):
     created_at = fields.DatetimeField(null=True)  # 你原来没设置默认，现在设为可空
     updated_at = fields.DatetimeField(auto_now=True, null=True)
 
-    class Meta:
+    class Meta(Model.Meta):
         table = "user_has_roles"

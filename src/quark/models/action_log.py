@@ -15,6 +15,5 @@ class ActionLog(Model):
     updated_at = fields.DatetimeField(auto_now=True, null=True)
 
     class Meta(Model.Meta):
-
         table = "action_logs"
         table_description = "操作日志表"

@@ -10,5 +10,5 @@ class RoleHasPermission(Model):
     created_at = fields.DatetimeField(null=True)
     updated_at = fields.DatetimeField(auto_now=True, null=True)
 
-    class Meta:
+    class Meta(Model.Meta):
         table = "role_has_permissions"

@@ -1,7 +1,8 @@
-from tortoise import models, fields
+from tortoise import fields
+from tortoise.models import Model
 
 
-class MenuHasPermission(models.Model):
+class MenuHasPermission(Model):
     id = fields.BigIntField(pk=True)
     menu_id = fields.BigIntField()
     permission_id = fields.BigIntField()
@@ -9,5 +10,5 @@ class MenuHasPermission(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True, null=True)
     updated_at = fields.DatetimeField(auto_now=True, null=True)
 
-    class Meta:
+    class Meta(Model.Meta):
         table = "menu_has_permissions"
