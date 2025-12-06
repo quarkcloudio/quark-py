@@ -5,7 +5,7 @@ from quark import Quark, Response
 app = Quark()
 
 # 配置数据库
-app.config["DB_URL"] = "sqlite://data.db"
+app.config["DB_URL"] = "mysql://root:fK7xPGJi1gJfIief@127.0.0.1:3306/quarkcloud"
 
 
 # 创建路由
