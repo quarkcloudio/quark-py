@@ -18,10 +18,7 @@
    ```bash
 
    # Create a virtual environment
-   python3 -m venv .venv
-
-   # Activate the virtual environment
-   .venv\Scripts\activate
+   uv venv
 
    # Install dependencies
    uv sync
