@@ -42,42 +42,72 @@ def load_method(file_path, class_name, method_name, *args, **kwargs):
 
 
 def get_classes_in_package(package_path):
-    """获取指定包下的所有类"""
+    """
+    安全扫描指定目录，加载其中的类
+    """
     classes = []
     package_dir = os.path.abspath(package_path)
+
     if not os.path.exists(package_dir):
         return classes
 
-    # 使用 os.walk 遍历目录及其子目录
+    # 禁止扫描的目录（防止导入用户虚拟环境）
+    IGNORE_DIRS = {
+        "venv",
+        ".venv",
+        "env",
+        ".env",
+        "Lib",
+        "lib",
+        "site-packages",
+        "__pycache__",
+    }
+
     for root, dirs, files in os.walk(package_dir):
+
+        # 过滤不应该扫描的目录
+        dirs[:] = [d for d in dirs if d not in IGNORE_DIRS and not d.startswith(".")]
+
         for file_name in files:
-            if file_name.endswith(".py") and file_name != "__init__.py":
-                module_name = file_name[:-3]  # 去掉 .py 后缀
-                module_path = os.path.join(root, file_name)
-                full_module_name = (
-                    os.path.relpath(root, package_dir).replace(os.sep, ".")
-                    + "."
-                    + module_name
-                )
-                if full_module_name.startswith("."):
-                    full_module_name = full_module_name[1:]  # 去掉开头的点
+            if not file_name.endswith(".py"):
+                continue
+            if file_name == "__init__.py":
+                continue
+
+            module_path = os.path.join(root, file_name)
+
+            # 构造模块名（安全版本）
+            rel_path = os.path.relpath(root, package_dir)
+            rel_path = rel_path.replace(os.sep, ".")
+
+            if rel_path == ".":
+                full_module_name = file_name[:-3]
+            else:
+                full_module_name = f"{rel_path}.{file_name[:-3]}"
+
+            # 非法模块名过滤
+            if not full_module_name.replace(".", "").isidentifier():
+                continue
+
+            try:
                 spec = importlib.util.spec_from_file_location(
                     full_module_name, module_path
                 )
-                if spec is None:
+                if not spec or not spec.loader:
                     continue
+
                 module = importlib.util.module_from_spec(spec)
-                if module is None:
-                    continue
-                if spec.loader is None:
-                    continue
                 spec.loader.exec_module(module)
 
-                # 遍历模块中的所有成员，检查是否为类
+                # 遍历类
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
                     if isinstance(attr, type):
                         classes.append(attr)
+
+            except Exception as e:
+                # 可以打印日志但不影响程序继续运行
+                print(f"[WARN] 模块加载失败: {module_path} | {e}")
 
     return classes
 

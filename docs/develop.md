@@ -13,13 +13,7 @@
    brew install uv
    ```
 
-2. Install dependencies
-
-   ```bash
-   uv sync
-   ```
-
-3. Start backend
+2. Start backend
 
    ```bash
 
@@ -28,6 +22,9 @@
 
    # Activate the virtual environment
    .venv\Scripts\activate
+
+   # Install dependencies
+   uv sync
 
    # Run the backend server
    uv run -m quark
