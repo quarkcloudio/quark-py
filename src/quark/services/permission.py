@@ -1,7 +1,7 @@
 from typing import List
 
-from quark.models.menu_has_permission import MenuHasPermission
-from quark.models.role_has_permission import RoleHasPermission
+from quark.models.menu_permission import MenuPermission
+from quark.models.role_permission import RolePermission
 
 from ..component.form.fields.transfer import DataSource
 from ..models.permission import Permission
@@ -40,18 +40,18 @@ class PermissionService:
         return permissions
 
     async def get_menu_permissions(self, menu_id: int):
-        permissions = await MenuHasPermission.filter(menu_id=menu_id).all()
+        permissions = await MenuPermission.filter(menu_id=menu_id).all()
         return permissions
 
     async def get_permissions_by_role_ids(self, role_ids: List[int]):
-        permissions = await RoleHasPermission.filter(role_id__in=role_ids).all()
+        permissions = await RolePermission.filter(role_id__in=role_ids).all()
         return permissions
 
     async def add_menu_permission(self, menu_id: int, permission_ids: List[int]):
-        await MenuHasPermission.filter(menu_id=menu_id).delete()
-        await MenuHasPermission.bulk_create(
+        await MenuPermission.filter(menu_id=menu_id).delete()
+        await MenuPermission.bulk_create(
             [
-                MenuHasPermission(menu_id=menu_id, permission_id=permission_id)
+                MenuPermission(menu_id=menu_id, permission_id=permission_id)
                 for permission_id in permission_ids
             ]
         )

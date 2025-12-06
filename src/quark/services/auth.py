@@ -5,8 +5,8 @@ from fastapi import HTTPException, Request
 from jose import JWTError, jwt
 from tortoise.exceptions import DoesNotExist
 
-from quark.models.role_has_permission import RoleHasPermission
-from quark.models.user_has_role import UserHasRole
+from quark.models.role_permission import RolePermission
+from quark.models.user_role import UserRole
 from quark.services.permission import PermissionService
 from quark.services.role import RoleService
 
@@ -112,7 +112,7 @@ class AuthService:
             return False
 
         placeholders = ",".join(str(role_id) for role_id in role_ids)
-        rows = await RoleHasPermission.raw(
+        rows = await RolePermission.raw(
             f"""
             SELECT p.id, p.name, p.guard_name, p.path, p.method
             FROM role_has_permissions rhp
@@ -123,7 +123,7 @@ class AuthService:
         if rows:
             return True
 
-        rows = await RoleHasPermission.raw(
+        rows = await RolePermission.raw(
             f"""
             SELECT p.id, p.name, p.guard_name, p.path, p.method
             FROM role_has_permissions rhp

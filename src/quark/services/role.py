@@ -3,11 +3,11 @@ from typing import List, Optional
 from tortoise.transactions import in_transaction
 
 from quark.component.form.fields.checkbox import Option
-from quark.models.menu_has_permission import MenuHasPermission
-from quark.models.role_has_menu import RoleHasMenu
-from quark.models.role_has_permission import RoleHasPermission
+from quark.models.menu_permission import MenuPermission
+from quark.models.role_menu import RoleMenu
+from quark.models.role_permission import RolePermission
 
-from ..models import Role, UserHasRole
+from ..models import Role, UserRole
 
 
 class RoleService:
@@ -43,32 +43,32 @@ class RoleService:
     async def save_roles_by_user_id(self, user_id: int, role_ids: List[int]):
         async with in_transaction() as connection:
             # 删除用户原有的角色
-            await UserHasRole.filter(uid=user_id).delete()  # 移除 using_db 参数
+            await UserRole.filter(uid=user_id).delete()  # 移除 using_db 参数
 
             # 保存新的角色
             for role_id in role_ids:
-                user_role = UserHasRole(uid=user_id, role_id=role_id)
+                user_role = UserRole(uid=user_id, role_id=role_id)
                 await user_role.save(using_db=connection)
 
     async def get_role_ids_by_user_id(self, user_id: int) -> List[int]:
-        user_roles = await UserHasRole.filter(uid=user_id).all()
+        user_roles = await UserRole.filter(uid=user_id).all()
         return [user_role.role_id for user_role in user_roles]
 
     async def get_menu_ids_by_role_id(self, role_id: int) -> List[int]:
-        role_menus = await RoleHasMenu.filter(role_id=role_id).all()
+        role_menus = await RoleMenu.filter(role_id=role_id).all()
         return [role_menu.menu_id for role_menu in role_menus]
 
     async def save_menus_by_role_id(
         self, role_id: int, menu_ids: List[int]
     ) -> List[int]:
-        await RoleHasMenu.filter(role_id=role_id).delete()
-        await RoleHasPermission.filter(role_id=role_id).delete()
+        await RoleMenu.filter(role_id=role_id).delete()
+        await RolePermission.filter(role_id=role_id).delete()
         for menu_id in menu_ids:
-            role_menu = RoleHasMenu(role_id=role_id, menu_id=menu_id)
+            role_menu = RoleMenu(role_id=role_id, menu_id=menu_id)
             await role_menu.save()
-            menu_permissions = await MenuHasPermission.filter(menu_id=menu_id).all()
+            menu_permissions = await MenuPermission.filter(menu_id=menu_id).all()
             for menu_permission in menu_permissions:
-                role_permission = RoleHasPermission(
+                role_permission = RolePermission(
                     role_id=role_id, permission_id=menu_permission.permission_id
                 )
                 await role_permission.save()
