@@ -30,9 +30,6 @@ class Auth(BaseModel):
     # 标题
     title: str = Field(default="QuarkPy")
 
-    # 子标题
-    sub_title: str = Field(default="信息丰富的世界里，唯一稀缺的就是人类的注意力")
-
     async def init(self, request: Request):
         """初始化"""
         return self
@@ -63,7 +60,7 @@ class Auth(BaseModel):
     async def fields(self, request: Request):
         return []
 
-    async def handle(self, request: Request):
+    async def login(self, request: Request):
         return Message.error("请实现登录方法")
 
     async def logout(self, request: Request):
@@ -129,9 +126,6 @@ class Auth(BaseModel):
         # 标题
         title = self.title
 
-        # 子标题
-        sub_title = self.sub_title
-
         # 包裹在组件内的字段
         fields = await self.fields_within_components(request)
 
@@ -149,7 +143,6 @@ class Auth(BaseModel):
                     .set_redirect(redirect)
                     .set_logo(logo)
                     .set_title(title)
-                    .set_sub_title(sub_title)
                     .set_body(tab_component)
                 )
             else:
@@ -162,7 +155,6 @@ class Auth(BaseModel):
                     .set_redirect(redirect)
                     .set_logo(logo)
                     .set_title(title)
-                    .set_sub_title(sub_title)
                     .set_body(fields)
                 )
         else:
@@ -175,8 +167,7 @@ class Auth(BaseModel):
                 .set_redirect(redirect)
                 .set_logo(logo)
                 .set_title(title)
-                .set_sub_title(sub_title)
                 .set_body(fields)
             )
 
-        return component
+        return Message.success("退出成功", component)

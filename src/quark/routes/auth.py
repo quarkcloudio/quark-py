@@ -7,37 +7,28 @@ router = APIRouter(prefix="/api/admin", tags=["管理员登录"])
 
 @router.get("/auth/{resource}/index")
 async def index(request: Request, resource: str):
-    res = await loader.load_resource_object(request, resource, "Login")
+    res = await loader.load_resource_object(request, resource, "Auth")
     return JSONResponse(
         content=jsonable_encoder(await res.render(request), exclude_none=True)
     )
 
-
-@router.get("/auth/{resource}/captchaId")
-async def captcha_id(request: Request, resource: str):
-    res = await loader.load_resource_object(request, resource, "Login")
-    return JSONResponse(
-        content=jsonable_encoder(await res.captcha_id(request), exclude_none=True)
-    )
-
-
-@router.get("/auth/{resource}/captcha/{id}")
+@router.get("/auth/{resource}/captcha")
 async def captcha(request: Request, resource: str):
-    res = await loader.load_resource_object(request, resource, "Login")
+    res = await loader.load_resource_object(request, resource, "Auth")
     return await res.captcha(request)
 
 
-@router.post("/auth/{resource}/handle")
-async def handle(request: Request, resource: str):
-    res = await loader.load_resource_object(request, resource, "Login")
+@router.post("/auth/{resource}/login")
+async def login(request: Request, resource: str):
+    res = await loader.load_resource_object(request, resource, "Auth")
     return JSONResponse(
-        content=jsonable_encoder(await res.handle(request), exclude_none=True)
+        content=jsonable_encoder(await res.login(request), exclude_none=True)
     )
 
 
 @router.get("/auth/{resource}/handle")
 async def logout(request: Request, resource: str):
-    res = await loader.load_resource_object(request, resource, "Login")
+    res = await loader.load_resource_object(request, resource, "Auth")
     return JSONResponse(
         content=jsonable_encoder(await res.logout(request), exclude_none=True)
     )

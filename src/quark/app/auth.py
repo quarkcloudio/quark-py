@@ -10,10 +10,9 @@ from quark.services.auth import AuthService
 class Index(Auth):
 
     async def init(self, request: Request):
-        self.api = "/api/admin/login/index/handle"
+        self.api = "/api/admin/auth/index/login"
         self.title = "QuarkPy"
         self.redirect = "/layout/index?api=/api/admin/dashboard/index/index"
-        self.sub_title = "信息丰富的世界里，唯一稀缺的就是人类的注意力"
         return self
 
     async def fields(self, request: Request) -> List[Any]:
@@ -24,7 +23,7 @@ class Index(Auth):
                 .set_rules([Rule.required("请输入用户名")])
                 .set_width("100%")
                 .set_size("large")
-                .set_prefix(Icon().set_type("icon-user"))
+                .set_prefix(Icon().set_type("ant-design:user-outlined"))
             ),
             (
                 field.Password(name="password")
@@ -32,21 +31,20 @@ class Index(Auth):
                 .set_rules([Rule.required("请输入密码")])
                 .set_width("100%")
                 .set_size("large")
-                .set_prefix(Icon().set_type("icon-lock"))
+                .set_prefix(Icon().set_type("ant-design:lock-outlined"))
             ),
             (
                 field.ImageCaptcha(name="captcha")
-                .set_captcha_id_url("/api/admin/login/index/captchaId")
-                .set_captcha_url("/api/admin/login/index/captcha/:id")
+                .set_captcha_url("/api/admin/auth/index/captcha")
                 .set_placeholder("验证码")
                 .set_rules([Rule.required("请输入验证码")])
                 .set_width("100%")
                 .set_size("large")
-                .set_prefix(Icon().set_type("icon-safetycertificate"))
+                .set_prefix(Icon().set_type("ant-design:safety-certificate-outlined"))
             ),
         ]
 
-    async def handle(self, request: Request):
+    async def login(self, request: Request):
         data_json = await request.json()
         try:
             data = LoginData(**data_json)

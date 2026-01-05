@@ -20,23 +20,19 @@ class Middleware(BaseHTTPMiddleware):
         # 登录路由
         login_routes = [
             {
-                "path": "/api/admin/login/{resource}/index",
+                "path": "/api/admin/auth/{resource}/index",
                 "method": "GET",
             },
             {
-                "path": "/api/admin/login/{resource}/captchaId",
+                "path": "/api/admin/auth/{resource}/captcha",
                 "method": "GET",
             },
             {
-                "path": "/api/admin/login/{resource}/captcha/{id}",
-                "method": "GET",
-            },
-            {
-                "path": "/api/admin/login/{resource}/handle",
+                "path": "/api/admin/auth/{resource}/login",
                 "method": "POST",
             },
             {
-                "path": "/api/admin/logout/{resource}/handle",
+                "path": "/api/admin/auth/{resource}/handle",
                 "method": "GET",
             },
         ]
