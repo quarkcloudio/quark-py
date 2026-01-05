@@ -15,7 +15,7 @@ from ..component.login.login import Login as LoginComponent
 from ..component.tabs.tabs import Tabs
 
 
-class Login(BaseModel):
+class Auth(BaseModel):
     """登录组件"""
 
     # 登录接口
@@ -67,7 +67,7 @@ class Login(BaseModel):
         return Message.error("请实现登录方法")
 
     async def logout(self, request: Request):
-        return Message.success("退出成功", None, "/")
+        return Message.success("退出成功")
 
     async def fields_within_components(self, request: Request):
 

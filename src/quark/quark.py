@@ -15,7 +15,7 @@ from tortoise import Tortoise
 from . import cache, config, db
 from .install import setup_all
 from .middleware import Middleware
-from .routes import dashboard, layout, login, resource, upload
+from .routes import auth, dashboard, resource, upload
 
 
 class Quark(FastAPI):
@@ -80,8 +80,7 @@ class Quark(FastAPI):
 
     def register_routers(self) -> None:
         """注册路由"""
-        self.include_router(login.router)
-        self.include_router(layout.router)
+        self.include_router(auth.router)
         self.include_router(dashboard.router)
         self.include_router(resource.router)
         self.include_router(upload.router)

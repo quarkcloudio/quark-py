@@ -1,5 +1,5 @@
 from typing import Any, List
-from quark import Login, Request, cache
+from quark import Auth, Request, cache
 from quark.component.form import Rule, field
 from quark.component.icon.icon import Icon
 from quark.component.message.message import Message
@@ -7,7 +7,7 @@ from quark.schemas import LoginData
 from quark.services.auth import AuthService
 
 
-class Index(Login):
+class Index(Auth):
 
     async def init(self, request: Request):
         self.api = "/api/admin/login/index/handle"

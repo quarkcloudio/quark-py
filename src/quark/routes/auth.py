@@ -5,7 +5,7 @@ from .. import loader
 router = APIRouter(prefix="/api/admin", tags=["管理员登录"])
 
 
-@router.get("/login/{resource}/index")
+@router.get("/auth/{resource}/index")
 async def index(request: Request, resource: str):
     res = await loader.load_resource_object(request, resource, "Login")
     return JSONResponse(
@@ -13,7 +13,7 @@ async def index(request: Request, resource: str):
     )
 
 
-@router.get("/login/{resource}/captchaId")
+@router.get("/auth/{resource}/captchaId")
 async def captcha_id(request: Request, resource: str):
     res = await loader.load_resource_object(request, resource, "Login")
     return JSONResponse(
@@ -21,13 +21,13 @@ async def captcha_id(request: Request, resource: str):
     )
 
 
-@router.get("/login/{resource}/captcha/{id}")
+@router.get("/auth/{resource}/captcha/{id}")
 async def captcha(request: Request, resource: str):
     res = await loader.load_resource_object(request, resource, "Login")
     return await res.captcha(request)
 
 
-@router.post("/login/{resource}/handle")
+@router.post("/auth/{resource}/handle")
 async def handle(request: Request, resource: str):
     res = await loader.load_resource_object(request, resource, "Login")
     return JSONResponse(
@@ -35,7 +35,7 @@ async def handle(request: Request, resource: str):
     )
 
 
-@router.get("/logout/{resource}/handle")
+@router.get("/auth/{resource}/handle")
 async def logout(request: Request, resource: str):
     res = await loader.load_resource_object(request, resource, "Login")
     return JSONResponse(
