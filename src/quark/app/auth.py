@@ -52,7 +52,7 @@ class Index(Auth):
             return Message.error(str(e))
 
         # 验证验证码
-        cached_captcha = await cache.get(data.captcha["id"])
+        cached_captcha = await cache.get(data.captcha["uuid"])
         if cached_captcha != data.captcha["value"]:
             return Message.error("验证码错误")
 

@@ -1,3 +1,4 @@
+import base64
 import random
 import string
 import uuid
@@ -34,17 +35,8 @@ class Auth(BaseModel):
         """初始化"""
         return self
 
-    async def captcha_id(self, request: Request):
-        id = str(uuid.uuid4())
-        await cache.set(id, "uninitialized", 60)
-        return Message.success("获取成功", {"captchaId": id})
-
     async def captcha(self, request: Request):
-        id = request.path_params["id"]
-        value = await cache.get(id)
-        if value != "uninitialized":
-            return Message.error("验证码已过期，请重新获取")
-
+        id = str(uuid.uuid4())
         captcha_text = "".join(random.choices(string.digits, k=4))
         await cache.set(id, captcha_text, 60)
 
@@ -54,8 +46,8 @@ class Auth(BaseModel):
         buffer = BytesIO()
         captcha_image.save(buffer, format="PNG")
         buffer.seek(0)
-
-        return StreamingResponse(buffer, media_type="image/png")
+        
+        return Message.success("获取成功", {"captchaEnabled": True,"img": base64.b64encode(buffer.getvalue()).decode("utf-8"),"uuid": id})
 
     async def fields(self, request: Request):
         return []

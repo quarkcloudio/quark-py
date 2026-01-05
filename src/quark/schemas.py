@@ -10,7 +10,7 @@ class LoginData(BaseModel):
 
     @field_validator("captcha")
     def captcha_must_have_id_and_value(cls, v):
-        if "id" not in v or not v["id"]:
+        if "uuid" not in v or not v["uuid"]:
             raise ValueError("验证码ID不能为空")
         if "value" not in v or not v["value"]:
             raise ValueError("验证码不能为空")
