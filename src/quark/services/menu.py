@@ -88,18 +88,17 @@ class MenuService:
     async def menu_parser(self, menus):
         new_menus = []
         for menu in menus:
-            menu.key = str(uuid.uuid4())
-            menu.locale = "menu" + menu.path.replace("/", ".") if menu.path else ""
-
-            menu.hide_in_menu = False if menu.show == 1 else True
-
-            if menu.type == 2 and menu.is_engine == 1:
-                menu.path = "/layout/index?api=" + menu.path
-
-            if not self.has_menu(new_menus, menu.id) and menu.type != 3:
+            menu.meta = {
+                "icon": menu.icon,
+                "title": menu.name,
+                "order": menu.sort,
+                "hide_in_menu": False if menu.visible == 1 else True,
+            }
+            menu.name = menu.path
+            if not self.has_menu(new_menus, menu.id):
                 new_menus.append(menu)
 
-        return self.list_to_tree(new_menus, "id", "pid", "routes", 0)
+        return self.list_to_tree(new_menus, "id", "pid", "children", 0)
 
     def has_menu(self, menus, menu_id):
         return any(menu.id == menu_id for menu in menus)

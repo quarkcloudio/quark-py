@@ -26,7 +26,21 @@ async def login(request: Request, resource: str):
     )
 
 
-@router.get("/auth/{resource}/handle")
+@router.get("/auth/{resource}/userInfo")
+async def user_info(request: Request, resource: str):
+    res = await loader.load_resource_object(request, resource, "Auth")
+    return JSONResponse(
+        content=jsonable_encoder(await res.user_info(request), exclude_none=True)
+    )
+
+@router.get("/auth/{resource}/userRoutes")
+async def user_routes(request: Request, resource: str):
+    res = await loader.load_resource_object(request, resource, "Auth")
+    return JSONResponse(
+        content=jsonable_encoder(await res.user_routes(request), exclude_none=True)
+    )
+
+@router.get("/auth/{resource}/logout")
 async def logout(request: Request, resource: str):
     res = await loader.load_resource_object(request, resource, "Auth")
     return JSONResponse(

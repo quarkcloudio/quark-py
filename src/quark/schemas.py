@@ -76,3 +76,13 @@ class ImageDeleteRequest(BaseModel):
 class ImageCropRequest(BaseModel):
     id: int
     file: str
+
+class UserInfoResponse(BaseModel):
+    id: int
+    username: str
+    nickname: str
+    email: str
+    phone: str
+    avatar: str
+    roles: list[str]
+    buttons: list[str]

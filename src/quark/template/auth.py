@@ -8,7 +8,9 @@ from typing import Any, Optional
 from captcha.image import ImageCaptcha
 from pydantic import BaseModel, Field
 
-from quark import Message, Request, StreamingResponse
+from quark import Message, Request
+from quark.services.auth import AuthService
+from quark.services.menu import MenuService
 
 from .. import cache
 from ..component.auth.auth import Auth as AuthComponent
@@ -67,6 +69,19 @@ class Auth(BaseModel):
 
     async def login(self, request: Request):
         return Message.error("请实现登录方法")
+
+    async def user_info(self, request: Request):
+        user_info = await AuthService(request).get_current_admin()
+        return Message.success("ok",user_info)
+
+    async def user_routes(self, request: Request):
+        user_info = await AuthService(request).get_current_user("admin")
+        menus = await MenuService().get_list_by_user_id(user_info.id)
+        return Message.success("ok", {
+            "routes": menus,
+            "home": "home"
+        })
+
 
     async def logout(self, request: Request):
         return Message.success("退出成功")

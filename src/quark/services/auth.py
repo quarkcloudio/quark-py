@@ -9,6 +9,7 @@ from quark.models.role_permission import RolePermission
 from quark.models.user_role import UserRole
 from quark.services.permission import PermissionService
 from quark.services.role import RoleService
+from quark.schemas import UserInfoResponse
 
 from .. import config
 from ..models.user import User
@@ -101,8 +102,19 @@ class AuthService:
             raise HTTPException(status_code=403, detail="User is disabled")
         return user
 
-    async def get_current_admin(self) -> User:
-        return await self.get_current_user("admin")
+    async def get_current_admin(self) -> UserInfoResponse:
+        userInfo = await self.get_current_user("admin")
+        getuser = UserInfoResponse(
+            id=userInfo.id,
+            username=userInfo.username,
+            nickname=userInfo.nickname,
+            email=userInfo.email,
+            phone=userInfo.phone,
+            avatar=userInfo.avatar,
+            buttons=[],
+            roles=["R_SUPER"]
+        )
+        return getuser
 
     async def check_permission(self, path: str, method: str) -> bool:
         admin_info = await self.get_current_admin()
