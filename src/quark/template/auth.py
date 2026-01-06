@@ -11,8 +11,8 @@ from pydantic import BaseModel, Field
 from quark import Message, Request, StreamingResponse
 
 from .. import cache
+from ..component.auth.auth import Auth as AuthComponent
 from ..component.divider.divider import Divider
-from ..component.login.login import Login as LoginComponent
 from ..component.tabs.tabs import Tabs
 
 
@@ -20,7 +20,13 @@ class Auth(BaseModel):
     """登录组件"""
 
     # 登录接口
-    api: str = Field(default="/api/admin/login/index/handle")
+    login_api: str = Field(default="/api/admin/auth/index/index")
+
+    # 用户信息接口
+    user_info_api: str = Field(default="/api/admin/auth/index/userInfo")
+
+    # 用户路由接口
+    user_routes_api: str = Field(default="/api/admin/auth/index/userRoutes")
 
     # 登录后跳转地址
     redirect: str = Field(default="/layout/index?api=/api/admin/dashboard/index/index")
@@ -46,8 +52,15 @@ class Auth(BaseModel):
         buffer = BytesIO()
         captcha_image.save(buffer, format="PNG")
         buffer.seek(0)
-        
-        return Message.success("获取成功", {"captchaEnabled": True,"img": base64.b64encode(buffer.getvalue()).decode("utf-8"),"uuid": id})
+
+        return Message.success(
+            "获取成功",
+            {
+                "captchaEnabled": True,
+                "img": base64.b64encode(buffer.getvalue()).decode("utf-8"),
+                "uuid": id,
+            },
+        )
 
     async def fields(self, request: Request):
         return []
@@ -107,7 +120,13 @@ class Auth(BaseModel):
     async def render(self, request: Request):
 
         # 登录接口
-        login_api = self.api
+        login_api = self.login_api
+
+        # 用户信息接口
+        user_info_api = self.user_info_api
+
+        # 用户路由接口
+        user_routes_api = self.user_routes_api
 
         # 登录后跳转地址
         redirect = self.redirect
@@ -130,8 +149,10 @@ class Auth(BaseModel):
 
                 # 组件
                 component = (
-                    LoginComponent()
-                    .set_api(login_api)
+                    AuthComponent()
+                    .set_login_api(login_api)
+                    .set_user_info_api(user_info_api)
+                    .set_user_routes_api(user_routes_api)
                     .set_redirect(redirect)
                     .set_logo(logo)
                     .set_title(title)
@@ -142,8 +163,10 @@ class Auth(BaseModel):
 
                 # 组件
                 component = (
-                    LoginComponent()
-                    .set_api(login_api)
+                    AuthComponent()
+                    .set_login_api(login_api)
+                    .set_user_info_api(user_info_api)
+                    .set_user_routes_api(user_routes_api)
                     .set_redirect(redirect)
                     .set_logo(logo)
                     .set_title(title)
@@ -154,8 +177,10 @@ class Auth(BaseModel):
 
             # 组件
             component = (
-                LoginComponent()
-                .set_api(login_api)
+                AuthComponent()
+                .set_login_api(login_api)
+                .set_user_info_api(user_info_api)
+                .set_user_routes_api(user_routes_api)
                 .set_redirect(redirect)
                 .set_logo(logo)
                 .set_title(title)

@@ -1,22 +1,26 @@
-from pydantic import Field, model_validator
-from typing import Any, Dict, List, Optional
 import json
+from typing import Any, Dict, List, Optional
+
+from pydantic import Field, model_validator
+
 from ..component import Component
+
 
 class ActivityConfig(Component):
     title: str = ""
-    sub_title: str = ""
     action: Any = None
     style: Dict[str, Any] = Field(default_factory=dict)
 
-class Login(Component):
-    component: str = "login"
-    api: str = None
-    redirect: str = None
+
+class Auth(Component):
+    component: str = "auth"
+    login_api: str = ""
+    user_info_api: str = ""
+    user_routes_api: str = ""
+    redirect: str = ""
     logo: Any = None
-    title: str = None
-    sub_title: str = None
-    background_image_url: str = None
+    title: str = ""
+    background_image_url: str = ""
     activity_config: Optional[ActivityConfig] = None
     values: Dict[str, Any] = Field(default_factory=dict)
     initial_values: Dict[str, Any] = Field(default_factory=dict)
@@ -33,8 +37,16 @@ class Login(Component):
         self.style = style
         return self
 
-    def set_api(self, api: str):
-        self.api = api
+    def set_login_api(self, api: str):
+        self.login_api = api
+        return self
+
+    def set_user_info_api(self, api: str):
+        self.user_info_api = api
+        return self
+
+    def set_user_routes_api(self, api: str):
+        self.user_routes_api = api
         return self
 
     def set_redirect(self, redirect: str):
@@ -47,10 +59,6 @@ class Login(Component):
 
     def set_title(self, title: str):
         self.title = title
-        return self
-
-    def set_sub_title(self, sub_title: str):
-        self.sub_title = sub_title
         return self
 
     def set_background_image_url(self, url: str):

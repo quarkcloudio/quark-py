@@ -1,8 +1,8 @@
 from typing import Any, List
-from quark import Auth, Request, cache
+
+from quark import Auth, Message, Request, cache
 from quark.component.form import Rule, field
 from quark.component.icon.icon import Icon
-from quark.component.message.message import Message
 from quark.schemas import LoginData
 from quark.services.auth import AuthService
 
@@ -10,7 +10,7 @@ from quark.services.auth import AuthService
 class Index(Auth):
 
     async def init(self, request: Request):
-        self.api = "/api/admin/auth/index/login"
+        self.login_api = "/api/admin/auth/index/login"
         self.title = "QuarkPy"
         self.redirect = "/layout/index?api=/api/admin/dashboard/index/index"
         return self
