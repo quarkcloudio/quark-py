@@ -179,7 +179,7 @@ class User(Resource):
             searches.Input("username", "用户名"),
             searches.Input("nickname", "昵称"),
             searches.Status(),
-            searches.DatetimeRange("created_at", "创建时间"),
+            searches.DatetimeRange("last_login_time", "登录时间"),
         ]
 
     async def actions(self, request: Request) -> List[Any]:
