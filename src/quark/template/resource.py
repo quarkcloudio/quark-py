@@ -170,19 +170,6 @@ class Resource(
         """
         return None
 
-    async def page_component_render(self, request: Request, body: Any) -> Any:
-        """页面组件渲染"""
-        return await self.page_container_component_render(request, body)
-
-    async def page_container_component_render(
-        self, request: Request, body: Any
-    ) -> PageContainer:
-        """页面容器组件渲染"""
-        header = PageHeader().set_title(self.title).set_sub_title(self.sub_title)
-        if not self.back_icon:
-            header.set_back_icon(False)
-        return PageContainer().set_header(header).set_body(body)
-
     async def query(self, request: Request) -> QuerySet:
         """
         全局查询
@@ -223,9 +210,9 @@ class Resource(
         ).query_data()
 
         # 页面组件渲染
-        result = await self.index_component_render(request, index_data)
-
-        return Message.success("ok", result)
+        return Message.success(
+            "ok", await self.index_component_render(request, index_data)
+        )
 
     async def creation_render(self, request: Request) -> Any:
         """列表页渲染"""
@@ -233,8 +220,8 @@ class Resource(
         data = await self.before_creating(request)
 
         # 页面组件渲染
-        return await self.page_component_render(
-            request, await self.creation_component_render(request, data)
+        return Message.success(
+            "ok", await self.creation_component_render(request, data)
         )
 
     async def store_render(self, request: Request) -> Any:
@@ -259,9 +246,7 @@ class Resource(
         data = await self.before_editing(request, data)
 
         # 页面组件渲染
-        return await self.page_component_render(
-            request, await self.update_component_render(request, data)
-        )
+        return Message.success("ok", await self.update_component_render(request, data))
 
     async def edit_values_render(self, request: Request) -> Any:
         query = await self.query(request)
@@ -326,9 +311,7 @@ class Resource(
         data = await self.before_detail_showing(request, data)
 
         # 页面组件渲染
-        return await self.page_component_render(
-            request, await self.detail_component_render(request, data)
-        )
+        return Message.success("ok", await self.detail_component_render(request, data))
 
     async def detail_values_render(self, request: Request) -> Any:
         """获取详情页值"""
@@ -347,6 +330,6 @@ class Resource(
         data = await self.before_form_showing(request)
 
         # 页面组件渲染
-        return await self.page_component_render(
-            request, await self.creation_component_render(request, data)
+        return Message.success(
+            "ok", await self.creation_component_render(request, data)
         )
