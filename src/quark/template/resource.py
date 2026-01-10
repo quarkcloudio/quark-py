@@ -223,9 +223,7 @@ class Resource(
         ).query_data()
 
         # 页面组件渲染
-        result = await self.page_component_render(
-            request, await self.index_component_render(request, index_data)
-        )
+        result = await self.index_component_render(request, index_data)
 
         return Message.success("ok", result)
 
