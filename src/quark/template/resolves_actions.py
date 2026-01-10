@@ -5,81 +5,87 @@ from quark import Request
 from ..component.action.action import Action
 from ..component.dropdown.dropdown import Dropdown
 from ..component.form.form import Form
-from ..component.space.space import Space
 
 
 class ResolvesActions:
 
     # 请求
-    request: Request = None
+    request: Optional[Request] = None
 
     # 行为
-    actions: Optional[Any] = None
+    actions: Optional[List[Any]] = None
 
-    def __init__(self, request: Request, actions: Optional[Any] = None):
+    def __init__(self, request: Request, actions: Optional[List[Any]] = None):
         self.request = request
         self.actions = actions
 
     async def index_table_actions(self) -> List[Any]:
         """获取列表页顶部工具栏中的动作"""
         items = []
-        for action in self.actions:
-            if action.shown_on_index():
-                items.append(await self.build_action(action))
+        if self.actions is not None:
+            for action in self.actions:
+                if action.shown_on_index():
+                    items.append(await self.build_action(action))
 
-        return self._wrap_in_space(items)
+        return items
 
     async def index_table_row_actions(self) -> List[Any]:
         """获取列表页行内动作"""
         items = []
-        for action in self.actions:
-            if action.shown_on_index_table_row():
-                items.append(await self.build_action(action))
+        if self.actions is not None:
+            for action in self.actions:
+                if action.shown_on_index_table_row():
+                    items.append(await self.build_action(action))
 
         return items
 
     async def index_table_alert_actions(self) -> List[Any]:
         """获取多选弹出层动作"""
         items = []
-        for action in self.actions:
-            if action.shown_on_index_table_alert():
-                items.append(await self.build_action(action))
+        if self.actions is not None:
+            for action in self.actions:
+                if action.shown_on_index_table_alert():
+                    items.append(await self.build_action(action))
 
         return items
 
     async def form_actions(self) -> List[Any]:
         """获取表单页动作"""
         items = []
-        for action in self.actions:
-            if action.shown_on_form():
-                items.append(await self.build_action(action))
+        if self.actions is not None:
+            for action in self.actions:
+                if action.shown_on_form():
+                    items.append(await self.build_action(action))
 
         return items
 
     async def form_extra_actions(self) -> List[Any]:
         """表单页右上角自定义区域行为"""
         items = []
-        for action in self.actions:
-            if action.shown_on_form_extra():
-                items.append(await self.build_action(action))
+        if self.actions is not None:
+            for action in self.actions:
+                if action.shown_on_form_extra():
+                    items.append(await self.build_action(action))
 
         return items
 
     async def detail_actions(self) -> List[Any]:
         """获取详情页动作"""
         items = []
-        for action in self.actions:
-            if action.shown_on_detail():
-                items.append(await self.build_action(action))
+        if self.actions is not None:
+            for action in self.actions:
+                if action.shown_on_detail():
+                    items.append(await self.build_action(action))
 
         return items
 
     async def detail_extra_actions(self) -> List[Any]:
         """详情页右上角自定义区域行为"""
         items = []
-        for action in self.actions:
-            if action.shown_on_detail_extra():
-                items.append(await self.build_action(action))
+        if self.actions is not None:
+            for action in self.actions:
+                if action.shown_on_detail_extra():
+                    items.append(await self.build_action(action))
 
         return items
 
@@ -199,17 +205,17 @@ class ResolvesActions:
                 unchecked_children
             )
 
-        if confirm_title:
+        # 只对 Action 类型的组件设置确认对话框
+        if confirm_title and isinstance(action_component, Action):
             action_component.set_with_confirm(confirm_title, confirm_text, confirm_type)
 
         return action_component
 
-    def _wrap_in_space(self, items: List[Any]) -> Space:
-        """包装在 space 组件中"""
-        return Space().set_body(items)
-
     def build_action_api(self, params: List[str], uri_key: str) -> str:
         """构建行为 API 地址"""
+        if self.request is None:
+            return ""
+
         api = self.request.url.path
         api_paths = api.split("/")
 
@@ -242,6 +248,9 @@ class ResolvesActions:
 
     def build_init_api(self, params: List[str], uri_key: str) -> str:
         """构建初始化数据 API 地址"""
+        if self.request is None:
+            return ""
+
         api = self.request.url.path
         api_paths = api.split("/")
 
