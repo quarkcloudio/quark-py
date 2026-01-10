@@ -61,6 +61,9 @@ class AttachmentService:
             attachment_type = params[0]
             id = params[1]
 
+        if id is None or id == "":
+            return ""
+
         http = ""
         path = ""
         web_site_domain = await self.config_service.get_value("WEB_SITE_DOMAIN")
