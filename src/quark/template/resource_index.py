@@ -107,9 +107,6 @@ class ResourceIndex:
             table_action_column_title=self.table_action_column_title,
             table_action_column_width=self.table_action_column_width,
         ).index_table_columns()
-        index_table_alert_actions = await ResolvesActions(
-            request=request, actions=actions
-        ).index_table_alert_actions()
         index_searches = ResolvesSearches(
             request=request, search=self.table_search, searches=searches
         ).index_searches()
@@ -126,7 +123,6 @@ class ResourceIndex:
             .set_tool_bar(table_tool_bar)
             .set_tree_bar(table_tree_bar)
             .set_columns(table_columns)
-            .set_batch_actions(index_table_alert_actions)
             .set_searches(index_searches)
         )
 

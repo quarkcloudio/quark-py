@@ -34,7 +34,6 @@ class Table(Component):
         default_factory=lambda: {"fullScreen": True, "reload": True, "setting": True}
     )
     search: Any = None
-    batch_actions: Any = None
     date_formatter: str = "string"
     column_empty_text: str = "-"
     tool_bar: Any = None
@@ -111,10 +110,6 @@ class Table(Component):
 
     def set_tree_bar(self, treebar: Any):
         self.tree_bar = treebar
-        return self
-
-    def set_batch_actions(self, actions: Any):
-        self.batch_actions = actions
         return self
 
     def set_table_extra_render(self, render: Any):
