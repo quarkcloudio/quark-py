@@ -211,7 +211,7 @@ class IndexRequest:
 
                         # 图片字段处理
                         if component in ["imageField", "imagePickerField"]:
-                            value = AttachmentService().get_image_url(value)
+                            value = await AttachmentService().get_image_url(value)
 
                         fields[name] = value
 

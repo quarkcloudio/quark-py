@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
 
-from quark import Request
+from quark import Message, Request
 
 from ..component.form.form import Form
 from ..component.pagecontainer.pagecontainer import PageContainer
@@ -210,7 +210,7 @@ class Resource(
             fields=await self.fields(request),
         ).index_fields()
 
-        result = await IndexRequest(
+        index_data = await IndexRequest(
             request=request,
             resource=self,
             query=query,
@@ -223,9 +223,11 @@ class Resource(
         ).query_data()
 
         # 页面组件渲染
-        return await self.page_component_render(
-            request, await self.index_component_render(request, result)
+        result = await self.page_component_render(
+            request, await self.index_component_render(request, index_data)
         )
+
+        return Message.success("ok", result)
 
     async def creation_render(self, request: Request) -> Any:
         """列表页渲染"""
