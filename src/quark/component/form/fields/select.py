@@ -1,9 +1,10 @@
 import json
 from typing import Dict, List, Optional, Any, Callable, Union
+from pydantic import BaseModel
 from .base import Base
 
 
-class FieldNames(Base):
+class FieldNames(BaseModel):
     """
     定义选项中标签、值和子项字段名的类。
 
@@ -18,7 +19,7 @@ class FieldNames(Base):
     children: str
 
 
-class Option(Base):
+class Option(BaseModel):
     """
     表示选择框选项的类。
 
