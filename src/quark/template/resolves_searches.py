@@ -32,8 +32,8 @@ class ResolvesSearches:
         search: Optional[Any] = None,
         searches: Optional[Any] = None,
         export: bool = False,
-        export_text: str = None,
-        export_path: str = None,
+        export_text: str = "",
+        export_path: str = "",
     ):
         self.request = request
         self.search = search

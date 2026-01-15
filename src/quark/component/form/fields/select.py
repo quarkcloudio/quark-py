@@ -1,6 +1,8 @@
 import json
-from typing import Dict, List, Optional, Any, Callable, Union
-from pydantic import BaseModel
+from typing import Any, Callable, Dict, List, Optional, Union
+
+from pydantic import BaseModel, Field
+
 from .base import Base
 
 
@@ -41,206 +43,207 @@ class Select(Base):
     组件名称
     """
 
-    allow_clear: bool = True
+    allow_clear: bool = Field(default=True, exclude=True)
     """
     可以点击清除图标删除内容，默认值为 True
     """
 
-    auto_clear_search_value: bool = False
+    auto_clear_search_value: bool = Field(default=False, exclude=True)
     """
     是否在选中项后清空搜索框，只在 mode 为 multiple 或 tags 时有效，默认值为 False
     """
 
-    auto_focus: bool = False
+    auto_focus: bool = Field(default=False, exclude=True)
     """
     默认获取焦点，默认值为 False
     """
 
-    bordered: bool = True
+    bordered: bool = Field(default=True, exclude=True)
     """
     是否有边框，默认值为 True
     """
 
-    clear_icon: Optional[Any] = None
+    clear_icon: Optional[Any] = Field(default=None, exclude=True)
     """
     自定义的多选框清空图标，默认值为 None
     """
 
-    default_active_first_option: bool = True
+    default_active_first_option: bool = Field(default=True, exclude=True)
     """
     是否默认高亮第一个选项，默认值为 True
     """
 
-    default_open: bool = False
+    default_open: bool = Field(default=False, exclude=True)
     """
     是否默认展开下拉菜单，默认值为 False
     """
 
-    default_value: Optional[Any] = None
+    default_value: Optional[Any] = Field(default=None, exclude=True)
     """
     默认选中的选项，默认值为 None
     """
 
-    disabled: bool = False
+    disabled: bool = Field(default=False, exclude=True)
     """
     整组失效，默认值为 False
     """
 
-    popup_class_name: str = ""
+    popup_class_name: str = Field(default="", exclude=True)
     """
     下拉菜单的 className 属性
     """
 
-    dropdown_match_select_width: Optional[Any] = None
+    dropdown_match_select_width: Optional[Any] = Field(default=None, exclude=True)
     """
     下拉菜单和选择器同宽。默认将设置 min-width，当值小于选择框宽度时会被忽略。false 时会关闭虚拟滚动，默认值为 None
     """
 
-    dropdown_style: Optional[Any] = None
+    dropdown_style: Optional[Any] = Field(default=None, exclude=True)
     """
     下拉菜单的 style 属性，默认值为 None
     """
 
-    field_names: FieldNames = None
+    # 修改第106行代码
+    field_names: Optional[FieldNames] = Field(default=None, exclude=True)
     """
     自定义 options 中 label value children 的字段
     """
 
-    label_in_value: bool = False
+    label_in_value: bool = Field(default=False, exclude=True)
     """
     是否把每个选项的 label 包装到 value 中，
             会把 Select 的 value 类型从 string 变为 { value: string, label: ReactNode } 的格式，默认值为 False
     """
 
-    list_height: int = 256
+    list_height: int = Field(default=256, exclude=True)
     """
     设置弹窗滚动高度 256，默认值为 256
     """
 
-    loading: bool = False
+    loading: bool = Field(default=False, exclude=True)
     """
     加载中状态，默认值为 False
     """
 
-    max_tag_count: int = 0
+    max_tag_count: int = Field(default=0, exclude=True)
     """
     最多显示多少个 tag，响应式模式会对性能产生损耗，默认值为 0
     """
 
-    max_tag_placeholder: str = ""
+    max_tag_placeholder: str = Field(default="", exclude=True)
     """
     隐藏 tag 时显示的内容，默认值为 ""
     """
 
-    max_tag_text_length: int = 0
+    max_tag_text_length: int = Field(default=0, exclude=True)
     """
     最大显示的 tag 文本长度，默认值为 0
     """
 
-    menu_item_selected_icon: Optional[Any] = None
+    menu_item_selected_icon: Optional[Any] = Field(default=None, exclude=True)
     """
     自定义多选时当前选中的条目图标，默认值为 None
     """
 
-    mode: str = ""
+    mode: str = Field(default="", exclude=True)
     """
     设置 Select 的模式为多选或标签 multiple | tags，默认值为 ""
     """
 
-    not_found_content: str = ""
+    not_found_content: str = Field(default="", exclude=True)
     """
     当下拉列表为空时显示的内容，默认值为 ""
     """
 
-    open: bool = False
+    open: bool = Field(default=False, exclude=True)
     """
     是否展开下拉菜单，默认值为 False
     """
 
-    option_filter_prop: str = ""
+    option_filter_prop: str = Field(default="", exclude=True)
     """
     搜索时过滤对应的 option 属性，如设置为 children 表示对内嵌内容进行搜索。
             若通过 options 属性配置选项内容，建议设置 optionFilterProp="label" 来对内容进行搜索，默认值为 ""
     """
 
-    option_label_prop: str = ""
+    option_label_prop: str = Field(default="", exclude=True)
     """
     回填到选择框的 Option 的属性值，默认是 Option 的子元素。
             比如在子元素需要高亮效果时，此值可以设为 value，默认值为 ""
     """
 
-    options: List[Option] = []
+    options: List[Option] = Field(default=[])
     """
     可选项数据源，默认值为空列表
     """
 
-    placeholder: str = ""
+    placeholder: str = Field(default="")
     """
     选择框默认文本，默认值为 ""
     """
 
-    placement: str = ""
+    placement: str = Field(default="", exclude=True)
     """
     选择框弹出的位置 bottomLeft bottomRight topLeft topRight
     """
 
-    remove_icon: Optional[Any] = None
+    remove_icon: Optional[Any] = Field(default=None, exclude=True)
     """
     自定义的多选框清除图标，默认值为 None
     """
 
-    search_value: str = ""
+    search_value: str = Field(default="", exclude=True)
     """
     控制搜索文本，默认值为 ""
     """
 
-    show_arrow: bool = True
+    show_arrow: bool = Field(default=True, exclude=True)
     """
     是否显示下拉小箭头，默认值为 True
     """
 
-    show_search: bool = False
+    show_search: bool = Field(default=False, exclude=True)
     """
     配置是否可搜索，默认值为 False
     """
 
-    size: str = ""
+    size: str = Field(default="", exclude=True)
     """
     选择框大小
     """
 
-    status: str = ""
+    status: str = Field(default="", exclude=True)
     """
     设置校验状态 'error' | 'warning'
     """
 
-    suffix_icon: Optional[Any] = None
+    suffix_icon: Optional[Any] = Field(default=None, exclude=True)
     """
     自定义的选择框后缀图标，默认值为 None
     """
 
-    token_separators: Optional[Any] = None
+    token_separators: Optional[Any] = Field(default=None, exclude=True)
     """
     自动分词的分隔符，仅在 mode="tags" 时生效，默认值为 None
     """
 
-    value: Optional[Any] = None
+    value: Optional[Any] = Field(default=None, exclude=True)
     """
     指定当前选中的条目，多选时为一个数组。
             （value 数组引用未变化时，Select 不会更新），默认值为 None
     """
 
-    virtual: bool = True
+    virtual: bool = Field(default=True, exclude=True)
     """
     设置 false 时关闭虚拟滚动，默认值为 True
     """
 
-    load: Dict[str, str] = {}
+    load: Dict[str, str] = Field(default={}, exclude=True)
     """
     单向联动，默认值为空字典
     """
 
-    style: Dict[str, Any] = {}
+    style: Optional[Dict[str, Any]] = Field(default={}, exclude=True)
     """
     自定义样式，默认值为空字典
     """

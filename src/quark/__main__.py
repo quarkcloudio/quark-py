@@ -17,4 +17,4 @@ def index():
 if __name__ == "__main__":
 
     # 启动应用
-    app.run("quark.__main__:app", host="0.0.0.0", port=3000, reload=True)
+    app.run("quark.__main__:app", host="0.0.0.0", port=8080, reload=True)
