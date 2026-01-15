@@ -20,10 +20,11 @@ class Component(BaseModel):
     )
 
     # 组件名称
-    component: str = ""
+    # 组件名称
+    component: Optional[str] = None
 
     # 组件key
-    componentkey: str = ""
+    componentkey: Optional[str] = None
 
     # 组件样式
     style: Optional[dict] = None

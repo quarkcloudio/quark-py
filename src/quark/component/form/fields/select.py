@@ -38,7 +38,7 @@ class Option(BaseModel):
 
 class Select(Base):
 
-    component: str = "selectField"
+    component: Optional[str] = "selectField"
     """
     组件名称
     """
