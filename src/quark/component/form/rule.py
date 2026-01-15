@@ -9,49 +9,49 @@ class Rule(Component):
     """
 
     # 需要验证的字段名称
-    name: str = Field(None, exclude=True)
+    name: Optional[str] = Field(default=None, exclude=True)
 
     # 规则类型，max | min | unique | required
-    rule_type: str = Field(None, exclude=True)
+    rule_type: Optional[str] = Field(default=None, exclude=True)
 
     # 仅在 type 为 array 类型时有效，用于指定数组元素的校验规则
     default_field: Optional[Any] = None
 
     # 是否匹配枚举中的值（需要将 type 设置为 enum）
-    enum: List[Any] = None
+    enum: Optional[List[Any]] = None
 
     # 仅在 type 为 array 或 object 类型时有效，用于指定子元素的校验规则
     fields: Optional[Any] = None
 
     # string 类型时为字符串长度；number 类型时为确定数字； array 类型时为数组长度
-    length: int = None
+    length: Optional[int] = None
 
     # 必须设置 type：string 类型为字符串最大长度；number 类型时为最大值；array 类型时为数组最大长度
-    max_value: int = Field(alias="max", default=None)
+    max_value: Optional[int] = Field(alias="max", default=None)
 
     # 错误信息，不设置时会通过模板自动生成
-    message: str = None
+    message: Optional[str] = None
 
     # 必须设置 type：string 类型为字符串最小长度；number 类型时为最小值；array 类型时为数组最小长度
-    min_value: int = Field(alias="min", default=None)
+    min_value: Optional[int] = Field(alias="min", default=None)
 
     # 正则表达式匹配
-    pattern: str = None
+    pattern: Optional[str] = None
 
     # 是否为必选字段
-    required_value: bool = Field(alias="required", default=None)
+    required_value: Optional[bool] = Field(alias="required", default=None)
 
     # type：unique时，指定验证的表名
-    unique_table: str = Field(None, exclude=True)
+    unique_table: Optional[str] = Field(default=None, exclude=True)
 
     # type：unique时，指定需验证表中的字段
-    unique_table_field: str = Field(None, exclude=True)
+    unique_table_field: Optional[str] = Field(default=None, exclude=True)
 
     # type：unique时，忽略符合条件验证的列，例如：{id}
-    unique_ignore_value: str = Field(None, exclude=True)
+    unique_ignore_value: Optional[str] = Field(default=None, exclude=True)
 
     # 字段类型，string | number | boolean | method | regexp | integer | float | array | object | enum | date | url | hex | email | any
-    rule_type_field: str = None
+    rule_type_field: Optional[str] = None
 
     # 转换前端验证规则，剔除前端不支持的 unique
     @staticmethod
@@ -140,6 +140,8 @@ class Rule(Component):
         elif len(unique) == 4:
             unique_table, unique_table_field, unique_ignore_value, message = unique
             rule.set_unique(unique_table, unique_table_field, unique_ignore_value)
+        else:
+            raise ValueError("unique方法需要传入3个或4个参数: (table, field, message) 或 (table, field, ignore_value, message)")
         rule.set_message(message)
         return rule
 
