@@ -20,7 +20,6 @@ class Component(BaseModel):
     )
 
     # 组件名称
-    # 组件名称
     component: Optional[str] = None
 
     # 组件key
