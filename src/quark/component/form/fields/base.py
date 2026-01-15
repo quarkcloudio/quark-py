@@ -41,7 +41,7 @@ class Base(Component):
     配合 valiTextStatus 属性使用，展示校验状态图标，建议只配合 Input 组件使用
     """
 
-    help: str = None
+    help: Optional[str] = None
     """
     提示信息，如不设置，则会根据校验规则自动生成
     """
@@ -81,17 +81,17 @@ class Base(Component):
     为 true 时不带样式，作为纯字段控件使用
     """
 
-    required: bool = None
+    required: Optional[bool] = None
     """
     必填样式设置。如不设置，则会根据校验规则自动生成
     """
 
-    tooltip: str = None
+    tooltip: Optional[str] = None
     """
     会在 label 旁增加一个 icon，悬浮后展示配置的信息
     """
 
-    value_prop_name: str = None
+    value_prop_name: Optional[str] = None
     """
     子节点的值的属性，如 Switch 的是 'checked'。该属性为 getValueProps 的封装，自定义 getValueProps 后会失效
     """
@@ -101,12 +101,12 @@ class Base(Component):
     需要为输入控件设置布局样式时，使用该属性，用法同 labelCol。你可以通过 Form 的 wrapperCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准
     """
 
-    column: Column = Field(default_factory=Column)
+    column: Column = Field(default_factory=lambda: Column())
     """
     列表页、详情页中列属性
     """
 
-    align: str = None
+    align: Optional[str] = None
     """
     设置列的对齐方式,left | right | center，只在列表页、详情页中有效
     """
@@ -136,7 +136,7 @@ class Base(Component):
     表头的筛选菜单项，当值为 true 时，自动使用 valueEnum 生成，只在列表页中有效
     """
 
-    order: int = None
+    order: Optional[int] = None
     """
     查询表单中的权重，权重大排序靠前，只在列表页中有效
     """
@@ -146,12 +146,12 @@ class Base(Component):
     可排序列，只在列表页中有效
     """
 
-    span: int = None
+    span: Optional[int] = None
     """
     包含列的数量，只在详情页中有效
     """
 
-    column_width: int = None
+    column_width: Optional[int] = None
     """
     设置列宽，只在列表页中有效
     """
@@ -233,11 +233,6 @@ class Base(Component):
     回调函数
     """
 
-    style: Optional[Dict[str, Any]] = None
-    """
-    自定义样式
-    """
-
     @model_validator(mode="after")
     def init(self):
         self.set_key()
@@ -245,7 +240,13 @@ class Base(Component):
 
     def set_style(self, style: Dict[str, Any]):
         """设置组件的样式。"""
-        self.style = style
+        # 直接使用父类的style属性
+        current_style = getattr(self, "style", {}) or {}
+        if hasattr(self, "style"):
+            self.style = {**current_style, **style}
+        else:
+            # 如果父类没有style属性，则设置
+            self.__dict__["style"] = style
         return self
 
     def set_tooltip(self, tooltip: str):
@@ -494,7 +495,7 @@ class Base(Component):
         self.when = w.set_items(self.when_item)
         return self
 
-    def get_when(self) -> When:
+    def get_when(self) -> Optional[When]:
         """获取 When 组件数据。"""
         return self.when
 

@@ -1,7 +1,8 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
 import hashlib
 import uuid
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
 
 
 def to_camel(string: str) -> str:
@@ -19,13 +20,13 @@ class Component(BaseModel):
     )
 
     # 组件名称
-    component: str = None
+    component: str = ""
 
     # 组件key
-    componentkey: str = None
+    componentkey: str = ""
 
     # 组件样式
-    style: dict = None
+    style: Optional[dict] = None
 
     def set_component(self, component: str) -> "Component":
         self.component = component
