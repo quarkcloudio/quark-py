@@ -1,8 +1,8 @@
 import json
 from typing import Any, Dict, List
 
-from tortoise.queryset import QuerySet
 from tortoise.expressions import Q
+from tortoise.queryset import QuerySet
 
 from quark import Request, Resource, models, services, utils
 from quark.app import actions, searches
@@ -76,12 +76,13 @@ class User(Resource):
         positions = await services.PositionService().get_list()
 
         async def get_username(row) -> str:
-            return ("<a href='#/layout/index?api=/api/admin/user/edit&id="
+            return (
+                "<a href='#/layout/index?api=/api/admin/user/edit&id="
                 + str(row.id)
                 + "'>"
                 + row.username
-                + "</a>")
-            
+                + "</a>"
+            )
 
         return [
             field.id("id", "ID"),
@@ -185,12 +186,10 @@ class User(Resource):
     async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return [
-            actions.CreateLink(self.title),
+            actions.CreateDrawer(self),
             actions.BatchDelete(),
-            actions.BatchDisable(),
-            actions.BatchEnable(),
-            actions.DetailLink(),
-            actions.More().set_actions([actions.EditLink(), actions.DeleteSpecial()]),
+            actions.EditDrawer(self),
+            actions.DeleteSpecial(),
             actions.FormSubmit(),
             actions.FormReset(),
             actions.FormBack(),
