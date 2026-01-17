@@ -10,6 +10,7 @@ class BatchDelete(Action):
 
     def __init__(self, name: str = "批量删除"):
         self.name = name
+        self.icon = "ant-design:delete-outlined"
         self.type = "primary"
         self.size = "small"
         self.reload = "table"
