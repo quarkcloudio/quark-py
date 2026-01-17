@@ -11,9 +11,10 @@ class CreateDrawer(Drawer):
 
     def __init__(self, resource: Any):
         self.resource = resource
-        self.name = "创建" + resource.title
+        self.name = "新增"
         self.type = "primary"
-        self.icon = "plus-circle"
+        self.ghost = True
+        self.icon = "ant-design:plus-outlined"
         self.reload = "table"
         self.destroy_on_close = True
         self.set_only_on_index(True)

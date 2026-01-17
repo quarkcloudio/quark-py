@@ -18,6 +18,12 @@ class ModalForm(Action):
     # 关闭时销毁弹出层里的子元素，默认为 False
     destroy_on_close: bool = False
 
+    # 设置按钮类型，primary | ghost | dashed | link | text | default
+    type: str = "default"
+
+    # 设置按钮大小,large | middle | small | default
+    size: str = "small"
+
     # 获取取消按钮文案，默认为“取消”
     cancel_text: str = "取消"
 

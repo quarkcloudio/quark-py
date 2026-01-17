@@ -18,6 +18,12 @@ class Drawer(Action):
     # 关闭时销毁弹出层里的子元素，默认为 False
     destroy_on_close: bool = False
 
+    # 设置按钮类型，primary | ghost | dashed | link | text | default
+    type: str = "default"
+
+    # 设置按钮大小,large | middle | small | default
+    size: str = "small"
+
     async def content(self, request: Request) -> Optional[Any]:
         """
         获取抽屉内容，可以是任意类型的数据

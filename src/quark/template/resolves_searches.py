@@ -9,10 +9,10 @@ from ..component.table.search import Search as TableSearch
 class ResolvesSearches:
 
     # 请求
-    request: Request = None
+    request: Optional[Request] = None
 
     # 搜索组件
-    search: TableSearch = None
+    search: Optional[TableSearch] = None
 
     # 搜索字段
     searches: Optional[Any] = None

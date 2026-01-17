@@ -10,13 +10,16 @@ class BatchDelete(Action):
 
     def __init__(self, name: str = "批量删除"):
         self.name = name
-        self.type = "link"
+        self.type = "primary"
         self.size = "small"
         self.reload = "table"
+        self.batch = True
+        self.danger = True
+        self.ghost = True
         self.with_confirm(
             "确定要删除吗？", "删除后数据将无法恢复，请谨慎操作！", "modal"
         )
-        self.set_only_on_index_table_alert(True)
+        self.set_only_on_index(True)
 
     def get_api_params(self) -> List[str]:
         return ["id"]

@@ -28,6 +28,21 @@ class Action:
     # 当 action 的作用类型为submit的时候，可以指定提交哪个表格，submitForm为提交表单的key值，为空时提交当前表单
     submit_form: str = ""
 
+    # 配置按钮是否为块级元素
+    block: bool = False
+
+    # 批量操作
+    batch: bool = False
+
+    # 设置按钮是否为危险按钮
+    danger: bool = False
+
+    # 禁用按钮
+    disabled: bool = False
+
+    # 配置按钮是否为幽灵按钮
+    ghost: bool = False
+
     # 设置按钮的图标组件
     icon: Any = None
 
@@ -66,9 +81,6 @@ class Action:
 
     # 在列表页行展示
     show_on_index_table_row: bool = False
-
-    # 在列表页弹出层展示
-    show_on_index_table_alert: bool = False
 
     # 在表单页展示
     show_on_form: bool = False
@@ -131,6 +143,26 @@ class Action:
         """设置按钮的图标组件"""
         return self.icon
 
+    def get_block(self) -> bool:
+        """配置按钮是否为块级元素"""
+        return self.block
+
+    def get_batch(self) -> bool:
+        """批量操作"""
+        return self.batch
+
+    def get_danger(self) -> bool:
+        """设置按钮是否为危险按钮"""
+        return self.danger
+
+    def get_disabled(self) -> bool:
+        """禁用按钮"""
+        return self.disabled
+
+    def get_ghost(self) -> bool:
+        """配置按钮是否为幽灵按钮"""
+        return self.ghost
+
     def get_fields(self) -> Any:
         """行为表单字段"""
         return self.fields
@@ -187,6 +219,26 @@ class Action:
         """设置按钮的图标组件"""
         self.icon = icon
 
+    def set_block(self, block: bool):
+        """配置按钮是否为块级元素"""
+        self.block = block
+
+    def set_batch(self, batch: bool):
+        """批量操作"""
+        self.batch = batch
+
+    def set_danger(self, danger: bool):
+        """设置按钮是否为危险按钮"""
+        self.danger = danger
+
+    def set_disabled(self, disabled: bool):
+        """禁用按钮"""
+        self.disabled = disabled
+
+    def set_ghost(self, ghost: bool):
+        """配置按钮是否为幽灵按钮"""
+        self.ghost = ghost
+
     def set_fields(self, fields: Any):
         """行为表单字段"""
         self.fields = fields
@@ -215,7 +267,6 @@ class Action:
         self.show_on_index = value
         self.show_on_detail = not value
         self.show_on_index_table_row = not value
-        self.show_on_index_table_alert = not value
         self.show_on_form = not value
         self.show_on_form_extra = not value
         self.show_on_detail_extra = not value
@@ -224,7 +275,6 @@ class Action:
         """除了列表页外展示"""
         self.show_on_detail = True
         self.show_on_index_table_row = True
-        self.show_on_index_table_alert = True
         self.show_on_form = True
         self.show_on_form_extra = True
         self.show_on_detail_extra = True
@@ -233,7 +283,6 @@ class Action:
     def set_only_on_form(self, value: bool):
         """只在表单页展示"""
         self.show_on_form = value
-        self.show_on_index_table_alert = not value
         self.show_on_index = not value
         self.show_on_detail = not value
         self.show_on_index_table_row = not value
@@ -242,7 +291,6 @@ class Action:
 
     def set_except_on_form(self):
         """除了表单页外展示"""
-        self.show_on_index_table_alert = True
         self.show_on_index = True
         self.show_on_detail = True
         self.show_on_index_table_row = True
@@ -253,7 +301,6 @@ class Action:
     def set_only_on_form_extra(self, value: bool):
         """只在表单页右上角自定义区域展示"""
         self.show_on_form = not value
-        self.show_on_index_table_alert = not value
         self.show_on_index = not value
         self.show_on_detail = not value
         self.show_on_index_table_row = not value
@@ -262,7 +309,6 @@ class Action:
 
     def set_except_on_form_extra(self):
         """除了表单页右上角自定义区域外展示"""
-        self.show_on_index_table_alert = True
         self.show_on_index = True
         self.show_on_detail = True
         self.show_on_index_table_row = True
@@ -276,7 +322,6 @@ class Action:
         self.show_on_detail = value
         self.show_on_index = not value
         self.show_on_index_table_row = not value
-        self.show_on_index_table_alert = not value
         self.show_on_form = not value
         self.show_on_form_extra = not value
         self.show_on_detail_extra = not value
@@ -286,7 +331,6 @@ class Action:
         self.show_on_index = True
         self.show_on_detail = False
         self.show_on_index_table_row = True
-        self.show_on_index_table_alert = True
         self.show_on_form = True
         self.show_on_form_extra = True
         self.show_on_detail_extra = True
@@ -294,7 +338,6 @@ class Action:
     def set_only_on_detail_extra(self, value: bool):
         """只在详情页右上角自定义区域展示"""
         self.show_on_form = not value
-        self.show_on_index_table_alert = not value
         self.show_on_index = not value
         self.show_on_detail = not value
         self.show_on_index_table_row = not value
@@ -303,7 +346,6 @@ class Action:
 
     def set_except_on_detail_extra(self):
         """除了详情页右上角自定义区域外展示"""
-        self.show_on_index_table_alert = True
         self.show_on_index = True
         self.show_on_detail = True
         self.show_on_index_table_row = True
@@ -316,7 +358,6 @@ class Action:
         self.show_on_index_table_row = value
         self.show_on_index = not value
         self.show_on_detail = not value
-        self.show_on_index_table_alert = not value
         self.show_on_form = not value
         self.show_on_form_extra = not value
         self.show_on_detail_extra = not value
@@ -326,27 +367,6 @@ class Action:
         self.show_on_index_table_row = False
         self.show_on_index = True
         self.show_on_detail = True
-        self.show_on_index_table_alert = True
-        self.show_on_form = True
-        self.show_on_form_extra = True
-        self.show_on_detail_extra = True
-
-    def set_only_on_index_table_alert(self, value: bool):
-        """在表格多选弹出层展示"""
-        self.show_on_index_table_alert = value
-        self.show_on_index = not value
-        self.show_on_detail = not value
-        self.show_on_index_table_row = not value
-        self.show_on_form = not value
-        self.show_on_form_extra = not value
-        self.show_on_detail_extra = not value
-
-    def set_except_on_index_table_alert(self):
-        """除了表格多选弹出层外展示"""
-        self.show_on_index_table_alert = False
-        self.show_on_index = True
-        self.show_on_detail = True
-        self.show_on_index_table_row = True
         self.show_on_form = True
         self.show_on_form_extra = True
         self.show_on_detail_extra = True
@@ -374,10 +394,6 @@ class Action:
     def set_show_on_index_table_row(self):
         """在表格行内展示"""
         self.show_on_index_table_row = True
-
-    def set_show_on_index_table_alert(self):
-        """在多选弹出层展示"""
-        self.show_on_index_table_alert = True
 
     def shown_on_index(self) -> bool:
         """判断是否在列表页展示"""
@@ -412,10 +428,6 @@ class Action:
     def shown_on_index_table_row(self) -> bool:
         """判断是否在表格行内展示"""
         return self.show_on_index_table_row
-
-    def shown_on_index_table_alert(self) -> bool:
-        """判断是否在多选弹出层展示"""
-        return self.show_on_index_table_alert
 
     def shown_on_form_extra(self) -> bool:
         """判断是否在表单页右上角自定义区域展示"""

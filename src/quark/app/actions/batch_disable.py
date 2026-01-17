@@ -11,13 +11,14 @@ class BatchDisable(Action):
     def __init__(self, name: str = "批量禁用"):
         super().__init__()
         self.name = name
-        self.type = "link"
+        self.type = "default"
         self.size = "small"
         self.reload = "table"
-        self.set_only_on_index_table_alert(True)
+        self.batch = True
         self.with_confirm(
             "确定要禁用吗？", "禁用后数据将无法使用，请谨慎操作！", "modal"
         )
+        self.set_only_on_index(True)
 
     def get_api_params(self) -> List[str]:
         return ["id"]

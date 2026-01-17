@@ -10,11 +10,12 @@ class BatchEnable(Action):
 
     def __init__(self, name: str = "批量启用"):
         self.name = name
-        self.type = "link"
+        self.type = "default"
         self.size = "small"
         self.reload = "table"
-        self.set_only_on_index_table_alert(True)
+        self.batch = True
         self.with_confirm("确定要启用吗？", "启用后数据将正常使用！", "modal")
+        self.set_only_on_index(True)
 
     def get_api_params(self) -> List[str]:
         return ["id"]

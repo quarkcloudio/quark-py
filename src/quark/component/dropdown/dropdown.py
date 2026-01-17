@@ -1,11 +1,13 @@
+from typing import Dict, List, Optional, Union
+
 from pydantic import model_validator
-from typing import Union, List, Dict, Optional
+
 from ..component import Component
 from .item import Item
 
 
 class Dropdown(Component):
-    component: str = "dropdown"
+    component: Optional[str] = "dropdown"
 
     # 按钮文字
     label: Optional[Union[str, List[str]]] = None
@@ -131,9 +133,9 @@ class Dropdown(Component):
         :return: 返回当前组件实例
         """
         if isinstance(icon, str):
-            self.icon = f"icon-{icon}"
+            self.icon = f"{icon}"
         elif isinstance(icon, list) and len(icon) == 2:
-            self.icon = [f"icon-{icon[0]}", f"icon-{icon[1]}"]
+            self.icon = [f"{icon[0]}", f"{icon[1]}"]
         return self
 
     def set_shape(self, shape: str) -> "Dropdown":

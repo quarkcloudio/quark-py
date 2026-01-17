@@ -39,16 +39,6 @@ class ResolvesActions:
 
         return items
 
-    async def index_table_alert_actions(self) -> List[Any]:
-        """获取多选弹出层动作"""
-        items = []
-        if self.actions is not None:
-            for action in self.actions:
-                if action.shown_on_index_table_alert():
-                    items.append(await self.build_action(action))
-
-        return items
-
     async def form_actions(self) -> List[Any]:
         """获取表单页动作"""
         items = []
@@ -101,6 +91,11 @@ class ResolvesActions:
         button_type = item.get_type()
         size = item.get_size()
         icon = item.get_icon()
+        block = item.get_block()
+        batch = item.get_batch()
+        disabled = item.get_disabled()
+        danger = item.get_danger()
+        ghost = item.get_ghost()
         confirm_title = item.get_confirm_title()
         confirm_text = item.get_confirm_text()
         confirm_type = item.get_confirm_type()
@@ -126,6 +121,21 @@ class ResolvesActions:
 
         if icon:
             action_component.set_icon(icon)
+
+        if block:
+            action_component.set_block(block)
+
+        if batch:
+            action_component.set_batch(batch)
+
+        if disabled:
+            action_component.set_disabled(disabled)
+
+        if danger:
+            action_component.set_danger(danger)
+
+        if ghost:
+            action_component.set_ghost(ghost)
 
         # 特定行为类型渲染
         if action_type == "link":
