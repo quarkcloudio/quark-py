@@ -1,27 +1,31 @@
+from typing import Any, Dict, List, Optional
+
 from pydantic import Field, model_validator
-from typing import Any, List, Dict
+
 from ..component import Component
 
 
 class Search(Component):
-    component: str = "search"
-    filter_type: str = None
-    search_text: str = None
-    reset_text: str = None
-    submit_text: str = None
-    label_width: int = None
-    span: int = None
-    class_name: str = None
+    component: Optional[str] = "search"
+    filter_type: Optional[str] = None
+    search_text: Optional[str] = None
+    reset_text: Optional[str] = None
+    submit_text: Optional[str] = None
+    label_width: Optional[int] = None
+    span: Optional[int] = None
+    class_name: Optional[str] = None
     default_collapsed: bool = True
     show_hidden_num: bool = False
-    export_text: str = None
-    export_api: str = None
+    export_text: Optional[str] = None
+    export_api: Optional[str] = None
     items: List[Any] = Field(default_factory=list)
-    style: Dict[str, Any] = Field(default_factory=dict)
+    style: Optional[dict] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def init(self):
         self.set_key()
+        self.reset_text = "重置"
+        self.submit_text = "搜索"
         return self
 
     # 设置方法（链式调用）
