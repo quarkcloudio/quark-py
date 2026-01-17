@@ -1,26 +1,30 @@
-from pydantic import Field, field_validator, model_validator
 from typing import Any, List, Optional, Union
+
+from pydantic import Field, model_validator
+
 from ..component import Component
 from ..drawer.drawer import Drawer
 from ..modal.modal import Modal
 
+
 class Action(Component):
-    component: str = Field(default="action")
+    component: Optional[str] = Field(default="action")
     label: Any = Field(default=None)
     block: bool = Field(default=False)
+    batch: bool = Field(default=False)
     danger: bool = Field(default=False)
     disabled: bool = Field(default=False)
     ghost: bool = Field(default=False)
-    icon: Union[str, List[str]] = Field(default=None)
+    icon: Optional[Any] = Field(default=None)
     shape: Optional[str] = Field(default=None)
     size: str = Field(default="default")
     type: str = Field(default="default")
-    action_type: str = Field(default=None, alias="actionType")
+    action_type: Optional[str] = Field(default=None, alias="actionType")
     submit_form: Any = Field(default=None, alias="submitForm")
     href: Optional[str] = Field(default=None)
     target: Optional[str] = Field(default=None)
-    modal: Optional[Any] = Field(default=None)
-    drawer: Optional[Any] = Field(default=None)
+    modal: Optional["Modal"] = Field(default=None)
+    drawer: Optional["Drawer"] = Field(default=None)
     checked_children: Optional[Any] = Field(default=None, alias="checkedChildren")
     un_checked_children: Optional[Any] = Field(default=None, alias="unCheckedChildren")
     field_name: Optional[Any] = Field(default=None, alias="fieldName")
@@ -31,14 +35,6 @@ class Action(Component):
     api: Optional[str] = Field(default=None)
     reload: Optional[str] = Field(default=None)
     with_loading: bool = Field(default=False, alias="withLoading")
-
-    @field_validator('icon')
-    def validate_icon(cls, v):
-        if isinstance(v, str):
-            return f"icon-{v}"
-        elif isinstance(v, list):
-            return [f"icon-{item}" for item in v]
-        return v
 
     @model_validator(mode="after")
     def init(self):
@@ -57,6 +53,10 @@ class Action(Component):
         self.block = block
         return self
 
+    def set_batch(self, batch: bool):
+        self.batch = batch
+        return self
+
     def set_danger(self, danger: bool):
         self.danger = danger
         return self
@@ -70,7 +70,7 @@ class Action(Component):
         return self
 
     def set_icon(self, icon: Union[str, List[str]]):
-        self.icon = self.validate_icon(icon)
+        self.icon = icon
         return self
 
     def set_shape(self, shape: str):

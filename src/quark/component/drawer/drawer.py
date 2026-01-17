@@ -1,28 +1,45 @@
-from pydantic import Field, model_validator
 from typing import Any, List, Optional
+
+from pydantic import Field, model_validator
+
 from ..component import Component
 
+
 class Drawer(Component):
-    component: str = Field(default="drawer")
+    component: Optional[str] = Field(default="drawer")
     title: Any = Field(None, description="标题")
     body_style: Any = Field(None, alias="bodyStyle", description="Modal body 样式")
     closable: bool = Field(True, description="是否显示右上角的关闭按钮")
-    content_wrapper_style: Any = Field(None, alias="contentWrapperStyle", description="可用于设置 Drawer 包裹内容部分的样式")
-    destroy_on_close: bool = Field(False, alias="destroyOnClose", description="关闭时销毁 Modal 里的子元素")
-    drawer_style: Any = Field(None, alias="drawerStyle", description="用于设置 Drawer 弹出层的样式")
-    footer_style: Any = Field({"textAlign": "right"}, alias="footerStyle", description="抽屉页脚部件的样式")
+    content_wrapper_style: Any = Field(
+        None,
+        alias="contentWrapperStyle",
+        description="可用于设置 Drawer 包裹内容部分的样式",
+    )
+    destroy_on_close: bool = Field(
+        False, alias="destroyOnClose", description="关闭时销毁 Modal 里的子元素"
+    )
+    drawer_style: Any = Field(
+        None, alias="drawerStyle", description="用于设置 Drawer 弹出层的样式"
+    )
+    footer_style: Any = Field(
+        {"textAlign": "right"}, alias="footerStyle", description="抽屉页脚部件的样式"
+    )
     height: int = Field(256, description="高度, 在 placement 为 top 或 bottom 时使用")
     keyboard: bool = Field(True, description="是否支持键盘 esc 关闭")
     mask: bool = Field(True, description="是否展示遮罩")
-    mask_closable: bool = Field(True, alias="maskClosable", description="点击蒙层是否允许关闭")
+    mask_closable: bool = Field(
+        True, alias="maskClosable", description="点击蒙层是否允许关闭"
+    )
     mask_style: Any = Field(None, alias="maskStyle", description="遮罩样式")
     open: bool = Field(False, description="对话框是否可见")
     width: int = Field(256, description="宽度")
     z_index: int = Field(1000, alias="zIndex", description="设置 Modal 的 z-index")
     actions: List[Any] = Field([], description="弹窗行为")
-    placement: str = Field("right", description="抽屉的方向, top | right | bottom | left")
+    placement: str = Field(
+        "right", description="抽屉的方向, top | right | bottom | left"
+    )
     init_api: Optional[Any] = Field(None, alias="initApi", description="数据初始化接口")
-    body: Any = Field(None, description="容器控件里面的内容")
+    body: Any = Field([], description="容器控件里面的内容")  # 修改默认值为 []
 
     @model_validator(mode="after")
     def init(self):

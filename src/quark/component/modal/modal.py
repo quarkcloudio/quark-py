@@ -1,17 +1,28 @@
-from pydantic import Field, model_validator
 from typing import Any, List, Optional
+
+from pydantic import Field, model_validator
+
 from ..component import Component
 
+
 class Modal(Component):
-    component: str = Field(default="modal")
+    component: Optional[str] = Field(default="modal")
     title: Any = Field(None, description="标题")
     centered: bool = Field(False, description="垂直居中展示 Modal")
     closable: bool = Field(True, description="是否显示右上角的关闭按钮")
-    destroy_on_close: bool = Field(False, alias="destroyOnClose", description="关闭时销毁 Modal 里的子元素")
-    focus_trigger_after_close: bool = Field(False, alias="focusTriggerAfterClose", description="设置按钮形状，可选值为 circle、 round 或者不设")
+    destroy_on_close: bool = Field(
+        False, alias="destroyOnClose", description="关闭时销毁 Modal 里的子元素"
+    )
+    focus_trigger_after_close: bool = Field(
+        False,
+        alias="focusTriggerAfterClose",
+        description="设置按钮形状，可选值为 circle、 round 或者不设",
+    )
     keyboard: bool = Field(True, description="是否支持键盘 esc 关闭")
     mask: bool = Field(True, description="是否展示遮罩")
-    mask_closable: bool = Field(True, alias="maskClosable", description="点击蒙层是否允许关闭")
+    mask_closable: bool = Field(
+        True, alias="maskClosable", description="点击蒙层是否允许关闭"
+    )
     open: bool = Field(False, description="对话框是否可见")
     width: int = Field(520, description="宽度")
     z_index: int = Field(1000, alias="zIndex", description="设置 Modal 的 z-index")

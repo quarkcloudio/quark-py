@@ -25,18 +25,18 @@ class Form(Component):
     date_formatter: str = "string"
     layout: str = "horizontal"
     grid: bool = False
-    row_props: Dict[str, Any] = {}
-    label_col: Dict[str, Any] = {"span": 4}
-    wrapper_col: Dict[str, Any] = {"span": 20}
-    button_wrapper_col: Dict[str, Any] = {"offset": 4, "span": 20}
+    row_props: Optional[Dict[str, Any]] = None
+    label_col: Optional[Dict[str, Any]] = {"span": 4}
+    wrapper_col: Optional[Dict[str, Any]] = {"span": 20}
+    button_wrapper_col: Optional[Dict[str, Any]] = {"offset": 4, "span": 20}
     api: Optional[str] = None
     api_type: str = "POST"
     target_blank: bool = False
     init_api: Optional[str] = None
     body: Any = None
-    actions: List[Any] = None
+    actions: Optional[List[Any]] = None
     component_key: Optional[str] = None
-    style: Dict[str, Any] = None
+    style: Optional[dict] = None
 
     @model_validator(mode="after")
     def init(self) -> "Form":
