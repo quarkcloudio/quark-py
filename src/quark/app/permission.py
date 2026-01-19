@@ -62,9 +62,9 @@ class Permission(Resource):
     async def actions(self, request: Request) -> List[Any]:
         """行为定义"""
         return [
-            actions.SyncPermission(),
             actions.CreateModal(self),
             actions.BatchDelete(),
+            actions.SyncPermission(),
             actions.EditModal(self),
             actions.Delete(),
             actions.FormSubmit(),
