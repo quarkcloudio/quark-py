@@ -1,25 +1,28 @@
 from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel
+
 from .base import Base
 
 
-class FieldNames(Base):
+class FieldNames(BaseModel):
     label: str
     value: str
     children: str
 
 
-class TreeData(Base):
+class TreeData(BaseModel):
     title: str
     value: Any
     children: List["TreeData"] = []
-    disabled: bool = None
-    disable_checkbox: bool = None
-    selectable: bool = None
-    checkable: bool = None
+    disabled: Optional[bool] = None
+    disable_checkbox: Optional[bool] = None
+    selectable: Optional[bool] = None
+    checkable: Optional[bool] = None
 
 
 class TreeSelect(Base):
-    component: str = "treeSelectField"
+    component: Optional[str] = "treeSelectField"
     """
     组件名称
     """
@@ -29,12 +32,12 @@ class TreeSelect(Base):
     可以点击清除图标删除内容
     """
 
-    auto_clear_search_value: bool = None
+    auto_clear_search_value: Optional[bool] = None
     """
     是否在选中项后清空搜索框，只在 mode 为 multiple 或 tags 时有效
     """
 
-    bordered: bool = None
+    bordered: Optional[bool] = None
     """
     是否有边框
     """
@@ -44,7 +47,7 @@ class TreeSelect(Base):
     默认选中的选项
     """
 
-    disabled: bool = None
+    disabled: Optional[bool] = None
     """
     整组失效
     """
@@ -69,7 +72,7 @@ class TreeSelect(Base):
     自定义 options 中 label value children 的字段
     """
 
-    label_in_value: bool = None
+    label_in_value: Optional[bool] = None
     """
     是否把每个选项的 label 包装到 value 中，会把 Select 的 value 类型从 string 变为 { value: string, label: ReactNode } 的格式
     """
@@ -94,7 +97,7 @@ class TreeSelect(Base):
     最大显示的 tag 文本长度
     """
 
-    multiple: bool = None
+    multiple: Optional[bool] = None
     """
     支持多选（当设置 treeCheckable 时自动变为 true）
     """
@@ -119,12 +122,12 @@ class TreeSelect(Base):
     控制搜索文本
     """
 
-    show_arrow: bool = None
+    show_arrow: Optional[bool] = None
     """
     是否显示下拉小箭头
     """
 
-    show_search: bool = None
+    show_search: Optional[bool] = None
     """
     配置是否可搜索
     """
@@ -149,12 +152,12 @@ class TreeSelect(Base):
     自定义树节点的展开/折叠图标
     """
 
-    tree_checkable: bool = None
+    tree_checkable: Optional[bool] = None
     """
     显示 Checkbox
     """
 
-    tree_check_strictly: bool = None
+    tree_check_strictly: Optional[bool] = None
     """
     checkable 状态下节点选择完全受控（父子节点选中状态不再关联），会使得 labelInValue 强制为 true
     """
@@ -174,7 +177,7 @@ class TreeSelect(Base):
     默认展开所有树节点
     """
 
-    tree_default_expanded_keys: List[Any] = None
+    tree_default_expanded_keys: Optional[List[Any]] = None
     """
     默认展开的树节点
     """
@@ -184,12 +187,12 @@ class TreeSelect(Base):
     点击节点 title 时的展开逻辑，可选：false | click | doubleClick
     """
 
-    tree_expanded_keys: List[Any] = None
+    tree_expanded_keys: Optional[List[Any]] = None
     """
     设置展开的树节点
     """
 
-    tree_icon: bool = None
+    tree_icon: Optional[bool] = None
     """
     是否展示 TreeNode title 前的图标，没有默认样式，如设置为 true，需要自行定义图标相关样式
     """
@@ -214,7 +217,7 @@ class TreeSelect(Base):
     指定当前选中的条目，多选时为一个数组。（value 数组引用未变化时，Select 不会更新）
     """
 
-    virtual: bool = None
+    virtual: Optional[bool] = None
     """
     设置 false 时关闭虚拟滚动
     """
