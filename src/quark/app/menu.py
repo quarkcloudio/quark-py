@@ -137,8 +137,6 @@ class Menu(Resource):
         return [
             actions.MenuCreateDrawer(self),
             actions.BatchDelete(),
-            actions.BatchDisable(),
-            actions.BatchEnable(),
             actions.ChangeStatus(),
             actions.MenuEditDrawer(self),
             actions.Delete(),

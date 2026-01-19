@@ -88,8 +88,6 @@ class Department(Resource):
         return [
             actions.CreateModal(self),
             actions.BatchDelete(),
-            actions.BatchDisable(),
-            actions.BatchEnable(),
             actions.EditModal(self),
             actions.DeleteSpecial(),
         ]
