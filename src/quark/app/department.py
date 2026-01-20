@@ -47,15 +47,6 @@ class Department(Resource):
                     Rule.max(100, "部门名称不能超过100个字符"),
                 ]
             ),
-            field.tree_select("pid", "父节点")
-            .set_tree_data(departments, "pid", "name", "id")
-            .set_rules(
-                [
-                    Rule.required("请选择父节点"),
-                ]
-            )
-            .set_default_value(1)
-            .only_on_creating(),
             field.dependency().set_when(
                 "id",
                 "!=",
@@ -65,7 +56,6 @@ class Department(Resource):
                     .set_tree_data(departments, "pid", "name", "id")
                     .set_rules([Rule.required("请选择父节点")])
                     .set_default_value(1)
-                    .only_on_updating()
                 ),
             ),
             field.number("sort", "排序").set_editable(True).set_default_value(0),
