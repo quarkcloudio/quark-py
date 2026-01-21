@@ -56,6 +56,7 @@ class Department(Resource):
                     .set_tree_data(departments, "pid", "name", "id")
                     .set_rules([Rule.required("请选择父节点")])
                     .set_default_value(1)
+                    .only_on_forms()
                 ),
             ),
             field.number("sort", "排序").set_editable(True).set_default_value(0),
