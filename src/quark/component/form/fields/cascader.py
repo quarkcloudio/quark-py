@@ -1,5 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 from pydantic import model_validator
-from typing import Any, List, Optional, Dict
+
 from ...component import Component
 from .base import Base
 
@@ -184,6 +186,15 @@ class Cascader(Base):
         self.set_width(400)
         self.placeholder = "请选择"
         return self
+
+    def get_options(self) -> List[Option]:
+        """
+        获取当前可选项。
+
+        Returns:
+            List[Option]: 可选项列表。
+        """
+        return self.options
 
     def set_options(self, *args: Any):
         """

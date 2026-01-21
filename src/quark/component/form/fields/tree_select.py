@@ -244,6 +244,15 @@ class TreeSelect(Base):
         self.set_width(200)
         self.set_key("DEFAULT_KEY", False)
 
+    def get_options(self) -> List[TreeData]:
+        """
+        获取当前可选项。
+
+        Returns:
+            List[Option]: 可选项列表。
+        """
+        return self.tree_data
+
     def set_allow_clear(self, allow_clear: bool):
         self.allow_clear = allow_clear
         return self
