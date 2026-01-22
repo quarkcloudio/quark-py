@@ -2,11 +2,10 @@ from typing import Any, Dict, List
 
 from tortoise import Model
 
-from quark import Request
+from quark import Message, Request
 
 from ..component.card.card import Card
 from ..component.form.form import Form
-from ..component.message.message import Message
 from ..component.tabs.tabs import Tabs
 from ..utils import is_creating, is_editing
 from .request.store import StoreRequest
@@ -166,4 +165,4 @@ class ResourceForm:
             "{resource}", request.path_params.get("resource", "")
         )
 
-        return Message.success("操作成功", None, redirect_url)
+        return Message.redirect_to("操作成功", redirect_url)

@@ -5,7 +5,7 @@ from tortoise.models import Model
 class Permission(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=500)
-    guard_name = fields.CharField(max_length=100)
+    guard_name = fields.CharField(max_length=100, null=True)
     path = fields.CharField(max_length=500)
     method = fields.CharField(max_length=500)
     remark = fields.CharField(max_length=100, null=True)
