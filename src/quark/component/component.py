@@ -19,6 +19,10 @@ class Component(BaseModel):
         extra="allow",
     )
 
+    def model_dump(self, exclude_none=True, **kwargs):
+        """重写 model_dump 方法来默认排除 None 值"""
+        return super().model_dump(exclude_none=exclude_none, **kwargs)
+
     # 组件名称
     component: Optional[str] = None
 

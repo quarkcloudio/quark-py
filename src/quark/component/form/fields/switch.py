@@ -1,4 +1,5 @@
-from typing import Dict, Optional, Any
+from typing import Any, Dict, Optional
+
 from .base import Base
 
 
@@ -17,17 +18,17 @@ class Option(Base):
 
 class Switch(Base):
 
-    component: str = "switchField"
+    component: Optional[str] = "switchField"
     """
     组件名称
     """
 
-    auto_focus: bool = False
+    auto_focus: Optional[bool] = None
     """
     默认获取焦点，默认值为 False
     """
 
-    checked: bool = False
+    checked: Optional[bool] = None
     """
     指定当前是否选中，默认值为 False
     """
@@ -42,7 +43,7 @@ class Switch(Base):
     Switch 器类名
     """
 
-    default_checked: bool = False
+    default_checked: Optional[bool] = None
     """
     初始是否选中，默认值为 False
     """
@@ -52,12 +53,12 @@ class Switch(Base):
     默认选中的选项
     """
 
-    disabled: bool = False
+    disabled: Optional[bool] = None
     """
     整组失效，默认值为 False
     """
 
-    loading: bool = False
+    loading: Optional[bool] = None
     """
     加载中状态，默认值为 False
     """

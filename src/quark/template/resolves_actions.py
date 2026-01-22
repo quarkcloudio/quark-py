@@ -150,14 +150,11 @@ class ResolvesActions:
             body = await item.get_body(self.request)
             actions = await item.get_actions(self.request)
 
-            form_component = Form().set_api(api).set_init_api(init_api).set_body(body)
-            form_component.label_col = {"span": 6}
-            form_component.wrapper_col = {"span": 18}
-
             action_component.set_modal(
                 lambda m: m.set_title(name)
+                .set_init_api(init_api)
                 .set_width(width)
-                .set_body(form_component)
+                .set_body(body)
                 .set_actions(actions)
                 .set_destroy_on_close(destroy_on_close)
             )
@@ -169,14 +166,11 @@ class ResolvesActions:
             body = await item.get_body(self.request)
             actions = await item.get_actions(self.request)
 
-            form_component = Form().set_api(api).set_init_api(init_api).set_body(body)
-            form_component.label_col = {"span": 6}
-            form_component.wrapper_col = {"span": 18}
-
             action_component.set_drawer(
                 lambda d: d.set_title(name)
+                .set_init_api(init_api)
                 .set_width(width)
-                .set_body(form_component)
+                .set_body(body)
                 .set_actions(actions)
                 .set_destroy_on_close(destroy_on_close)
             )
