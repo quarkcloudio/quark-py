@@ -183,7 +183,7 @@ class Cascader(Base):
     @model_validator(mode="after")
     def init(self):
         self.set_key()
-        self.set_width(400)
+        self.set_width("400px")
         self.placeholder = "请选择"
         return self
 

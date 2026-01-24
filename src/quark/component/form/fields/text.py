@@ -1,5 +1,7 @@
-from pydantic import Field, model_validator
 from typing import Any, Optional, Union
+
+from pydantic import Field, model_validator
+
 from .base import Base
 
 
@@ -27,7 +29,7 @@ class Text(Base):
     @model_validator(mode="after")
     def init(self):
         self.set_key()
-        self.set_width(200)
+        self.set_width("200px")
         return self
 
     def set_addon_after(self, addon_after: Any):

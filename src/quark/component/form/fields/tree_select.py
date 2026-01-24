@@ -241,7 +241,7 @@ class TreeSelect(Base):
         self.allow_clear = True
         self.tree_default_expand_all = True
         self.tree_line = True
-        self.set_width(200)
+        self.set_width("200px")
         self.set_key("DEFAULT_KEY", False)
 
     def get_options(self) -> List[TreeData]:

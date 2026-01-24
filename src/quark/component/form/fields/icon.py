@@ -360,7 +360,7 @@ class Icon(Base):
             "icon-admin",
             "icon-banner",
         ]
-        self.set_width(200)
+        self.set_width("200px")
         self.set_default_value("")
         self.set_key()
         return self

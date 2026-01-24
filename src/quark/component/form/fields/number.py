@@ -120,7 +120,7 @@ class Number(Base):
     @model_validator(mode="after")
     def init(self):
         self.set_key()
-        self.set_width(200)
+        self.set_width("200px")
         return self
 
     def set_addon_after(self, addon_after: Any):

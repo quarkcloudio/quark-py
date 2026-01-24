@@ -88,7 +88,7 @@ class Menu(Resource):
                     .set_rules([Rule.required("路由必须填写")])
                     .set_editable(True)
                     .set_help("前端路由")
-                    .set_width(400),
+                    .set_width("400px"),
                 ],
             ),
             field.dependency().set_when(
@@ -107,7 +107,7 @@ class Menu(Resource):
                     .set_rules([Rule.required("路由必须填写")])
                     .set_editable(True)
                     .set_help("前端路由或后端api")
-                    .set_width(400)
+                    .set_width("400px")
                     .only_on_forms(),
                 ],
             ),
