@@ -15,13 +15,16 @@ class MenuCreateDrawer(Drawer):
         self.resource = resource
 
         # 名称
-        self.name = "创建" + resource.title
+        self.name = "创建"
 
         # 类型
         self.type = "primary"
 
+        # 幽灵按钮
+        self.ghost = True
+
         # 图标
-        self.icon = "plus-circle"
+        self.icon = "ant-design:plus-outlined"
 
         # 执行成功后刷新的组件
         self.reload = "table"
@@ -46,9 +49,8 @@ class MenuCreateDrawer(Drawer):
             Form()
             .set_api(api)
             .set_body(fields)
+            .set_layout("vertical")
             .set_initial_values(data)
-            .set_label_col({"span": 6})
-            .set_wrapper_col({"span": 18})
             .set_key("createDrawerForm", False)
         )
 
