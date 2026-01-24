@@ -1,7 +1,7 @@
 import json
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from .base import Base
 
@@ -247,6 +247,12 @@ class Select(Base):
     """
     自定义样式，默认值为空字典
     """
+
+    @model_validator(mode="after")
+    def init(self):
+        self.set_key()
+        self.set_width("200px")
+        return self
 
     def get_options(self) -> List[Option]:
         """
