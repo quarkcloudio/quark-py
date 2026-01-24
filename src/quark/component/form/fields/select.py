@@ -243,7 +243,7 @@ class Select(Base):
     单向联动，默认值为空字典
     """
 
-    style: Optional[Dict[str, Any]] = Field(default={}, exclude=True)
+    style: dict = Field(default_factory=dict)
     """
     自定义样式，默认值为空字典
     """
