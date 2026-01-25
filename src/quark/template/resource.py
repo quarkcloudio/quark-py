@@ -92,7 +92,7 @@ class Resource(
     table_action_column_title: str = Field(default="操作")
 
     # 操作列宽度，单位为像素
-    table_action_column_width: int = Field(default=150)
+    table_action_column_width: Optional[int] = Field(default=None)
 
     # 表格数据轮询间隔时间（秒）
     table_polling: Any = Field(default=None)

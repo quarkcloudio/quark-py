@@ -1,33 +1,35 @@
+from typing import Any, Dict, List, Optional, Union
+
 from pydantic import Field, model_validator
-from typing import Any, Dict, Union, List, Optional
+
 from ..component import Component
 
 
 class Column(Component):
-    component: str = "column"
-    title: str = None
-    attribute: str = None
+    component: Optional[str] = "column"
+    title: Optional[str] = None
+    attribute: Optional[str] = None
     align: str = "left"
-    data_index: str = None
+    data_index: Optional[str] = None
     fixed: Any = None
-    tooltip: str = None
-    ellipsis: bool = None
-    copyable: bool = None
+    tooltip: Optional[str] = None
+    ellipsis: Optional[bool] = None
+    copyable: Optional[bool] = None
     value_enum: Optional[Union[Dict[Any, Any], List[Dict[str, Any]]]] = None
-    value_type: str = None
+    value_type: Optional[str] = None
     hide_in_search: bool = True
-    hide_in_table: bool = None
-    hide_in_form: bool = None
+    hide_in_table: Optional[bool] = None
+    hide_in_form: Optional[bool] = None
     filters: Optional[Union[bool, Dict[str, str], List[Dict[str, str]]]] = None
-    order: int = None
+    order: Optional[int] = None
     sorter: Any = None
-    span: int = None
-    width: int = None
+    span: Optional[int] = None
+    width: Optional[int] = None
     editable: Optional[Dict[str, Any]] = None
     actions: Optional[Any] = None
     form_item_props: Optional[Any] = None
     field_props: Optional[Any] = None
-    style: Dict[str, Any] = None
+    style: Optional[Dict[str, Any]] = None
 
     @model_validator(mode="after")
     def init(self):
@@ -114,7 +116,7 @@ class Column(Component):
         self.span = span
         return self
 
-    def set_width(self, width: int):
+    def set_width(self, width: Optional[int]):
         self.width = width
         return self
 

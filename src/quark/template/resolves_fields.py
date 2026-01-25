@@ -25,7 +25,7 @@ class ResolvesFields:
     table_action_column_title: str = "操作"
 
     # 表格行内操作列宽度
-    table_action_column_width: int = 150
+    table_action_column_width: Optional[int] = None
 
     def __init__(
         self,
@@ -34,7 +34,7 @@ class ResolvesFields:
         table_column: Column = None,
         table_row_actions: Optional[Any] = None,
         table_action_column_title: str = "操作",
-        table_action_column_width: int = 150,
+        table_action_column_width: Optional[int] = None,
     ):
         self.request = request
         self.fields = fields
