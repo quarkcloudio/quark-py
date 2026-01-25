@@ -89,7 +89,7 @@ class IndexRequest:
             return await self.performs_list(results)
 
         # 分页参数
-        data = self.request.query_params.get("search")
+        data = self.request.query_params.get("pagination")
         search_params = {}
         if data:
             try:
@@ -97,7 +97,7 @@ class IndexRequest:
             except:
                 pass
 
-        page = int(search_params.get("current", 1))
+        current = int(search_params.get("current", 1))
         page_size = int(search_params.get("pageSize", page_size))
 
         # 获取总数
@@ -112,7 +112,7 @@ class IndexRequest:
 
         # 获取当前页数据
         results = (
-            await index_query.limit(page_size).offset((page - 1) * page_size).all()
+            await index_query.limit(page_size).offset((current - 1) * page_size).all()
         )
 
         # 解析列表数据
@@ -120,7 +120,7 @@ class IndexRequest:
 
         # 构建返回数据
         data = {
-            "page": page,
+            "current": current,
             "pageSize": page_size,
             "pageSizeOptions": page_size_options,
             "total": total,

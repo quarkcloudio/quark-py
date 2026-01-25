@@ -134,7 +134,7 @@ class ResourceIndex:
         if not isinstance(page_size, int) or isinstance(page_size, bool):
             return table.set_datasource(data)
         else:
-            current = data.get("page")
+            current = data.get("current")
             page_size_val = data.get("pageSize")
             page_size_options = data.get("pageSizeOptions")
             total = data.get("total")
