@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
 
-from fastapi import Request
+from quark import Message, Request
 from pydantic import BaseModel, Field
 
 from ..component.card.card import Card
@@ -85,4 +85,6 @@ class Dashboard(BaseModel):
                 row.set_style({"marginTop": "20px"})
             body.append(row)
 
-        return await self.page_component_render(request, body)
+        return Message.success(
+            "ok", body
+        )
