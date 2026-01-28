@@ -30,21 +30,6 @@ class Dashboard(BaseModel):
         """获取卡片组件列表"""
         return []
 
-    async def page_component_render(self, request: Request, body: Any) -> Any:
-        """页面组件渲染"""
-        return await self.page_container_component_render(request, body)
-
-    async def page_container_component_render(self, request: Request, body: Any) -> Any:
-        """页面容器组件渲染"""
-
-        # 设置头部
-        header = PageHeader().set_title(self.title).set_sub_title(self.sub_title)
-        if not self.back_icon:
-            header.set_back_icon(False)
-
-        # 返回页面容器组件
-        return PageContainer().set_header(header).set_body(body)
-
     async def render(self, request: Request) -> Any:
         """组件渲染"""
         # 获取卡片组件列表
