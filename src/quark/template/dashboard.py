@@ -11,15 +11,6 @@ from ..component.grid.row import Row
 class Dashboard(BaseModel):
     """仪表盘"""
 
-    # 页面标题
-    title: str = Field(default="")
-
-    # 页面子标题
-    sub_title: Optional[str] = Field(default="")
-
-    # 页面是否携带返回Icon
-    back_icon: bool = Field(default=False)
-
     async def init(self, request: Request):
         """初始化"""
         return self

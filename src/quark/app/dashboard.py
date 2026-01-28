@@ -13,7 +13,6 @@ class Index(Dashboard):
     """仪表盘"""
 
     async def init(self, request: Request):
-        self.title = "仪表盘"
         return self
 
     async def cards(self, request: Request) -> List[Any]:
