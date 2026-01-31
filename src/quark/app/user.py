@@ -156,6 +156,9 @@ class User(Resource):
                     Rule.required("密码必须填写"),
                 ]
             )
+            .set_help(
+                "密码不少于六位，且至少包含一个大写字母、小写字母、数字和特殊字符"
+            )
             .only_on_forms(),
             field.datetime("last_login_time", "最后登录时间").only_on_index(),
             field.switch("status", "状态")
