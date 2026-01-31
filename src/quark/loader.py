@@ -1,13 +1,28 @@
 import importlib.util
 import os
-from typing import Any
+from typing import Any, Dict, List
 
 import inflection
 
 from . import Request, config
 
+# 全局缓存字典，用于缓存已加载的类
+_LOADED_CLASSES_CACHE: Dict[str, List[type]] = {}
 
-def load_class(file_path, class_name):
+# 禁止扫描的目录（防止导入用户虚拟环境）
+IGNORE_DIRS = {
+    "venv",
+    ".venv",
+    "env",
+    ".env",
+    "Lib",
+    "lib",
+    "site-packages",
+    "__pycache__",
+}
+
+
+def load_class(file_path: str, class_name: str) -> Any:
     """从文件加载类"""
     abs_file_path = os.path.abspath(file_path)
     if not os.path.exists(abs_file_path):
@@ -24,47 +39,38 @@ def load_class(file_path, class_name):
     return getattr(module, class_name)
 
 
-def load_object(file_path, class_name):
+def load_object(file_path: str, class_name: str) -> Any:
     """从文件加载类对象"""
     cls = load_class(file_path, class_name)
     if cls is None:
         return None
-
     obj = cls()
     return obj
 
 
-def load_method(file_path, class_name, method_name, *args, **kwargs):
+def load_method(file_path: str, class_name: str, method_name: str, *args, **kwargs) -> Any:
     """从文件加载类方法"""
     obj = load_object(file_path, class_name)
     method = getattr(obj, method_name)
     return method(*args, **kwargs)
 
 
-def get_classes_in_package(package_path):
-    """
-    安全扫描指定目录，加载其中的类
-    """
+def get_classes_in_package(package_path: str) -> List[type]:
+    """安全扫描指定目录，加载其中的类（带缓存）"""
+    global _LOADED_CLASSES_CACHE
+
+    # 检查缓存
+    if package_path in _LOADED_CLASSES_CACHE:
+        return _LOADED_CLASSES_CACHE[package_path]
+
     classes = []
     package_dir = os.path.abspath(package_path)
 
     if not os.path.exists(package_dir):
+        _LOADED_CLASSES_CACHE[package_path] = classes
         return classes
 
-    # 禁止扫描的目录（防止导入用户虚拟环境）
-    IGNORE_DIRS = {
-        "venv",
-        ".venv",
-        "env",
-        ".env",
-        "Lib",
-        "lib",
-        "site-packages",
-        "__pycache__",
-    }
-
     for root, dirs, files in os.walk(package_dir):
-
         # 过滤不应该扫描的目录
         dirs[:] = [d for d in dirs if d not in IGNORE_DIRS and not d.startswith(".")]
 
@@ -90,9 +96,7 @@ def get_classes_in_package(package_path):
                 continue
 
             try:
-                spec = importlib.util.spec_from_file_location(
-                    full_module_name, module_path
-                )
+                spec = importlib.util.spec_from_file_location(full_module_name, module_path)
                 if not spec or not spec.loader:
                     continue
 
@@ -106,17 +110,18 @@ def get_classes_in_package(package_path):
                         classes.append(attr)
 
             except Exception as e:
-                # 可以打印日志但不影响程序继续运行
                 print(f"[WARN] 模块加载失败: {module_path} | {e}")
 
+    # 缓存结果
+    _LOADED_CLASSES_CACHE[package_path] = classes
     return classes
 
 
-def load_resource_classes(class_type: str):
+def load_resource_classes(class_type: str) -> List[type]:
     """从应用程序目录或quark包加载资源类"""
     get_classes = []
 
-    #  遍历应用目录下的所有类
+    # 遍历应用目录下的所有类
     app_classes = get_classes_in_package(config.get("MODULE_PATH"))
 
     # 遍历quark包目录下的所有类
@@ -125,23 +130,18 @@ def load_resource_classes(class_type: str):
     )
 
     # 查找指定类名的类
-    for getclass in app_classes:
-        if getclass.__bases__[0].__name__ == class_type:
-            get_classes.append(getclass)
-
-    # 查找指定类名的类
-    for getclass in quark_package_classes:
+    for getclass in app_classes + quark_package_classes:
         if getclass.__bases__[0].__name__ == class_type:
             get_classes.append(getclass)
 
     return get_classes
 
 
-def load_resource(resource: str, class_type: str):
+def load_resource(resource: str, class_type: str) -> Any:
     """从应用程序目录或quark包加载资源类对象"""
     app_class = None
 
-    #  遍历应用目录下的所有类
+    # 遍历应用目录下的所有类
     app_classes = get_classes_in_package(config.get("MODULE_PATH"))
 
     # 遍历quark包目录下的所有类
@@ -149,24 +149,13 @@ def load_resource(resource: str, class_type: str):
         os.path.join(os.path.dirname(__file__), "app")
     )
 
-    # 查找指定类名的类
-    for getclass in app_classes:
-        if (
-            getclass.__name__ == inflection.camelize(resource)
-            and getclass.__bases__[0].__name__ == class_type
-        ):
-            app_class = getclass
-
-    if app_class is not None:
-        return app_class
+    target_name = inflection.camelize(resource)
 
     # 查找指定类名的类
-    for getclass in quark_package_classes:
-        if (
-            getclass.__name__ == inflection.camelize(resource)
-            and getclass.__bases__[0].__name__ == class_type
-        ):
+    for getclass in app_classes + quark_package_classes:
+        if getclass.__name__ == target_name and getclass.__bases__[0].__name__ == class_type:
             app_class = getclass
+            break
 
     return app_class
 
