@@ -72,16 +72,12 @@ class Auth(BaseModel):
 
     async def user_info(self, request: Request):
         user_info = await AuthService(request).get_current_admin()
-        return Message.success("ok",user_info)
+        return Message.success("ok", user_info)
 
     async def user_routes(self, request: Request):
         user_info = await AuthService(request).get_current_user("admin")
         menus = await MenuService().get_list_by_user_id(user_info.id)
-        return Message.success("ok", {
-            "routes": menus,
-            "home": "home"
-        })
-
+        return Message.success("ok", {"routes": menus, "home": "home"})
 
     async def logout(self, request: Request):
         return Message.success("退出成功")

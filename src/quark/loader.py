@@ -48,7 +48,9 @@ def load_object(file_path: str, class_name: str) -> Any:
     return obj
 
 
-def load_method(file_path: str, class_name: str, method_name: str, *args, **kwargs) -> Any:
+def load_method(
+    file_path: str, class_name: str, method_name: str, *args, **kwargs
+) -> Any:
     """从文件加载类方法"""
     obj = load_object(file_path, class_name)
     method = getattr(obj, method_name)
@@ -96,7 +98,9 @@ def get_classes_in_package(package_path: str) -> List[type]:
                 continue
 
             try:
-                spec = importlib.util.spec_from_file_location(full_module_name, module_path)
+                spec = importlib.util.spec_from_file_location(
+                    full_module_name, module_path
+                )
                 if not spec or not spec.loader:
                     continue
 
@@ -153,7 +157,10 @@ def load_resource(resource: str, class_type: str) -> Any:
 
     # 查找指定类名的类
     for getclass in app_classes + quark_package_classes:
-        if getclass.__name__ == target_name and getclass.__bases__[0].__name__ == class_type:
+        if (
+            getclass.__name__ == target_name
+            and getclass.__bases__[0].__name__ == class_type
+        ):
             app_class = getclass
             break
 

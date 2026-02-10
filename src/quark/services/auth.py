@@ -7,9 +7,9 @@ from tortoise.exceptions import DoesNotExist
 
 from quark.models.role_permission import RolePermission
 from quark.models.user_role import UserRole
+from quark.schemas import UserInfoResponse
 from quark.services.permission import PermissionService
 from quark.services.role import RoleService
-from quark.schemas import UserInfoResponse
 
 from .. import config
 from ..models.user import User
@@ -112,7 +112,7 @@ class AuthService:
             phone=userInfo.phone,
             avatar=userInfo.avatar,
             buttons=[],
-            roles=["R_SUPER"]
+            roles=["R_SUPER"],
         )
         return getuser
 
