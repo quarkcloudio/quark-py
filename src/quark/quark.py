@@ -23,7 +23,7 @@ class Quark(FastAPI):
     # 配置
     config: dict[str, Any] = {
         "APP_NAME": "QuarkPy",
-        "APP_VERSION": "0.2.1",
+        "APP_VERSION": "0.2.2",
         "APP_SECRET_KEY": "your-secret-key",
         "CACHE_PREFIX": "quark-cache",
         "MODULE_PATH": "",
@@ -63,6 +63,7 @@ class Quark(FastAPI):
             "quark.models"
         ]
         await db.init(
+            app=self,
             config=self.config["DB_CONFIG"],
             db_url=self.config["DB_URL"],
             modules=self.config["DB_MODULES"],
