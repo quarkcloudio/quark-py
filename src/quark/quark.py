@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Any, Awaitable, Callable, Optional
 
 import i18n
 import uvicorn
@@ -23,7 +23,7 @@ class Quark(FastAPI):
     # 配置
     config: dict[str, Any] = {
         "APP_NAME": "QuarkPy",
-        "APP_VERSION": "0.2.3",
+        "APP_VERSION": "0.2.4",
         "APP_SECRET_KEY": "your-secret-key",
         "CACHE_PREFIX": "quark-cache",
         "MODULE_PATH": "",
@@ -34,6 +34,12 @@ class Quark(FastAPI):
             "models": [],
         },
     }
+
+    # 应用启动加载
+    startup: Optional[Callable[[], Awaitable[None]]] = None
+
+    # 应用关闭加载
+    shutdown: Optional[Callable[[], Awaitable[None]]] = None
 
     def __init__(self, *args, **kwargs):
         """初始化"""
@@ -117,17 +123,6 @@ class Quark(FastAPI):
     async def lifespan(self, app: FastAPI):
         """生命周期"""
 
-        # 应用启动时执行
-        await self.startup()
-
-        yield
-
-        # 应用关闭时执行
-        await self.shutdown()
-
-    async def startup(self) -> Any:
-        """启动服务"""
-
         # 同步配置到全局变量
         self.sync_config()
 
@@ -148,10 +143,15 @@ class Quark(FastAPI):
 
         # 安装应用
         await setup_all()
+        if self.startup:
+            await self.startup()
 
-    async def shutdown(self) -> Any:
-        """关闭服务"""
+        yield
+
+        # 应用关闭时执行
         await Tortoise.close_connections()
+        if self.shutdown:
+            await self.shutdown()
 
     def run(
         self,
