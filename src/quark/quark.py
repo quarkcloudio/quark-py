@@ -23,7 +23,7 @@ class Quark(FastAPI):
     # 配置
     config: dict[str, Any] = {
         "APP_NAME": "QuarkPy",
-        "APP_VERSION": "0.2.4",
+        "APP_VERSION": "0.2.5",
         "APP_SECRET_KEY": "your-secret-key",
         "CACHE_PREFIX": "quark-cache",
         "MODULE_PATH": "",
@@ -95,6 +95,15 @@ class Quark(FastAPI):
     def register_middleware(self) -> None:
         """注册中间件"""
         self.add_middleware(Middleware)
+
+    def register_lifespan(
+        self,
+        startup: Optional[Callable[[], Awaitable[None]]] = None,
+        shutdown: Optional[Callable[[], Awaitable[None]]] = None,
+    ) -> None:
+        """注册生命周期"""
+        self.startup = startup
+        self.shutdown = shutdown
 
     def load_static(self):
         """加载静态资源"""
